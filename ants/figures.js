@@ -79,8 +79,11 @@ var grid_length = 150;
 var grid = [];
 var temp_grid = [];
 var population = [];
-var max_ants_on_grid = 10;
-var max_children_on_grid = 10;
+var max_ants_on_grid = 5;
+var max_children_on_grid = 5;
+var max_adults_on_grid = 5;
+var max_adults_w_backpack_on_grid = 3;
+var max_adults_w_bike_on_grid = 2;
 var ms_between_updates = 33;
 var ants_out_of_nest = 0;
 
@@ -112,14 +115,32 @@ function Child() {
 }
 
 function Adult() {
+  this.last_signal = 0;
+  this.orientation = random_orientation();
+
+  this.color = function() {
+      return "rgb(0,255,0)";
+   }
 
 }
 
 function AdultBackpack() {
+  this.last_signal = 0;
+  this.orientation = random_orientation();
+
+   this.color = function() {
+      return "rgb(0,0,255)";
+   }
 
 }
 
 function AdultBike() {
+  this.last_signal = 0;
+  this.orientation = random_orientation();
+
+   this.color = function() {
+      return "rgb(255,255,0)";
+   }
 
 }
 
@@ -214,6 +235,36 @@ function place_things() {
     var jj = get_random_int(0, grid_length)
 
     grid[j][jj].thing = new Child();
+    temp_grid[j][jj].thing = grid[j][jj].thing;
+  }
+  
+    for (var n = 0; n < max_adults_on_grid; n++) {
+    var j = get_random_int(0, grid_length)
+    var jj = get_random_int(0, grid_length)
+
+    adult = new Adult();
+    grid[j][jj].thing = adult;
+    grid[j+1][jj].thing = adult; //started implementation by creating "multiple adults"
+    temp_grid[j][jj].thing = grid[j][jj].thing;
+    temp_grid[j+1][jj].thing = grid[j+1][jj].thing;
+  }
+  
+    for (var n = 0; n < max_adults_w_backpack_on_grid; n++) {
+    var j = get_random_int(0, grid_length)
+    var jj = get_random_int(0, grid_length)
+
+    grid[j][jj].thing = new AdultBackpack();
+    //grid[j+1][jj].thing = new AdultBackpack();
+    //grid[j-1][jj-1].thing = new AdultBackpack();
+   // grid[j+1][jj-1].thing = new AdultBackpack();
+    temp_grid[j][jj].thing = grid[j][jj].thing;
+  }
+  
+    for (var n = 0; n < max_adults_w_bike_on_grid; n++) {
+    var j = get_random_int(0, grid_length)
+    var jj = get_random_int(0, grid_length)
+
+    grid[j][jj].thing = new AdultBike();
     temp_grid[j][jj].thing = grid[j][jj].thing;
   }
 }
