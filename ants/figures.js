@@ -104,7 +104,7 @@ function Cell(i,ii) {
 
 }
 
-function Child() {
+function Child() { //maybe add this.type to know if adult, child, backpack, or bike
    this.last_signal = 0;
    this.orientation = random_orientation();
 
@@ -119,7 +119,7 @@ function Adult() {
   this.orientation = random_orientation();
 
   this.color = function() {
-      return "rgb(0,255,0)";
+      return "rgb(0,255,0)"; //green
    }
 
 }
@@ -198,19 +198,19 @@ function run_time_step() {
     move_things();
 }
 
-function move_things() {
+function move_things() { //add ti this function to handle different types and collisions
     for (var i = 0; i < grid_length; i = i + 1) {
         for (var ii = 0; ii < grid_length; ii = ii + 1) {
-            if (grid[i][ii].has_thing()) {
+            if (grid[i][ii].has_thing()) { //add another condition to know if it is the "head of the person"
                 move_thing(i,ii);
             }
         }
     }
-    // signal
+    // signal, do we still need this?
     for (var i = 0; i < grid_length; i = i + 1) {
         for (var ii = 0; ii < grid_length; ii = ii + 1) {
             // adjust reference
-            grid[i][ii].thing = temp_grid[i][ii].thing; 
+            grid[i][ii].thing = temp_grid[i][ii].thing; //think this line is needed
 
             grid[i][ii].signal *= 0.95;	
 
@@ -242,9 +242,9 @@ function place_things() {
     var j = get_random_int(0, grid_length)
     var jj = get_random_int(0, grid_length)
 
-    adult = new Adult();
+    adult = new Adult(); //constructing adults
     grid[j][jj].thing = adult;
-    grid[j+1][jj].thing = adult; //started implementation by creating "multiple adults"
+    grid[j+1][jj].thing = adult; 
     temp_grid[j][jj].thing = grid[j][jj].thing;
     temp_grid[j+1][jj].thing = grid[j+1][jj].thing;
   }
@@ -253,19 +253,50 @@ function place_things() {
     var j = get_random_int(0, grid_length)
     var jj = get_random_int(0, grid_length)
 
-    grid[j][jj].thing = new AdultBackpack();
-    //grid[j+1][jj].thing = new AdultBackpack();
-    //grid[j-1][jj-1].thing = new AdultBackpack();
-   // grid[j+1][jj-1].thing = new AdultBackpack();
+    adult_backpack = new AdultBackpack(); //constructing adults with a backpack
+    grid[j][jj].thing = adult_backpack;
+    grid[j+1][jj].thing = adult_backpack;
+    grid[j][jj-1].thing = adult_backpack;
+    grid[j+1][jj-1].thing = adult_backpack;
     temp_grid[j][jj].thing = grid[j][jj].thing;
+    temp_grid[j+1][jj].thing = grid[j+1][jj].thing;
+    temp_grid[j][jj-1].thing = grid[j][jj-1].thing;
+    temp_grid[j+1][jj-1].thing = grid[j+1][jj-1].thing;
   }
   
     for (var n = 0; n < max_adults_w_bike_on_grid; n++) {
     var j = get_random_int(0, grid_length)
     var jj = get_random_int(0, grid_length)
 
-    grid[j][jj].thing = new AdultBike();
+    adult_bike = new AdultBike(); //constructing adult with bike
+    grid[j][jj].thing = adult_bike;
+    grid[j+1][jj].thing = adult_bike;
+    grid[j+2][jj+1].thing = adult_bike;
+    grid[j+2][jj].thing = adult_bike;
+    grid[j+2][jj-1].thing = adult_bike;
+    grid[j+2][jj-2].thing = adult_bike;
+    grid[j+2][jj-3].thing = adult_bike;
+    grid[j+2][jj-4].thing = adult_bike;
+    grid[j+3][jj+1].thing = adult_bike;
+    grid[j+3][jj].thing = adult_bike;
+    grid[j+3][jj-1].thing = adult_bike;
+    grid[j+3][jj-2].thing = adult_bike;
+    grid[j+3][jj-3].thing = adult_bike;
+    grid[j+3][jj-4].thing = adult_bike;
     temp_grid[j][jj].thing = grid[j][jj].thing;
+    temp_grid[j+1][jj].thing = grid[j+1][jj].thing;
+    temp_grid[j+2][jj+1].thing = grid[j+2][jj+1].thing;
+    temp_grid[j+2][jj].thing = grid[j+2][jj].thing;
+    temp_grid[j+2][jj-1].thing = grid[j+2][jj-1].thing;
+    temp_grid[j+2][jj-2].thing = grid[j+2][jj-2].thing;
+    temp_grid[j+2][jj-3].thing = grid[j+2][jj-3].thing;
+    temp_grid[j+2][jj-4].thing = grid[j+2][jj-4].thing;
+    temp_grid[j+3][jj+1].thing = grid[j+3][jj+1].thing;
+    temp_grid[j+3][jj].thing = grid[j+3][jj].thing;
+    temp_grid[j+3][jj-1].thing = grid[j+3][jj-1].thing;
+    temp_grid[j+3][jj-2].thing = grid[j+3][jj-2].thing;
+    temp_grid[j+3][jj-3].thing = grid[j+3][jj-3].thing;
+    temp_grid[j+3][jj-4].thing = grid[j+3][jj-4].thing;
   }
 }
 
@@ -290,7 +321,7 @@ function move_thing(i,ii) {
     jj = new_coords[1];
 
     // handles collisions by doing NOTHING
-    if (!temp_grid[j][jj].has_thing()) {
+    if (!temp_grid[j][jj].has_thing()) { //will need to change when both going to same spot
         // adjust reference
         temp_grid[j][jj].thing = temp_grid[i][ii].thing;
         temp_grid[i][ii].thing = null;
