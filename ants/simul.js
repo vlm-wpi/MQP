@@ -3,15 +3,22 @@ var _data;
 
 var UP = 180;
 var DOWN = 90;
-
 var LEFT = 270;
 var RIGHT = 0;
 
+var diagDownRight = 45;
+var diagUpRight = 135;
+var diagDownLeft = 225;
+var diagUpLeft = 315;
+
+
 var grid_length = 150;
-var max_ants_on_grid = 50;
-var max_children_on_grid = 50;
-var max_backpack_on_grid = 50;
-var ms_between_updates = 500;
+var max_ants_on_grid = 25;
+var max_children_on_grid = 25;
+var max_backpack_on_grid = 25;
+var max_adult_on_grid = 25;
+var max_bike_on_grid = 15;
+var ms_between_updates = 33;
 
 function State() {
   this.grid = [];
@@ -104,8 +111,16 @@ function State() {
       return [i, this.get_bounded_index(ii+1)];
     } else if (orient == LEFT) {
       return [this.get_bounded_index(i-1), ii];
-    } else {
+    } else if (orient == RIGHT) {
       return [this.get_bounded_index(i+1), ii];
+    } else if (orient == diagDownRight) {
+    	return [this.get_bounded_index(i+1),this.get_bounded_index(ii+1)]
+    } else if (orient == diagUpRight) {
+    	return [this.get_bounded_index(i+1),this.get_bounded_index(ii-1)]
+    } else if (orient == diagDownLeft) {
+    	return [this.get_bounded_index(i-1),this.get_bounded_index(ii+1)]
+    } else {
+    	return [this.get_bounded_index(i-1),this.get_bounded_index(ii-1)]
     }
   }
 
@@ -313,7 +328,7 @@ function Ant(j,jj) {
 }
 
 function random_orientation() {
-   var r = Math.random() * 4;
+   var r = Math.random() * 8;
 
    if (r < 1) {
      return LEFT;
@@ -321,8 +336,16 @@ function random_orientation() {
      return UP;
    } else if (r < 3) {
      return RIGHT;
+   } else if (r < 4) {
+   	 return DOWN
+   } else if (r < 5) {
+     return diagDownRight;
+   } else if (r < 6) {
+   	return diagUpRight;
+   } else if (r < 7) {
+   	return diagDownLeft;
    } else {
-     return DOWN;
+   	return diagUpLeft;
    }
 }
 

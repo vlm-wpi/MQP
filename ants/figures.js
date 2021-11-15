@@ -163,7 +163,8 @@ function random_orientation() {
    } else if (r < 3) {
      return RIGHT;
    } else {
-     return DOWN;
+   	 return DOWN;
+ 
    }
 }
 
