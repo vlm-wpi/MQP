@@ -247,7 +247,7 @@ function Child(j,jj) {
    this.profile_ii = [0];
 
    this.color = function() {
-      return "rgb(255,0,0)";
+      return "rgb(0,255,0)";
    }
 
    this.place_footprint = function(state) {
