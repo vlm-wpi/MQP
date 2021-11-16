@@ -17,8 +17,8 @@ var max_ants_on_grid = 25;
 var max_children_on_grid = 25;
 var max_backpack_on_grid = 25;
 var max_adult_on_grid = 25;
-var max_bike_on_grid = 15;
-var ms_between_updates = 33;
+var max_bike_on_grid = 10;
+var ms_between_updates = 100;
 
 function State() {
   this.grid = [];
@@ -88,6 +88,38 @@ function State() {
       var jj = get_random_int(0, grid_length)
   
       var obj =  new AdultBackpack(j,jj);
+      this.population.push(obj);
+      for (var p = 0; p < obj.profile_i.length; p++) {  //
+          var dj = obj.profile_i[p];
+          var djj = obj.profile_ii[p];
+	  var safej = this.get_bounded_index(j+dj);
+	  var safejj = this.get_bounded_index(jj+djj);
+
+	  this.temp_grid[safej][safejj].thing = obj;
+      }
+    }
+
+    for (var n = 0; n < max_adult_on_grid; n++) {
+      var j = get_random_int(0, grid_length)
+      var jj = get_random_int(0, grid_length)
+  
+      var obj =  new Adult(j,jj);
+      this.population.push(obj);
+      for (var p = 0; p < obj.profile_i.length; p++) {  //
+          var dj = obj.profile_i[p];
+          var djj = obj.profile_ii[p];
+	  var safej = this.get_bounded_index(j+dj);
+	  var safejj = this.get_bounded_index(jj+djj);
+
+	  this.temp_grid[safej][safejj].thing = obj;
+	  }
+	}
+
+    for (var n = 0; n < max_bike_on_grid; n++) {
+      var j = get_random_int(0, grid_length)
+      var jj = get_random_int(0, grid_length)
+  
+      var obj =  new AdultBike(j,jj);
       this.population.push(obj);
       for (var p = 0; p < obj.profile_i.length; p++) {  //
           var dj = obj.profile_i[p];
@@ -259,8 +291,39 @@ function Child(j,jj) {
    }
 }
 
-function Adult() {
+function Adult(j,jj) {
+	this.last_signal = 0;
+	this.orientation = random_orientation();
+	this.anchor_i = j
+	this.anchor_ii = jj
 
+   // my projection 
+   	this.profile_i  = [1, 0]
+   	this.profile_ii = [0, 0]
+
+	this.color = function() {
+		return "rgb(0,0,255)";
+	}
+
+	this.place_footprint = function(state) {
+	for (var p = 0; p < this.profile_i.length; p++) {  //
+          var dj = this.profile_i[p];
+          var djj = this.profile_ii[p];
+	  var safej = state.get_bounded_index(this.anchor_i+dj);
+	  var safejj = state.get_bounded_index(this.anchor_ii+djj);
+	  state.temp_grid[safej][safejj].thing = this;
+	}
+   }
+
+   this.remove_footprint = function(state) {
+	for (var p = 0; p < this.profile_i.length; p++) {  //
+          var dj = this.profile_i[p];
+          var djj = this.profile_ii[p];
+	  var safei = state.get_bounded_index(this.anchor_i+dj);
+	  var safeii = state.get_bounded_index(this.anchor_ii+djj);
+	  state.temp_grid[safei][safeii].thing = null;
+	}
+   }
 }
 
 function AdultBackpack(j,jj) {
@@ -299,8 +362,39 @@ function AdultBackpack(j,jj) {
 
 }
 
-function AdultBike() {
+function AdultBike(j,jj) {
+	this.last_signal = 0;
+	this.orientation = random_orientation();
+	this.anchor_i = j
+	this.anchor_ii = jj
 
+   // my projection 
+	this.profile_i  = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
+	this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
+
+	this.color = function() {
+		return "rgb(0,255,0)";
+	}
+
+	this.place_footprint = function(state) {
+	for (var p = 0; p < this.profile_i.length; p++) {  //
+          var dj = this.profile_i[p];
+          var djj = this.profile_ii[p];
+	  var safej = state.get_bounded_index(this.anchor_i+dj);
+	  var safejj = state.get_bounded_index(this.anchor_ii+djj);
+	  state.temp_grid[safej][safejj].thing = this;
+	}
+   }
+
+   this.remove_footprint = function(state) {
+	for (var p = 0; p < this.profile_i.length; p++) {  //
+          var dj = this.profile_i[p];
+          var djj = this.profile_ii[p];
+	  var safei = state.get_bounded_index(this.anchor_i+dj);
+	  var safeii = state.get_bounded_index(this.anchor_ii+djj);
+	  state.temp_grid[safei][safeii].thing = null;
+	}
+   }
 }
 
 
