@@ -13,11 +13,13 @@ var diagUpLeft = 315;
 
 
 var grid_length = 150;
-var max_ants_on_grid = 25;
+// var max_ants_on_grid = 25;
 var max_children_on_grid = 25;
 var max_backpack_on_grid = 25;
 var max_adult_on_grid = 25;
 var max_bike_on_grid = 10;
+var max_obstacles_on_grid = 200;
+var exits = 10;
 var ms_between_updates = 100;
 
 function State() {
@@ -27,8 +29,8 @@ function State() {
 
   this.get_bounded_index = function (index) {
     var bounded_index = index;
-    if (index < 0) {
-        bounded_index = 0;
+    if (index < 0) 
+{        bounded_index = 0;
     }
     if (index >= grid_length) {
         bounded_index = grid_length-1;
@@ -65,14 +67,22 @@ function State() {
   }
 
   this.place_things = function () {
-    for (var n = 0; n < max_ants_on_grid; n++) {
+  	 for (var n = 0; n < max_obstacles_on_grid; n++) {
       var j = get_random_int(0, grid_length)
       var jj = get_random_int(0, grid_length)
   
-      var obj = new Ant(j, jj);
-      this.population.push(obj);
+      var obj = new Obstacle(j,jj);
+     // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
       this.temp_grid[j][jj].thing = obj;
     }
+    // for (var n = 0; n < max_ants_on_grid; n++) {
+    //   var j = get_random_int(0, grid_length)
+    //   var jj = get_random_int(0, grid_length)
+  
+    //   var obj = new Ant(j, jj);
+    //   this.population.push(obj);
+    //   this.temp_grid[j][jj].thing = obj;
+    // }
   
     for (var n = 0; n < max_children_on_grid; n++) {
       var j = get_random_int(0, grid_length)
@@ -269,6 +279,28 @@ function Cell(i,ii) {
 
 }
 
+function Obstacle(j,jj) {
+   this.last_signal = 0;
+   this.orientation = random_orientation();
+   this.anchor_i = j
+   this.anchor_ii = jj
+
+   this.profile_i  = [0];
+   this.profile_ii = [0];
+
+   this.color = function() {
+      return "rgb(0,0,0)";
+   }
+
+   this.place_footprint = function(state) {
+    state.temp_grid[this.anchor_i][this.anchor_ii].thing = this;
+   }
+
+   this.remove_footprint = function(state) {
+     state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
+   }
+}
+
 function Child(j,jj) {
    this.last_signal = 0;
    this.orientation = random_orientation();
@@ -279,7 +311,7 @@ function Child(j,jj) {
    this.profile_ii = [0];
 
    this.color = function() {
-      return "rgb(255,0,0)";
+      return "rgb(255,165,0)";
    }
 
    this.place_footprint = function(state) {
@@ -337,7 +369,7 @@ function AdultBackpack(j,jj) {
    this.profile_ii = [0, 1, 0, 1];
 
    this.color = function() {
-      return "rgb(255,0,0)";
+      return "rgb(0,128,0)";
    }
 
    this.place_footprint = function(state) {
@@ -373,7 +405,7 @@ function AdultBike(j,jj) {
 	this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
 
 	this.color = function() {
-		return "rgb(0,255,0)";
+		return "rgb(220,20,60)";
 	}
 
 	this.place_footprint = function(state) {
@@ -398,28 +430,28 @@ function AdultBike(j,jj) {
 }
 
 
-function Ant(j,jj) {
-   this.last_signal = 0;
-   this.orientation = random_orientation();
+// function Ant(j,jj) {
+//    this.last_signal = 0;
+//    this.orientation = random_orientation();
 
-   this.anchor_i = j;
-   this.anchor_ii = jj;
+//    this.anchor_i = j;
+//    this.anchor_ii = jj;
 
-   this.profile_i  = [0];
-   this.profile_ii = [0];
+//    this.profile_i  = [0];
+//    this.profile_ii = [0];
 
-   this.color = function() {
-      return "rgb(0,0,0)";
-   }
+//    this.color = function() {
+//       return "rgb(0,0,0)";
+//    }
 
-   this.place_footprint = function(state) {
-    state.temp_grid[this.anchor_i][this.anchor_ii].thing = this;
-   }
+//    this.place_footprint = function(state) {
+//     state.temp_grid[this.anchor_i][this.anchor_ii].thing = this;
+//    }
 
-   this.remove_footprint = function(state) {
-     state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
-   }
-}
+//    this.remove_footprint = function(state) {
+//      state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
+//    }
+// }
 
 function random_orientation() {
    var r = Math.random() * 8;
