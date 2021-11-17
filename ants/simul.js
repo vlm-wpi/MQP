@@ -209,6 +209,26 @@ function State() {
           collision = collision + 1 ;//add one to collision
         }
       }
+        //here we will handle collisions
+        //check the population if anyone is trying to move to the same spot
+        for (var pop = 0; pop < this.population.length; pop++){
+          //add in for every cell in person
+          person = this.population[pop]
+          
+          //for (var cell = 0; cell < person.profile_i.length; cell++){}
+          var person_coords = this.get_coords_from_orientation(person); //get where it wants to go
+          var px = person_coords[0];
+          var py = person_coords[1];
+          if ((px == j) && (py == jj)){ //if both trying to go to same spot
+            //need to implement checking orientation to stop head on ones
+            //for now just have one not move
+            if (!(person.last_signal == 1)){ //if the person is not already paused
+              collision = collision + 1;
+              person.last_signal = 1; //pausing the person
+            }
+          }
+  }
+
       if (collision == 0){ //if no collision for any cells then can move whole piece
         // where thing is RIGHT NOW
       	var i = thing.anchor_i;
@@ -223,9 +243,15 @@ function State() {
       	// move into new one
       	thing.place_footprint(this);
       }
+        // reset everyone to unpaused for next time going through
+        //this chunk is not working
+    //  for (var pop = 0; pop < this.population.length; pop++){
+       // person = this.population[pop];
+      //  person.last_signal = 0;
+     // }
 	
   }
-  //here we will handle collisions
+
 }
 }
 
