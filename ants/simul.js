@@ -165,6 +165,30 @@ function State() {
     	return [this.get_bounded_index(i-1),this.get_bounded_index(ii-1)]
     }
   }
+  
+    this.get_coords_from_orientation_neighbors = function (thing, index) { //need this to because we have to use profile and not anchor
+    var i = thing.profile_i[index];
+    var ii = thing.profile_ii[index];
+
+    var orient = thing.orientation;
+    if (orient == UP) {
+      return [i, this.get_bounded_index(ii-1)];
+    } else if (orient == DOWN) {
+      return [i, this.get_bounded_index(ii+1)];
+    } else if (orient == LEFT) {
+      return [this.get_bounded_index(i-1), ii];
+    } else if (orient == RIGHT) {
+      return [this.get_bounded_index(i+1), ii];
+    } else if (orient == diagDownRight) {
+    	return [this.get_bounded_index(i+1),this.get_bounded_index(ii+1)]
+    } else if (orient == diagUpRight) {
+    	return [this.get_bounded_index(i+1),this.get_bounded_index(ii-1)]
+    } else if (orient == diagDownLeft) {
+    	return [this.get_bounded_index(i-1),this.get_bounded_index(ii+1)]
+    } else {
+    	return [this.get_bounded_index(i-1),this.get_bounded_index(ii-1)]
+    }
+  }
 
   this.move_thing = function (thing) {
     var new_coords = this.get_coords_from_orientation(thing);
@@ -174,20 +198,35 @@ function State() {
     // handles collisions by doing NOTHING. If spot that you are trying 
     // to move to DOESN'T HAVE a thing then you are free to move.
     if (!this.temp_grid[j][jj].has_other_thing(thing)) {
-	// where thing is RIGHT NOW
-	var i = thing.anchor_i;
-	var ii = thing.anchor_ii;
-
-	// clear old one
-	thing.remove_footprint(this);
-
-	thing.anchor_i = j;
-	thing.anchor_ii = jj;
-
-	// move into new one
-	thing.place_footprint(this);
-    }
+      var collision = 0;
+      for (var x = 0; x < thing.profile_i.length; x++) { //need to check all of the cells of the person
+        var new_neighbor_cords = this.get_coords_from_orientation_neighbors(thing, x)
+        var r = new_neighbor_cords[0];
+        var c = new_neighbor_cords[1];
+        var safe_r = this.get_bounded_index(r + thing.anchor_i);
+        var safe_c = this.get_bounded_index(c + thing.anchor_ii);
+        if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
+          collision = collision + 1 ;//add one to collision
+        }
+      }
+      if (collision == 0){ //if no collision for any cells then can move whole piece
+        // where thing is RIGHT NOW
+      	var i = thing.anchor_i;
+      	var ii = thing.anchor_ii;
+      
+      	// clear old one
+      	thing.remove_footprint(this);
+      
+      	thing.anchor_i = j;
+      	thing.anchor_ii = jj;
+      
+      	// move into new one
+      	thing.place_footprint(this);
+      }
+	
   }
+  //here we will handle collisions
+}
 }
 
 
