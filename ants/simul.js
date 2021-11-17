@@ -19,7 +19,7 @@ var max_backpack_on_grid = 25;
 var max_adult_on_grid = 25;
 var max_bike_on_grid = 10;
 var max_obstacles_on_grid = 200;
-var exits = 10;
+var max_exits_on_grid = 10;
 var ms_between_updates = 100;
 
 function State() {
@@ -66,14 +66,41 @@ function State() {
     }
   }
 
+  function draw_border(){
+     for (var i = grid_length+1; i < grid_length+2; i = i + 1) {
+        this.grid[i+1] = [];
+        this.temp_grid[i+1] = [];
+        for (var ii = grid_length+1; ii < grid_length+2; ii = ii + 1) {
+            this.grid[i+1][ii+1] = new Cell(i,ii);
+            this.temp_grid[i+1][ii+1] = new Cell(i,ii);
+        }
+    }
+  } 	
+  
+
   this.place_things = function () {
-  	 for (var n = 0; n < max_obstacles_on_grid; n++) {
+  	for (var n = 0; n < max_obstacles_on_grid; n++) {
       var j = get_random_int(0, grid_length)
       var jj = get_random_int(0, grid_length)
   
       var obj = new Obstacle(j,jj);
      // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
       this.temp_grid[j][jj].thing = obj;
+    }
+    for (var n = 0; n < max_exits_on_grid; n++) {
+      var j = get_random_int(0, grid_length)
+      var jj = get_random_int(0, grid_length)
+  
+      var obj =  new Exit(j,jj);
+      // this.population.push(obj);
+      for (var p = 0; p < obj.profile_i.length; p++) {  //
+          var dj = obj.profile_i[p];
+          var djj = obj.profile_ii[p];
+	  var safej = this.get_bounded_index(j+dj);
+	  var safejj = this.get_bounded_index(jj+djj);
+
+	  this.temp_grid[safej][safejj].thing = obj;
+      }
     }
     // for (var n = 0; n < max_ants_on_grid; n++) {
     //   var j = get_random_int(0, grid_length)
@@ -305,6 +332,7 @@ function draw_grid(data) {
     }
 }
 
+
 // =====================================================
 // Stateless methods, that do not need state to operate
 // ======================================================
@@ -342,6 +370,26 @@ function Cell(i,ii) {
        return true;
     }
 
+}
+function Exit(j,jj) {
+   this.last_signal = 0;
+   this.anchor_i = j
+   this.anchor_ii = jj
+
+   this.profile_i  = [-1,0,1,2];
+   this.profile_ii = [0,0,0,0];
+
+   this.color = function() {
+      return "rgb(139,69,19)";
+   }
+
+   this.place_footprint = function(state) {
+    state.temp_grid[this.anchor_i][this.anchor_ii].thing = this;
+   }
+
+   this.remove_footprint = function(state) {
+     state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
+   }
 }
 
 function Obstacle(j,jj) {
