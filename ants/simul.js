@@ -48,6 +48,16 @@ function State() {
         }
     }
   }
+ //  this.draw_border = function() {
+	// for (var i = grid_length+1; i < grid_length+2; i = i + 1) {
+	// 	this.grid[i] = [];
+	// 	this.temp_grid[i] = [];
+	// 	for (var ii = grid_length+1; ii < grid_length+2; ii = ii + 1) {
+	// 		this.grid[i][ii] = new Cell(i,ii);
+	// 		this.temp_grid[i][ii] = new Cell(i,ii);
+	// 	}
+	// }
+ //  }
 
   this.move_things = function () {
     // move everyone at TOP level of abstraction
@@ -64,18 +74,7 @@ function State() {
             this.grid[i][ii].thing = this.temp_grid[i][ii].thing; 
         }
     }
-  }
-
-  function draw_border(){
-     for (var i = grid_length+1; i < grid_length+2; i = i + 1) {
-        this.grid[i+1] = [];
-        this.temp_grid[i+1] = [];
-        for (var ii = grid_length+1; ii < grid_length+2; ii = ii + 1) {
-            this.grid[i+1][ii+1] = new Cell(i,ii);
-            this.temp_grid[i+1][ii+1] = new Cell(i,ii);
-        }
-    }
-  } 	
+  }	
   
 
   this.place_things = function () {
@@ -319,7 +318,6 @@ function draw_grid(data) {
         
     }
     draw_cells();
-
     // remember _data as prior rendering
     if (!_data) {
         _data = [];
@@ -604,6 +602,7 @@ function get_random_int(min, max) {
 
 function initialize_simulation() {
     state.init_grids();
+    // state.draw_border();
     state.place_things();
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
 }
