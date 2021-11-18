@@ -225,7 +225,7 @@ function State() {
     // handles collisions by doing NOTHING. If spot that you are trying 
     // to move to DOESN'T HAVE a thing then you are free to move.
     if (!this.temp_grid[j][jj].has_other_thing(thing)) {
-      var collision = 0;
+      var collision = 0; //maybe could have break if collides so doesn't have to keep going through loop
       for (var x = 0; x < thing.profile_i.length; x++) { //need to check all of the cells of the person
         var new_neighbor_cords = this.get_coords_from_orientation_neighbors(thing, x)
         var r = new_neighbor_cords[0];
@@ -238,23 +238,66 @@ function State() {
       }
         //here we will handle collisions
         //check the population if anyone is trying to move to the same spot
-        for (var pop = 0; pop < this.population.length; pop++){
+        for (var pop = 0; pop < this.population.length; pop++){ //for anchor cell
           //add in for every cell in person
-          person = this.population[pop]
-          
-          //for (var cell = 0; cell < person.profile_i.length; cell++){}
+          person = this.population[pop];
+          //anchor anchor
           var person_coords = this.get_coords_from_orientation(person); //get where it wants to go
           var px = person_coords[0];
           var py = person_coords[1];
           if ((px == j) && (py == jj)){ //if both trying to go to same spot
-            //need to implement checking orientation to stop head on ones
-            //for now just have one not move
             if (!(person.last_signal == 1)){ //if the person is not already paused
               collision = collision + 1;
               person.last_signal = 1; //pausing the person
+              //change their orientation
+              person.orientation = random_orientation();
             }
           }
-  }
+          //profile anchor
+            for (var x = 0; x < thing.profile_i.length; x++) { 
+            var new_neighbor_cords = this.get_coords_from_orientation_neighbors(thing, x)
+            var r = new_neighbor_cords[0];
+            var c = new_neighbor_cords[1];
+            if ((px == r) && (py == c)){ //if both trying to go to same spot
+            if (!(person.last_signal == 1)){ //if the person is not already paused
+              collision = collision + 1;
+              person.last_signal = 1; //pausing the person
+              //change their orientation
+              person.orientation = random_orientation();
+            }
+          }
+        }
+          // now check for all profile cells (profile profile)
+          for (var x = 0; x < thing.profile_i.length; x++) { 
+            var new_neighbor_cords = this.get_coords_from_orientation_neighbors(thing, x)
+            var r = new_neighbor_cords[0];
+            var c = new_neighbor_cords[1];
+            
+            for (var cell = 0; cell < person.profile_i.length; cell++){ //check all the cells of the person
+              var surrounding_cell = this.get_coords_from_orientation_neighbors(person, cell); //get where want to go
+              var row = surrounding_cell[0];
+              var col = surrounding_cell[1];
+              
+              if ((r == row) && (c == col)){ //if both trying to go to same spot
+                if (!(person.last_signal == 1)){ //if the person is not already paused
+                  collision = collision + 1;
+                  person.last_signal = 1; //pausing the person
+                  //change their orientation
+                  person.orientation = random_orientation();
+                }
+              }
+            // anchor profile 
+            if ((row == j) && (col == jj)){ //if both trying to go to same spot
+                if (!(person.last_signal == 1)){ //if the person is not already paused
+                  collision = collision + 1;
+                  person.last_signal = 1; //pausing the person
+                  //change their orientation
+                  person.orientation = random_orientation();
+                }
+              }
+            }
+          }
+        }
 
       if (collision == 0){ //if no collision for any cells then can move whole piece
         // where thing is RIGHT NOW
@@ -278,8 +321,7 @@ function State() {
      // }
 	
   }
-
-}
+  }
 }
 
 
