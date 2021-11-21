@@ -15,11 +15,11 @@ var diagUpLeft = 315;
 var grid_length = 150;
 // var max_ants_on_grid = 25;
 var max_children_on_grid = 25;
-var max_backpack_on_grid = 25;
-var max_adult_on_grid = 25;
-var max_bike_on_grid = 10;
-var max_obstacles_on_grid = 200;
-var max_exits_on_grid = 10;
+var max_backpack_on_grid = 50;
+var max_adult_on_grid = 50;
+var max_bike_on_grid = 15;
+var max_obstacles_on_grid = 100;
+var max_exits_on_grid = 25;
 var ms_between_updates = 100;
 
 function State() {
@@ -48,14 +48,14 @@ function State() {
 				}
 			}
 		}
-		this.draw_border = function() {
-			for (var i = grid_length+1; i < grid_length+2; i = i + 1) {
-				this.grid[i] = [];
-				this.temp_grid[i] = [];
-				this.grid[i][0] = new Cell(i,ii);
-				this.temp_grid[i][0] = new Cell(i,ii);
-			}
-		}
+		// this.draw_border = function() {
+		// 	for (var i = grid_length+1; i < grid_length+2; i = i + 1) {
+		// 		this.grid[i] = [];
+		// 		this.temp_grid[i] = [];
+		// 		this.grid[i][0] = new Cell(i,ii);
+		// 		this.temp_grid[i][0] = new Cell(i,ii);
+		// 	}
+		// }
 
 
 		this.move_things = function () {
@@ -77,7 +77,6 @@ function State() {
 
 
 this.place_things = function () {
-  	// var obj = new Exit(0,0)
 
   	for (var n = 0; n < max_obstacles_on_grid; n++) {
   		var j = get_random_int(0, grid_length)
@@ -85,21 +84,28 @@ this.place_things = function () {
 
   		var obj = new Obstacle(j,jj);
      // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
-     this.temp_grid[j][jj].thing = obj;
+     	this.temp_grid[j][jj].thing = obj;
  }
 
  for (var n = 0; n < max_exits_on_grid; n++) {
- 	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation || RIGHT)) {
+ 	var obj =  new Exit(j,jj);
+ 	if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
  		var j = 0;
- 		var jj = get_random_int(0, grid_length);
-
+ 		var jj = get_random_int(0, grid_length-3);
  	}
- 	else {
- 		var j = get_random_int(0, grid_length);
+ 	else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
+ 		var j = grid_length;
+ 		var jj = get_random_int(0, grid_length-3);
+ 	}
+ 	else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
+ 		var j = get_random_int(0, grid_length-3);
  		var jj = 0;
  	}
+ 	else {
+ 		var j = get_random_int(0, grid_length-3);
+ 		var jj = grid_length;
+ 	}
 
- 	var obj =  new Exit(j,jj);
       // this.population.push(obj);
       for (var p = 0; p < obj.profile_i.length; p++) {  //
       	var dj = obj.profile_i[p];
@@ -107,7 +113,7 @@ this.place_things = function () {
       	var safej = this.get_bounded_index(j+dj);
       	var safejj = this.get_bounded_index(jj+djj);
 
-      	this.temp_grid[safej][safejj].thing = obj;
+     	this.temp_grid[safej][safejj].thing = obj;
       }
   }
     // for (var n = 0; n < max_ants_on_grid; n++) {
@@ -423,16 +429,16 @@ function Cell(i,ii) {
 function Exit(j,jj) {
 	this.last_signal = 0;
 	this.orientation = random_orientation();
-	this.anchor_i = j
-	this.anchor_ii = jj
+	this.anchor_i = j;
+	this.anchor_ii = jj;
 
-	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation || RIGHT)) {
-		this.profile_i  = [-1,0,1,2];
-		this.profile_ii = [0,0,0,0];
-	} 
-	else {
+	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation == RIGHT)) {
 		this.profile_i  = [0,0,0,0];
 		this.profile_ii = [-1,0,1,2];
+	} 
+	else {
+		this.profile_i  = [-1,0,1,2];
+		this.profile_ii = [0,0,0,0];
 	}
 
 
