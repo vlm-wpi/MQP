@@ -28,6 +28,8 @@ const rightChild = (index) => index * 2 + 2;
 const parent = (index) => Math.floor((index - 1) / 2);
 var goalX = 0;
 var goalY = 0;
+var D = 1;
+var D2 = Math.sqrt(2);
 
 function minHeap() {
  this.heap = [];
@@ -43,7 +45,7 @@ function minHeap() {
     return this.heap[0];
   }
   
-  minHeap.prototype.insert = function(element) {
+  minHeap.insert = function(element) {
     // push element to the end of the heap
     this.heap.push(element);
     
@@ -151,7 +153,7 @@ function State() {
         }
     }
 }
-this.get_neighbors = function(x,y){
+this.get_neighbors = function(x,y){ //gets the eight neighbors as a possible move
   var parents = [];
   parents.push((x-1,y));
   parents.push((x+1,y));
@@ -164,44 +166,60 @@ this.get_neighbors = function(x,y){
   return parents;
 }
 
+this.diagonal = function(x,y){ //diagonal distance heuristic
+  var dx = Math.abs(x - goalX);
+  var dy = Math.abs(y - goalY);
+ 
+  var h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+  return h;
+}
+
 this.AStar = function (thing){
   //step 1
   var open = new minHeap();
   //step 2
   var closed = new minHeap();
-  open.prototype.insert(thing);
-  
+  var anchorX = thing.anchor_i;
+  var anchorY = thing.anchor_ii;
+  open.minHeap.insert([anchorX, anchorY]);
+  //step 3
   while(open.length > 0){
-    var q = open.prototype.extractMin();
-    var x = this.anchor_i;
-    var y = this.anchor_ii;
-    var parents = this.get_neighbors(x,y);
-    for(i=0;i<parents.length;i++){
+    //do i need to call heapify function?
+    var q = open.prototype.extractMin(); //3a,b
+    var x = q[0];
+    var y = q[1];
+    var successors = this.get_neighbors(x,y); //3c, this function only returns coordinates
+    for(i=0;i<successors.length;i++){
+      successors[i] = [successors, q]//trying to set parents to q
       if(x==goalX && y==goalY){
-        break; //not sure of this is right
+        break; //not sure if this is right, want to move on to next successor
       }
-      parents[i].g = q.g; //need to initialize .g better
-      parents[i].h = 0;//heuristic!!
-      parents[i].f = parents[i].g + parents[i].h;
-      var count = 0;
+      successors[i].g = q.g + 1; //need to initialize .g better
+      successors[i].h = this.diagonal(successors[i][0], successors[i][1]);//heuristic!!
+      successors[i].f = successorss[i].g + successorss[i].h;
+
       //confused on this part (3ii)
       for(j=0;j<open.length;j++){
-        if (open[j] == parents[i] && open[j].f < parents[i].f){
-          count = count + 1;
-        }
-        else{
-          if(closed[j]==parents[i] && closed[j] < parents[i].f){
-            
-          }
-          else{
-            open.prototype.insert(parents[i]);
-          }
+        if (open[j] == successors[i] && open[j].f < successors[i].f){
+          break; //not sure if this is right, want to move on to next successor
         }
       }
+      count = 0;
+      for(j=0;j<closed.length;j++){
+        if(closed[j]==successors[i] && closed[j] < successors[i].f){
+            count = count+1;
+          }
+      }
+      if(count == 0){
+        open.prototype.insert(successors[i]);
+      }
+      }
+      closed.protootype.insert(q);
     }
-    closed.protootype.insert(q);
+      //might have to call heapify somewhere to get list on correct order
+  best_move = closed.prototype.extractMin();
+  return best_move[0];
   }
-}
 
 
 this.place_things = function () {
@@ -360,7 +378,8 @@ this.get_coords_from_orientation = function (thing) {
     }
 
     this.move_thing = function (thing) {
-    	var new_coords = this.get_coords_from_orientation(thing);
+    	//var new_coords = this.get_coords_from_orientation(thing); 
+    	var new_coords = this.AStar(thing); //using AStar algorithm to get the best move
     	var j = new_coords[0];
     	var jj = new_coords[1];
 
