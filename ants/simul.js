@@ -22,6 +22,83 @@ var max_obstacles_on_grid = 100;
 var max_exits_on_grid = 25;
 var ms_between_updates = 100;
 
+//creating a priority queue, noot totally sure where to put the functions
+const leftChild = (index) => index * 2 + 1;
+const rightChild = (index) => index * 2 + 2;
+const parent = (index) => Math.floor((index - 1) / 2);
+var goalX = 0;
+var goalY = 0;
+
+function minHeap() {
+ this.heap = [];
+ 
+  minHeap.prototype.swap = function (indexOne, indexTwo) {
+   const tmp = this.heap[indexOne];
+   this.heap[indexOne] = this.heap[indexTwo];
+   this.heap[indexTwo] = tmp;
+  }
+  
+  minHeap.prototype.peek = function() {
+    // the root is always the highest priority item, make sure actually lowest
+    return this.heap[0];
+  }
+  
+  minHeap.prototype.insert = function(element) {
+    // push element to the end of the heap
+    this.heap.push(element);
+    
+    // the index of the element we have just pushed
+    let index = this.heap.length-1;
+    
+    // if the element is greater than its parent:
+    // swap element with its parent
+    while (index !== 0 && this.heap[index] > this.heap[parent(index)]) {
+      this.swap(index, parent(index));
+      index = parent(index);
+    }
+  }
+  
+  minHeap.prototype.extractMin = function() {
+    // remove the first element from the heap
+    const root = this.heap.shift();
+   
+    // put the last element to the front of the heap
+    // and remove the last element from the heap as it now
+    // sits at the front of the heap
+    this.heap.unshift(this.heap[this.heap.length-1]);
+    this.heap.pop();
+    
+    // correctly re-position heap
+    this.heapify(0);
+    
+    return root;
+  }
+  
+  minHeap.prototype.heapify = function(index) { //used maxheap so confused on what to change
+    let left = leftChild(index);
+    let right = rightChild(index);
+    let largest = index;
+  
+    // if the left child is bigger than the node we are looking at
+    if (left < this.heap.length && this.heap[largest] < this.heap[left]) {
+      largest = left; //i think this is wrong
+    }
+    
+    // if the right child is bigger than the node we are looking at
+    if (right < this.heap.length && this.heap[largest] > this.heap[right]) {
+      largest = right;
+    }
+    
+    // if the value of largest has changed, then some swapping needs to be done
+    // and this method needs to be called again with the swapped element
+    if (largest != index) {
+      this.swap(largest, index);
+      this.heapify(largest);
+    }
+  }
+}
+
+
 function State() {
 	this.grid = [];
 	this.temp_grid = [];
@@ -73,7 +150,58 @@ function State() {
             this.grid[i][ii].thing = this.temp_grid[i][ii].thing; 
         }
     }
-}	
+}
+this.get_neighbors = function(x,y){
+  var parents = [];
+  parents.push((x-1,y));
+  parents.push((x+1,y));
+  parents.push((x-1,y-1));
+  parents.push((x,y-1));
+  parents.push((x+1,y-1));
+  parents.push((x-1,y+1));
+  parents.push((x,y+1));
+  parents.push((x+1,y+1));
+  return parents;
+}
+
+this.AStar = function (thing){
+  //step 1
+  var open = new minHeap();
+  //step 2
+  var closed = new minHeap();
+  open.prototype.insert(thing);
+  
+  while(open.length > 0){
+    var q = open.prototype.extractMin();
+    var x = this.anchor_i;
+    var y = this.anchor_ii;
+    var parents = this.get_neighbors(x,y);
+    for(i=0;i<parents.length;i++){
+      if(x==goalX && y==goalY){
+        break; //not sure of this is right
+      }
+      parents[i].g = q.g; //need to initialize .g better
+      parents[i].h = 0;//heuristic!!
+      parents[i].f = parents[i].g + parents[i].h;
+      var count = 0;
+      //confused on this part (3ii)
+      for(j=0;j<open.length;j++){
+        if (open[j] == parents[i] && open[j].f < parents[i].f){
+          count = count + 1;
+        }
+        else{
+          if(closed[j]==parents[i] && closed[j] < parents[i].f){
+            
+          }
+          else{
+            open.prototype.insert(parents[i]);
+          }
+        }
+      }
+    }
+    closed.protootype.insert(q);
+  }
+}
 
 
 this.place_things = function () {
@@ -485,6 +613,11 @@ function Child(j,jj) {
 
 	this.profile_i  = [0];
 	this.profile_ii = [0];
+	
+	//used for a*
+	this.f = 0;
+	this.h = 0;
+	this.g = 0;
 
 	this.color = function() {
 		return "rgb(255,165,0)";
