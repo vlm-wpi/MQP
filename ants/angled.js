@@ -502,13 +502,20 @@ function AdultBackpack(j,jj) {
 
 function AdultBike(j,jj) {
     this.last_signal = 0;
-    this.orientation = random_orientation();
+
+    this.orientation = 90*Math.trunc(Math.random()*4);     // only 0/90/180/270
+
     this.anchor_i = j
     this.anchor_ii = jj
     
-    // my projection 
+    // my projection (alternate based on UP/DOWN (0/180) or LEFT/RIGHT (90/270)
     this.profile_i  = [0, 1, 2, 2, 2, 2,  2,   2, 3, 3, 3, 3,   3,  3];
     this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
+
+    if (this.orientation == 90 || this.orientation == 270) {
+	this.profile_i  = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
+	this.profile_ii = [0, 1, 2, 2, 2, 2,  2,   2, 3, 3, 3, 3,   3,  3];
+    }
     
     this.color = function() {
    	return "rgb(220,20,60)";
