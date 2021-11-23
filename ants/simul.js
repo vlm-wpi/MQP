@@ -15,12 +15,91 @@ var diagUpLeft = 315;
 var grid_length = 150;
 // var max_ants_on_grid = 25;
 var max_children_on_grid = 25;
-var max_backpack_on_grid = 25;
-var max_adult_on_grid = 25;
-var max_bike_on_grid = 10;
-var max_obstacles_on_grid = 200;
-var max_exits_on_grid = 10;
+var max_backpack_on_grid = 50;
+var max_adult_on_grid = 50;
+var max_bike_on_grid = 15;
+var max_obstacles_on_grid = 100;
+var max_exits_on_grid = 25;
 var ms_between_updates = 100;
+
+//creating a priority queue, noot totally sure where to put the functions
+const leftChild = (index) => index * 2 + 1;
+const rightChild = (index) => index * 2 + 2;
+const parent = (index) => Math.floor((index - 1) / 2);
+var goalX = 0;
+var goalY = 0;
+var D = 1;
+var D2 = Math.sqrt(2);
+
+function minHeap() {
+ this.heap = [];
+ 
+  minHeap.prototype.swap = function (indexOne, indexTwo) {
+   const tmp = this.heap[indexOne];
+   this.heap[indexOne] = this.heap[indexTwo];
+   this.heap[indexTwo] = tmp;
+  }
+  
+  minHeap.prototype.peek = function() {
+    // the root is always the highest priority item, make sure actually lowest
+    return this.heap[0];
+  }
+  
+  minHeap.insert = function(element) {
+    // push element to the end of the heap
+    this.heap.push(element);
+    
+    // the index of the element we have just pushed
+    let index = this.heap.length-1;
+    
+    // if the element is greater than its parent:
+    // swap element with its parent
+    while (index !== 0 && this.heap[index] > this.heap[parent(index)]) {
+      this.swap(index, parent(index));
+      index = parent(index);
+    }
+  }
+  
+  minHeap.prototype.extractMin = function() {
+    // remove the first element from the heap
+    const root = this.heap.shift();
+   
+    // put the last element to the front of the heap
+    // and remove the last element from the heap as it now
+    // sits at the front of the heap
+    this.heap.unshift(this.heap[this.heap.length-1]);
+    this.heap.pop();
+    
+    // correctly re-position heap
+    this.heapify(0);
+    
+    return root;
+  }
+  
+  minHeap.prototype.heapify = function(index) { //used maxheap so confused on what to change
+    let left = leftChild(index);
+    let right = rightChild(index);
+    let largest = index;
+  
+    // if the left child is bigger than the node we are looking at
+    if (left < this.heap.length && this.heap[largest] < this.heap[left]) {
+      largest = left; //i think this is wrong
+    }
+    
+    // if the right child is bigger than the node we are looking at
+    if (right < this.heap.length && this.heap[largest] > this.heap[right]) {
+      largest = right;
+    }
+    
+    // if the value of largest has changed, then some swapping needs to be done
+    // and this method needs to be called again with the swapped element
+    if (largest != index) {
+      this.swap(largest, index);
+      this.heapify(largest);
+    }
+  }
+}
+
 
 function State() {
 	this.grid = [];
@@ -48,14 +127,14 @@ function State() {
 				}
 			}
 		}
-		this.draw_border = function() {
-			for (var i = grid_length+1; i < grid_length+2; i = i + 1) {
-				this.grid[i] = [];
-				this.temp_grid[i] = [];
-				this.grid[i][0] = new Cell(i,ii);
-				this.temp_grid[i][0] = new Cell(i,ii);
-			}
-		}
+		// this.draw_border = function() {
+		// 	for (var i = grid_length+1; i < grid_length+2; i = i + 1) {
+		// 		this.grid[i] = [];
+		// 		this.temp_grid[i] = [];
+		// 		this.grid[i][0] = new Cell(i,ii);
+		// 		this.temp_grid[i][0] = new Cell(i,ii);
+		// 	}
+		// }
 
 
 		this.move_things = function () {
@@ -73,11 +152,77 @@ function State() {
             this.grid[i][ii].thing = this.temp_grid[i][ii].thing; 
         }
     }
-}	
+}
+this.get_neighbors = function(x,y){ //gets the eight neighbors as a possible move
+  var parents = [];
+  parents.push((x-1,y));
+  parents.push((x+1,y));
+  parents.push((x-1,y-1));
+  parents.push((x,y-1));
+  parents.push((x+1,y-1));
+  parents.push((x-1,y+1));
+  parents.push((x,y+1));
+  parents.push((x+1,y+1));
+  return parents;
+}
+
+this.diagonal = function(x,y){ //diagonal distance heuristic
+  var dx = Math.abs(x - goalX);
+  var dy = Math.abs(y - goalY);
+ 
+  var h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
+  return h;
+}
+
+this.AStar = function (thing){
+  //step 1
+  var open = new minHeap();
+  //step 2
+  var closed = new minHeap();
+  var anchorX = thing.anchor_i;
+  var anchorY = thing.anchor_ii;
+  open.minHeap.insert([anchorX, anchorY]);
+  //step 3
+  while(open.length > 0){
+    //do i need to call heapify function?
+    var q = open.prototype.extractMin(); //3a,b
+    var x = q[0];
+    var y = q[1];
+    var successors = this.get_neighbors(x,y); //3c, this function only returns coordinates
+    for(i=0;i<successors.length;i++){
+      successors[i] = [successors, q]//trying to set parents to q
+      if(x==goalX && y==goalY){
+        break; //not sure if this is right, want to move on to next successor
+      }
+      successors[i].g = q.g + 1; //need to initialize .g better
+      successors[i].h = this.diagonal(successors[i][0], successors[i][1]);//heuristic!!
+      successors[i].f = successorss[i].g + successorss[i].h;
+
+      //confused on this part (3ii)
+      for(j=0;j<open.length;j++){
+        if (open[j] == successors[i] && open[j].f < successors[i].f){
+          break; //not sure if this is right, want to move on to next successor
+        }
+      }
+      count = 0;
+      for(j=0;j<closed.length;j++){
+        if(closed[j]==successors[i] && closed[j] < successors[i].f){
+            count = count+1;
+          }
+      }
+      if(count == 0){
+        open.prototype.insert(successors[i]);
+      }
+      }
+      closed.protootype.insert(q);
+    }
+      //might have to call heapify somewhere to get list on correct order
+  best_move = closed.prototype.extractMin();
+  return best_move[0];
+  }
 
 
 this.place_things = function () {
-  	// var obj = new Exit(0,0)
 
   	for (var n = 0; n < max_obstacles_on_grid; n++) {
   		var j = get_random_int(0, grid_length)
@@ -85,21 +230,28 @@ this.place_things = function () {
 
   		var obj = new Obstacle(j,jj);
      // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
-     this.temp_grid[j][jj].thing = obj;
+     	this.temp_grid[j][jj].thing = obj;
  }
 
  for (var n = 0; n < max_exits_on_grid; n++) {
- 	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation || RIGHT)) {
+ 	var obj =  new Exit(j,jj);
+ 	if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
  		var j = 0;
- 		var jj = get_random_int(0, grid_length);
-
+ 		var jj = get_random_int(0, grid_length-3);
  	}
- 	else {
- 		var j = get_random_int(0, grid_length);
+ 	else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
+ 		var j = grid_length;
+ 		var jj = get_random_int(0, grid_length-3);
+ 	}
+ 	else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
+ 		var j = get_random_int(0, grid_length-3);
  		var jj = 0;
  	}
+ 	else {
+ 		var j = get_random_int(0, grid_length-3);
+ 		var jj = grid_length;
+ 	}
 
- 	var obj =  new Exit(j,jj);
       // this.population.push(obj);
       for (var p = 0; p < obj.profile_i.length; p++) {  //
       	var dj = obj.profile_i[p];
@@ -107,7 +259,7 @@ this.place_things = function () {
       	var safej = this.get_bounded_index(j+dj);
       	var safejj = this.get_bounded_index(jj+djj);
 
-      	this.temp_grid[safej][safejj].thing = obj;
+     	this.temp_grid[safej][safejj].thing = obj;
       }
   }
     // for (var n = 0; n < max_ants_on_grid; n++) {
@@ -226,7 +378,8 @@ this.get_coords_from_orientation = function (thing) {
     }
 
     this.move_thing = function (thing) {
-    	var new_coords = this.get_coords_from_orientation(thing);
+    	//var new_coords = this.get_coords_from_orientation(thing); 
+    	var new_coords = this.AStar(thing); //using AStar algorithm to get the best move
     	var j = new_coords[0];
     	var jj = new_coords[1];
 
@@ -423,16 +576,16 @@ function Cell(i,ii) {
 function Exit(j,jj) {
 	this.last_signal = 0;
 	this.orientation = random_orientation();
-	this.anchor_i = j
-	this.anchor_ii = jj
+	this.anchor_i = j;
+	this.anchor_ii = jj;
 
-	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation || RIGHT)) {
-		this.profile_i  = [-1,0,1,2];
-		this.profile_ii = [0,0,0,0];
-	} 
-	else {
+	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation == RIGHT)) {
 		this.profile_i  = [0,0,0,0];
 		this.profile_ii = [-1,0,1,2];
+	} 
+	else {
+		this.profile_i  = [-1,0,1,2];
+		this.profile_ii = [0,0,0,0];
 	}
 
 
@@ -479,6 +632,11 @@ function Child(j,jj) {
 
 	this.profile_i  = [0];
 	this.profile_ii = [0];
+	
+	//used for a*
+	this.f = 0;
+	this.h = 0;
+	this.g = 0;
 
 	this.color = function() {
 		return "rgb(255,165,0)";
