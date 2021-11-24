@@ -10,6 +10,41 @@ Math.to_degrees = function(radians) {
 };
 
 
+var grid_length = 150;
+
+// initial population
+// ===========================================
+var max_children_on_grid = 10;
+var max_backpack_on_grid = 10;
+var max_adult_on_grid = 10;
+var max_bike_on_grid = 0;
+var max_obstacles_on_grid = 20;
+var max_exits_on_grid = 0;    // still needs work....
+var ms_between_updates = 33;
+
+
+
+// HOOK UP GUI ELEMENTS
+// -----------------------------------------------------
+var numBikesSlider = document.getElementById("numBikes");
+numBikesSlider.value=max_bike_on_grid;
+
+// Update the current slider value (each time you drag the slider handle)
+numBikesSlider.oninput = function() {
+  max_bike_on_grid = this.value;
+  initialize_simulation();
+}
+
+var numBackPacks = document.getElementById("numBackPacks");
+
+// Update the current slider value (each time you drag the slider handle)
+numBackPacks.oninput = function() {
+  max_backpack_on_grid = this.value;
+  initialize_simulation();
+}
+
+
+
 var UP = 0;
 var diagUpRight = 45;
 var RIGHT = 90;
@@ -19,15 +54,6 @@ var diagDownLeft = 225;
 var LEFT = 270;
 var diagUpLeft = 315;
 
-
-var grid_length = 150;
-var max_children_on_grid = 10;
-var max_backpack_on_grid = 10;
-var max_adult_on_grid = 10;
-var max_bike_on_grid = 10;
-var max_obstacles_on_grid = 20;
-var max_exits_on_grid = 0;    // still needs work....
-var ms_between_updates = 33;
 
 function State() {
     this.grid = [];
@@ -257,7 +283,7 @@ function State() {
     }
 }
     
-var state = new State();
+var state;
     
 function draw_grid(data) {
     var width = 600;
@@ -268,13 +294,13 @@ function draw_grid(data) {
     var canvas = document.getElementById("grid")
     
     // create the canvas the very first time this method is invoked...
-    if (canvas == null) {
-    	canvas = document.createElement('canvas');
-    	canvas.id = "grid";
-    	canvas.width = width;
-    	canvas.height = height;
-    	document.getElementsByTagName('body')[0].appendChild(canvas);
-    }
+//    if (canvas == null) {
+//    	canvas = document.createElement('canvas');
+//    	canvas.id = "grid";
+//    	canvas.width = width;
+//    	canvas.height = height;
+//    	document.getElementsByTagName('body')[0].appendChild(canvas);
+//    }
     
     var context = canvas.getContext("2d");
     
@@ -565,6 +591,7 @@ function get_random_int(min, max) {
 // ==============================================================================
 
 function initialize_simulation() {
+    state = new State();
     state.init_grids();
     state.place_things();
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
