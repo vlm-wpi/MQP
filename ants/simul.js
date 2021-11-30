@@ -174,7 +174,7 @@ this.diagonal = function(x,y){ //diagonal distance heuristic
   return h;
 }
 
-this.AStar = function (thing){
+this.AStar = function (thing) {
   //step 1
   var open = new minHeap();
   //step 2
@@ -601,7 +601,7 @@ function Exit(j,jj) {
 		state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
 	}
 }
-
+	
 function Obstacle(j,jj) {
 	this.last_signal = 0;
 	this.orientation = random_orientation();
