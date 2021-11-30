@@ -213,6 +213,13 @@ function State() {
         }
     }
     
+    function removeItemOnce(arr, value) {
+      var index = arr.indexOf(value);
+      if (index > -1) {
+      arr.splice(index, 1);
+      }
+    }
+    
     this.get_neighbors = function(x,y){ //gets the eight neighbors as a possible move
       var parents = [];
       parents.push([x-1,y]);
@@ -453,6 +460,14 @@ this.get_coords_from_orientation = function (thing) {
     	}
     
   	  var new_coords = node.initial_step();
+  	   var exiti = 0;
+      var exitii = 0;
+  	  if(new_coords[0] < exiti || new_coords[1] < 0){ //need to add in grid length
+  	    removeItemOnce(this.population, new_coords);
+  	    this.temp_grid[0][0]= [];
+  	   // this.grid[new_coords] = [];
+  	  }
+  	  else{
   	 	var j = new_coords[0];
     	var jj = new_coords[1];
 
@@ -489,6 +504,8 @@ this.get_coords_from_orientation = function (thing) {
           person.orientation = random_orientation();
         }
       }
+    }
+    
 /**      
           //profile anchor
           for (var x = 0; x < thing.profile_i.length; x++) { 
@@ -552,9 +569,9 @@ this.get_coords_from_orientation = function (thing) {
     	// move into new one
     	thing.place_footprint(this);
     }
-       
+    }   
  }
-}
+
 
 
 var state = new State();
