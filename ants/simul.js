@@ -14,7 +14,7 @@ var diagUpLeft = 315;
 
 var grid_length = 150;
 // var max_ants_on_grid = 25;
-var max_children_on_grid = 50;
+var max_children_on_grid = 1;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
 var max_bike_on_grid = 0;
@@ -228,12 +228,8 @@ function State() {
 
 
 
-<<<<<<< HEAD
-this.AStar = function (thing) {
-=======
 //should eventually use temp grid
 this.AStar = function (thing){
->>>>>>> af41eaf2b91fc1d6154712998392ff9d3f33d440
   //step 1
   var open = new minHeap();
   //step 2
@@ -452,7 +448,7 @@ this.get_coords_from_orientation = function (thing) {
     	//var new_coords = this.get_coords_from_orientation(thing); 
     	var node = this.AStar(thing); //using AStar algorithm to get the best move
     	if (node == null) {
-    	  console.log("NO MNOVE:");
+    	  console.log("NO MOVE:");
     	  return;
     	}
     
@@ -513,7 +509,6 @@ this.get_coords_from_orientation = function (thing) {
           	var new_neighbor_cords = this.get_coords_from_orientation_neighbors(thing, x)
           	var r = new_neighbor_cords[0];
           	var c = new_neighbor_cords[1];
-
             for (var cell = 0; cell < person.profile_i.length; cell++){ //check all the cells of the person
               var surrounding_cell = this.get_coords_from_orientation_neighbors(person, cell); //get where want to go
               var row = surrounding_cell[0];
@@ -676,7 +671,7 @@ function Exit(j,jj) {
 		state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
 	}
 }
-	
+
 function Obstacle(j,jj) {
 	this.last_signal = 0;
 	this.orientation = random_orientation();
