@@ -34,20 +34,20 @@ var D2 = Math.sqrt(2);
 function minHeap() {
  this.heap = [];
  
-  minHeap.prototype.swap = function (indexOne, indexTwo) {
+  this.swap = function (indexOne, indexTwo) {
    const tmp = this.heap[indexOne];
    this.heap[indexOne] = this.heap[indexTwo];
    this.heap[indexTwo] = tmp;
   }
   
-  minHeap.prototype.peek = function() {
+  this.peek = function() {
     // the root is always the highest priority item, make sure actually lowest
     return this.heap[0];
   }
   
-  minHeap.insert = function(element) {
+  this.insert = function([x,y]) {
     // push element to the end of the heap
-    this.heap.push(element);
+    this.heap.push([x,y]);
     
     // the index of the element we have just pushed
     let index = this.heap.length-1;
@@ -60,7 +60,7 @@ function minHeap() {
     }
   }
   
-  minHeap.prototype.extractMin = function() {
+  this.extractMin = function() {
     // remove the first element from the heap
     const root = this.heap.shift();
    
@@ -76,7 +76,7 @@ function minHeap() {
     return root;
   }
   
-  minHeap.prototype.heapify = function(index) { //used maxheap so confused on what to change
+  this.heapify = function(index) { //used maxheap so confused on what to change
     let left = leftChild(index);
     let right = rightChild(index);
     let largest = index;
@@ -174,20 +174,25 @@ this.diagonal = function(x,y){ //diagonal distance heuristic
   return h;
 }
 
+<<<<<<< HEAD
 this.AStar = function (thing) {
+=======
+//should eventually use temp grid
+this.AStar = function (thing){
+>>>>>>> af41eaf2b91fc1d6154712998392ff9d3f33d440
   //step 1
   var open = new minHeap();
   //step 2
   var closed = new minHeap();
   var anchorX = thing.anchor_i;
   var anchorY = thing.anchor_ii;
-  open.minHeap.insert([anchorX, anchorY]);
+  open.insert([anchorX, anchorY]);
   //step 3
   while(open.length > 0){
     //do i need to call heapify function?
-    var q = open.prototype.extractMin(); //3a,b
-    var x = q[0];
-    var y = q[1];
+    const q = open.extractMin(); //3a,b
+    const x = q[0];
+    const y = q[1];
     var successors = this.get_neighbors(x,y); //3c, this function only returns coordinates
     for(i=0;i<successors.length;i++){
       successors[i] = [successors, q]//trying to set parents to q
@@ -211,13 +216,13 @@ this.AStar = function (thing) {
           }
       }
       if(count == 0){
-        open.prototype.insert(successors[i]);
+        open.insert(successors[i]);
       }
       }
       closed.protootype.insert(q);
     }
       //might have to call heapify somewhere to get list on correct order
-  best_move = closed.prototype.extractMin();
+  best_move = closed.extractMin();
   return best_move[0];
   }
 

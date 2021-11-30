@@ -1,16 +1,23 @@
 // GUi state from prior update
 var _data; 
 
-var UP = 180;
-var DOWN = 90;
-
+var UP = 0;
+var RIGHT = 90;
+var DOWN = 180;
 var LEFT = 270;
-var RIGHT = 0;
 
 var grid_length = 150;
 var max_ants_on_grid = 500;
 var max_children_on_grid = 500;
 var ms_between_updates = 33;
+
+Math.to_radians = function(degrees) {
+  return degrees * Math.PI / 180;
+};
+
+Math.to_degrees = function(radians) {
+  return radians * 180 / Math.PI;
+};
 
 function State() {
   this.grid = [];
@@ -78,6 +85,12 @@ function State() {
 
   this.get_coords_from_orientation = function (i,ii) {
     var orient = this.grid[i][ii].thing.orientation;
+
+    var orientation_radians = Math.to_radians(orient);
+    coords.push(get_bounded_index(Math.round(i + Math.cos(orientation_radians))));
+    coords.push(get_bounded_index(Math.round(ii + Math.sin(orientation_radians))));
+    return coords;
+
     if (orient == UP) {
       return [i, this.get_bounded_index(ii-1)];
     } else if (orient == DOWN) {
@@ -217,8 +230,8 @@ function Ant() {
 }
 
 function random_orientation() {
-   var r = Math.random() * 4;
-
+   var r = Math.random() * 360;
+   return Math.trunc(r); 
    if (r < 1) {
      return LEFT;
    } else if (r < 2) {
