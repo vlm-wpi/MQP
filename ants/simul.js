@@ -14,22 +14,77 @@ var diagUpLeft = 315;
 
 var grid_length = 150;
 // var max_ants_on_grid = 25;
-var max_children_on_grid = 25;
-var max_backpack_on_grid = 50;
-var max_adult_on_grid = 50;
-var max_bike_on_grid = 15;
-var max_obstacles_on_grid = 100;
-var max_exits_on_grid = 25;
+var max_children_on_grid = 50;
+var max_backpack_on_grid = 0;
+var max_adult_on_grid = 0;
+var max_bike_on_grid = 0;
+var max_obstacles_on_grid = 0;
+var max_exits_on_grid = 0;
 var ms_between_updates = 100;
 
-//creating a priority queue, noot totally sure where to put the functions
+//creating a priority queue, not totally sure where to put the functions
 const leftChild = (index) => index * 2 + 1;
 const rightChild = (index) => index * 2 + 2;
 const parent = (index) => Math.floor((index - 1) / 2);
-var goalX = 0;
-var goalY = 0;
 var D = 1;
 var D2 = Math.sqrt(2);
+
+
+function diagonal(x,y, goalX, goalY) {  //diagonal distance heuristic
+  var dx = Math.abs(x - goalX);
+  var dy = Math.abs(y - goalY);
+ 
+  var h = D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
+  return h;
+}
+
+function Node(j,jj,exiti, exitii, parent, direction) {
+	this.i = j;
+	this.ii = jj;
+
+  this.exiti = exiti;
+  this.exitii = exitii;
+  
+  // starting from the last node (which is the exit) go backwards until you
+  // get to a node whose parent is the original, then return its locatino [i ,ii]
+  this.initial_step = function () {
+    var n = this;
+    if (this.parent === null) { return []; }   // sanity check
+    
+    // find node whose parent has no parent, sincee that node is the origin and then
+    // n is the first step in the direction of the final path.
+    while (typeof n.parent.parent !== 'undefined') {
+      n = n.parent;
+    }
+    
+    return [n.i, n.ii];
+  }
+  
+  this.key = function() { 
+    return "" + this.i + "," + this.ii;
+  }
+  
+  this.done = function() {
+    return (this.i == this.exiti && this.ii == this.exitii);
+  }
+  
+  // how many steps fromo starting spot.
+  this.parent = parent;
+  this.g = 0;
+  if (typeof parent === 'undefined') {
+    this.g = 0;
+  } else {
+    this.g = parent.g + 1;
+  }
+  
+   // this ensures that two nodes can be compared using < operator.
+   Node.prototype.valueOf=function() {
+    // f = g + h
+    var h = diagonal(this.i, this.ii, this.exiti, this.exitii);
+    return this.g + h;
+  }
+}
+
 
 function minHeap() {
  this.heap = [];
@@ -38,31 +93,31 @@ function minHeap() {
    const tmp = this.heap[indexOne];
    this.heap[indexOne] = this.heap[indexTwo];
    this.heap[indexTwo] = tmp;
-  }
+  };
   
   this.peek = function() {
     // the root is always the highest priority item, make sure actually lowest
     return this.heap[0];
-  }
+  };
   
-  this.insert = function([x,y]) {
+  this.insert = function(item) {
     // push element to the end of the heap
-    this.heap.push([x,y]);
+    this.heap.push(item);
     
     // the index of the element we have just pushed
     let index = this.heap.length-1;
     
     // if the element is greater than its parent:
     // swap element with its parent
-    while (index !== 0 && this.heap[index] > this.heap[parent(index)]) {
+    while (index !== 0 && this.heap[index] < this.heap[parent(index)]) {
       this.swap(index, parent(index));
       index = parent(index);
     }
-  }
+  };
   
   this.extractMin = function() {
     // remove the first element from the heap
-    const root = this.heap.shift();
+    var root = this.heap.shift();
    
     // put the last element to the front of the heap
     // and remove the last element from the heap as it now
@@ -74,29 +129,33 @@ function minHeap() {
     this.heapify(0);
     
     return root;
-  }
+  };
   
   this.heapify = function(index) { //used maxheap so confused on what to change
     let left = leftChild(index);
     let right = rightChild(index);
-    let largest = index;
+    let smallest = index;
   
     // if the left child is bigger than the node we are looking at
-    if (left < this.heap.length && this.heap[largest] < this.heap[left]) {
-      largest = left; //i think this is wrong
+    if (left < this.heap.length && this.heap[smallest] > this.heap[left]) {
+      smallest = left; //i think this is wrong
     }
     
     // if the right child is bigger than the node we are looking at
-    if (right < this.heap.length && this.heap[largest] > this.heap[right]) {
-      largest = right;
+    if (right < this.heap.length && this.heap[smallest] > this.heap[right]) {
+      smallest = right;
     }
     
     // if the value of largest has changed, then some swapping needs to be done
     // and this method needs to be called again with the swapped element
-    if (largest != index) {
-      this.swap(largest, index);
-      this.heapify(largest);
+    if (smallest != index) {
+      this.swap(smallest, index);
+      this.heapify(smallest);
     }
+  };
+  
+  this.size = function(){ //gets the length of the heap
+    return this.length;
   }
 }
 
@@ -138,41 +197,36 @@ function State() {
 
 
 		this.move_things = function () {
-    // move everyone at TOP level of abstraction
-    // assume: population knows loc AND temp_grid is properly set.
-    for (var p = 0; p < this.population.length; p++) {
-    	var thing = this.population[p];
-    	this.move_thing(thing);
-    }
-
-    // NEED THIS. This copies the footprint for drawing
-    for (var i = 0; i < grid_length; i = i + 1) {
-    	for (var ii = 0; ii < grid_length; ii = ii + 1) {
-            // adjust reference
-            this.grid[i][ii].thing = this.temp_grid[i][ii].thing; 
+        // move everyone at TOP level of abstraction
+        // assume: population knows loc AND temp_grid is properly set.
+        for (var p = 0; p < this.population.length; p++) {
+        	var thing = this.population[p];
+        	this.move_thing(thing);
+        }
+    
+        // NEED THIS. This copies the footprint for drawing
+        for (var i = 0; i < grid_length; i = i + 1) {
+        	for (var ii = 0; ii < grid_length; ii = ii + 1) {
+                // adjust reference
+                this.grid[i][ii].thing = this.temp_grid[i][ii].thing; 
+            }
         }
     }
-}
-this.get_neighbors = function(x,y){ //gets the eight neighbors as a possible move
-  var parents = [];
-  parents.push((x-1,y));
-  parents.push((x+1,y));
-  parents.push((x-1,y-1));
-  parents.push((x,y-1));
-  parents.push((x+1,y-1));
-  parents.push((x-1,y+1));
-  parents.push((x,y+1));
-  parents.push((x+1,y+1));
-  return parents;
-}
+    
+    this.get_neighbors = function(x,y){ //gets the eight neighbors as a possible move
+      var parents = [];
+      parents.push([x-1,y]);
+      parents.push([x+1,y]);
+      parents.push([x-1,y-1]);
+      parents.push([x,y-1]);
+      parents.push([x+1,y-1]);
+      parents.push([x-1,y+1]);
+      parents.push([x,y+1]);
+      parents.push([x+1,y+1]);
+      return parents;
+    }
 
-this.diagonal = function(x,y){ //diagonal distance heuristic
-  var dx = Math.abs(x - goalX);
-  var dy = Math.abs(y - goalY);
- 
-  var h = D * (dx + dy) + (D2 - 2 * D) * min(dx, dy);
-  return h;
-}
+
 
 <<<<<<< HEAD
 this.AStar = function (thing) {
@@ -183,49 +237,61 @@ this.AStar = function (thing){
   //step 1
   var open = new minHeap();
   //step 2
-  var closed = new minHeap();
+  var closed = {};
+  var open_hash = {}
   var anchorX = thing.anchor_i;
   var anchorY = thing.anchor_ii;
-  open.insert([anchorX, anchorY]);
+  var exiti = 0;
+  var exitii = 0;
+  var n = new Node(anchorX, anchorY, exiti, exitii, undefined, -1);
+  open.insert(n);
+  open_hash[n.key()] = n;
+  
   //step 3
-  while(open.length > 0){
+  var heapLength = open.heap.length;
+  
+  while(open.heap.length > 0){
     //do i need to call heapify function?
-    const q = open.extractMin(); //3a,b
-    const x = q[0];
-    const y = q[1];
-    var successors = this.get_neighbors(x,y); //3c, this function only returns coordinates
+    var q = open.extractMin(); //3a,b
+    console.log(open.heap.length + ":" + q.i + "," + q.ii);
+    var successors = this.get_neighbors(q.i,q.ii); //3c, this function only returns coordinates
+    
     for(i=0;i<successors.length;i++){
-      successors[i] = [successors, q]//trying to set parents to q
-      if(x==goalX && y==goalY){
-        break; //not sure if this is right, want to move on to next successor
+      var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q, i);
+      
+      if (succ.done()) { // matched the goal. reutrn this. last node
+        return succ;
       }
-      successors[i].g = q.g + 1; //need to initialize .g better
-      successors[i].h = this.diagonal(successors[i][0], successors[i][1]);//heuristic!!
-      successors[i].f = successorss[i].g + successorss[i].h;
-
+      
       //confused on this part (3ii)
-      for(j=0;j<open.length;j++){
-        if (open[j] == successors[i] && open[j].f < successors[i].f){
-          break; //not sure if this is right, want to move on to next successor
+      var exist = open_hash[succ.key()];
+      if (typeof exist === 'undefined') {
+        
+      } else {
+        if (exist < succ) {   // deep insights, Succ can never outperform exist.
+          continue;
         }
       }
-      count = 0;
-      for(j=0;j<closed.length;j++){
-        if(closed[j]==successors[i] && closed[j] < successors[i].f){
-            count = count+1;
-          }
+      
+      // step[ 3iii]
+      exist = closed[succ.key()];
+      if (typeof exist === 'undefined') {
+        open.insert(succ);
+        open_hash[succ.key()] = succ;
+      } else {
+        if (exist < succ) {    // already processed this state AND was better than succ
+          continue;
+        }
+        console.log("WOW! Found better.");
+        open.insert(succ);
+        open_hash[succ.key()] = succ;
       }
-      if(count == 0){
-        open.insert(successors[i]);
-      }
-      }
-      closed.protootype.insert(q);
     }
-      //might have to call heapify somewhere to get list on correct order
-  best_move = closed.extractMin();
-  return best_move[0];
+    
+    closed[q.key()] = q;
   }
-
+  return null;
+}
 
 this.place_things = function () {
 
@@ -384,8 +450,14 @@ this.get_coords_from_orientation = function (thing) {
 
     this.move_thing = function (thing) {
     	//var new_coords = this.get_coords_from_orientation(thing); 
-    	var new_coords = this.AStar(thing); //using AStar algorithm to get the best move
-    	var j = new_coords[0];
+    	var node = this.AStar(thing); //using AStar algorithm to get the best move
+    	if (node == null) {
+    	  console.log("NO MNOVE:");
+    	  return;
+    	}
+    
+  	  var new_coords = node.initial_step();
+  	 	var j = new_coords[0];
     	var jj = new_coords[1];
 
     // handles collisions by doing NOTHING. If spot that you are trying 
@@ -400,25 +472,28 @@ this.get_coords_from_orientation = function (thing) {
       	var safe_c = this.get_bounded_index(c + thing.anchor_ii);
         if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
           collision = collision + 1 ;//add one to collision
+        }
+  	  }
+    }
+    
+    //here we will handle collisions
+    //check the population if anyone is trying to move to the same spot
+    for (var pop = 0; pop < this.population.length; pop++){ //for anchor cell
+      //add in for every cell in person
+      person = this.population[pop];
+      //anchor anchor
+      var person_coords = this.get_coords_from_orientation(person); //get where it wants to go
+      var px = person_coords[0];
+      var py = person_coords[1];
+      if ((px == j) && (py == jj)){ //if both trying to go to same spot
+        if (!(person.last_signal == 1)){ //if the person is not already paused
+        	collision = collision + 1;
+          person.last_signal = 1; //pausing the person
+          //change their orientation
+          person.orientation = random_orientation();
+        }
       }
-  }
-        //here we will handle collisions
-        //check the population if anyone is trying to move to the same spot
-        for (var pop = 0; pop < this.population.length; pop++){ //for anchor cell
-          //add in for every cell in person
-          person = this.population[pop];
-          //anchor anchor
-          var person_coords = this.get_coords_from_orientation(person); //get where it wants to go
-          var px = person_coords[0];
-          var py = person_coords[1];
-          if ((px == j) && (py == jj)){ //if both trying to go to same spot
-            if (!(person.last_signal == 1)){ //if the person is not already paused
-            	collision = collision + 1;
-              person.last_signal = 1; //pausing the person
-              //change their orientation
-              person.orientation = random_orientation();
-          }
-      }
+/**      
           //profile anchor
           for (var x = 0; x < thing.profile_i.length; x++) { 
           	var new_neighbor_cords = this.get_coords_from_orientation_neighbors(thing, x)
@@ -463,31 +538,26 @@ this.get_coords_from_orientation = function (thing) {
           }
       }
   }
-}
+  
+  **/
+    }
 
-      if (collision == 0){ //if no collision for any cells then can move whole piece
-        // where thing is RIGHT NOW
-        var i = thing.anchor_i;
-        var ii = thing.anchor_ii;
+    if (collision == 0){ //if no collision for any cells then can move whole piece
+      // where thing is RIGHT NOW
+      var i = thing.anchor_i;
+      var ii = thing.anchor_ii;
 
-      	// clear old one
-      	thing.remove_footprint(this);
+    	// clear old one
+    	thing.remove_footprint(this);
 
-      	thing.anchor_i = j;
-      	thing.anchor_ii = jj;
+    	thing.anchor_i = j;
+    	thing.anchor_ii = jj;
 
-      	// move into new one
-      	thing.place_footprint(this);
-      }
-        // reset everyone to unpaused for next time going through
-        //this chunk is not working
-    //  for (var pop = 0; pop < this.population.length; pop++){
-       // person = this.population[pop];
-      //  person.last_signal = 0;
-     // }
-
+    	// move into new one
+    	thing.place_footprint(this);
+    }
+       
  }
-}
 }
 
 
@@ -829,9 +899,12 @@ function initialize_simulation() {
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
 }
 
-initialize_simulation();
+function start_simulation(){
+  initialize_simulation();
+  var interval_id = setInterval(simulate_and_visualize, ms_between_updates);
 
-var interval_id = setInterval(simulate_and_visualize, ms_between_updates);
+}
+
 
 function simulate_and_visualize() {
 	state.move_things();
