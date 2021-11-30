@@ -14,7 +14,7 @@ var diagUpLeft = 315;
 
 var grid_length = 150;
 // var max_ants_on_grid = 25;
-var max_children_on_grid = 1;
+var max_children_on_grid = 50;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
 var max_bike_on_grid = 0;
@@ -200,8 +200,8 @@ function State() {
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
         for (var p = 0; p < this.population.length; p++) {
-        	var thing = this.population[p];
-        	this.move_thing(thing);
+        	  var thing = this.population[p];
+        	  this.move_thing(thing);
         }
     
         // NEED THIS. This copies the footprint for drawing
