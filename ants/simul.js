@@ -33,7 +33,7 @@ var D2 = Math.sqrt(2);
 function diagonal(x,y, goalX, goalY) {  //diagonal distance heuristic
   var dx = Math.abs(x - goalX);
   var dy = Math.abs(y - goalY);
- 
+
   var h = D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
   return h;
 }
@@ -89,13 +89,13 @@ function Node(j,jj,exiti, exitii, parent, direction) {
 function minHeap() {
  this.heap = [];
  
-  this.swap = function (indexOne, indexTwo) {
+ this.swap = function (indexOne, indexTwo) {
    const tmp = this.heap[indexOne];
    this.heap[indexOne] = this.heap[indexTwo];
    this.heap[indexTwo] = tmp;
-  };
-  
-  this.peek = function() {
+ };
+
+ this.peek = function() {
     // the root is always the highest priority item, make sure actually lowest
     return this.heap[0];
   };
@@ -118,7 +118,7 @@ function minHeap() {
   this.extractMin = function() {
     // remove the first element from the heap
     var root = this.heap.shift();
-   
+
     // put the last element to the front of the heap
     // and remove the last element from the heap as it now
     // sits at the front of the heap
@@ -135,7 +135,7 @@ function minHeap() {
     let left = leftChild(index);
     let right = rightChild(index);
     let smallest = index;
-  
+
     // if the left child is bigger than the node we are looking at
     if (left < this.heap.length && this.heap[smallest] > this.heap[left]) {
       smallest = left; //i think this is wrong
@@ -200,26 +200,27 @@ function State() {
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
         for (var p = 0; p < this.population.length; p++) {
-        	  var thing = this.population[p];
-        	  this.move_thing(thing);
+        	var thing = this.population[p];
+          this.move_thing(thing);
+          
         }
-    
+
         // NEED THIS. This copies the footprint for drawing
         for (var i = 0; i < grid_length; i = i + 1) {
         	for (var ii = 0; ii < grid_length; ii = ii + 1) {
                 // adjust reference
                 this.grid[i][ii].thing = this.temp_grid[i][ii].thing; 
+              }
             }
-        }
-    }
-    
-    function removeItemOnce(arr, value) {
-      var index = arr.indexOf(value);
-      if (index > -1) {
-      arr.splice(index, 1);
-      }
-    }
-    
+          }
+
+          function removeItemOnce(arr, value) {
+            var index = arr.indexOf(value);
+            if (index > -1) {
+              arr.splice(index, 1);
+            }
+          }
+
     this.get_neighbors = function(x,y){ //gets the eight neighbors as a possible move
       var parents = [];
       parents.push([x-1,y]);
@@ -269,7 +270,7 @@ this.AStar = function (thing){
       //confused on this part (3ii)
       var exist = open_hash[succ.key()];
       if (typeof exist === 'undefined') {
-        
+
       } else {
         if (exist < succ) {   // deep insights, Succ can never outperform exist.
           continue;
@@ -298,33 +299,33 @@ this.AStar = function (thing){
 
 this.place_things = function () {
 
-  	for (var n = 0; n < max_obstacles_on_grid; n++) {
-  		var j = get_random_int(0, grid_length)
-  		var jj = get_random_int(0, grid_length)
+ for (var n = 0; n < max_obstacles_on_grid; n++) {
+  var j = get_random_int(0, grid_length)
+  var jj = get_random_int(0, grid_length)
 
-  		var obj = new Obstacle(j,jj);
+  var obj = new Obstacle(j,jj);
      // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
-     	this.temp_grid[j][jj].thing = obj;
- }
+     this.temp_grid[j][jj].thing = obj;
+   }
 
- for (var n = 0; n < max_exits_on_grid; n++) {
- 	var obj =  new Exit(j,jj);
- 	if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
- 		var j = 0;
- 		var jj = get_random_int(0, grid_length-3);
- 	}
- 	else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
- 		var j = grid_length;
- 		var jj = get_random_int(0, grid_length-3);
- 	}
- 	else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
- 		var j = get_random_int(0, grid_length-3);
- 		var jj = 0;
- 	}
- 	else {
- 		var j = get_random_int(0, grid_length-3);
- 		var jj = grid_length;
- 	}
+   for (var n = 0; n < max_exits_on_grid; n++) {
+    var obj =  new Exit(j,jj);
+    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
+     var j = 0;
+     var jj = get_random_int(0, grid_length-3);
+   }
+   else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
+     var j = grid_length;
+     var jj = get_random_int(0, grid_length-3);
+   }
+   else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
+     var j = get_random_int(0, grid_length-3);
+     var jj = 0;
+   }
+   else {
+     var j = get_random_int(0, grid_length-3);
+     var jj = grid_length;
+   }
 
       // this.population.push(obj);
       for (var p = 0; p < obj.profile_i.length; p++) {  //
@@ -333,9 +334,9 @@ this.place_things = function () {
       	var safej = this.get_bounded_index(j+dj);
       	var safejj = this.get_bounded_index(jj+djj);
 
-     	this.temp_grid[safej][safejj].thing = obj;
+        this.temp_grid[safej][safejj].thing = obj;
       }
-  }
+    }
     // for (var n = 0; n < max_ants_on_grid; n++) {
     //   var j = get_random_int(0, grid_length)
     //   var jj = get_random_int(0, grid_length)
@@ -368,14 +369,14 @@ this.place_things = function () {
 
       	this.temp_grid[safej][safejj].thing = obj;
       }
-  }
+    }
 
-  for (var n = 0; n < max_adult_on_grid; n++) {
-  	var j = get_random_int(0, grid_length)
-  	var jj = get_random_int(0, grid_length)
+    for (var n = 0; n < max_adult_on_grid; n++) {
+     var j = get_random_int(0, grid_length)
+     var jj = get_random_int(0, grid_length)
 
-  	var obj =  new Adult(j,jj);
-  	this.population.push(obj);
+     var obj =  new Adult(j,jj);
+     this.population.push(obj);
       for (var p = 0; p < obj.profile_i.length; p++) {  //
       	var dj = obj.profile_i[p];
       	var djj = obj.profile_ii[p];
@@ -384,14 +385,14 @@ this.place_things = function () {
 
       	this.temp_grid[safej][safejj].thing = obj;
       }
-  }
+    }
 
-  for (var n = 0; n < max_bike_on_grid; n++) {
-  	var j = get_random_int(0, grid_length)
-  	var jj = get_random_int(0, grid_length)
+    for (var n = 0; n < max_bike_on_grid; n++) {
+     var j = get_random_int(0, grid_length)
+     var jj = get_random_int(0, grid_length)
 
-  	var obj =  new AdultBike(j,jj);
-  	this.population.push(obj);
+     var obj =  new AdultBike(j,jj);
+     this.population.push(obj);
       for (var p = 0; p < obj.profile_i.length; p++) {  //
       	var dj = obj.profile_i[p];
       	var djj = obj.profile_ii[p];
@@ -400,31 +401,31 @@ this.place_things = function () {
 
       	this.temp_grid[safej][safejj].thing = obj;
       }
+    }
   }
-}
 
-this.get_coords_from_orientation = function (thing) {
-	var i = thing.anchor_i;
-	var ii = thing.anchor_ii;
+  this.get_coords_from_orientation = function (thing) {
+   var i = thing.anchor_i;
+   var ii = thing.anchor_ii;
 
-	var orient = thing.orientation;
-	if (orient == UP) {
-		return [i, this.get_bounded_index(ii-1)];
-	} else if (orient == DOWN) {
-		return [i, this.get_bounded_index(ii+1)];
-	} else if (orient == LEFT) {
-		return [this.get_bounded_index(i-1), ii];
-	} else if (orient == RIGHT) {
-		return [this.get_bounded_index(i+1), ii];
-	} else if (orient == diagDownRight) {
-		return [this.get_bounded_index(i+1),this.get_bounded_index(ii+1)]
-	} else if (orient == diagUpRight) {
-		return [this.get_bounded_index(i+1),this.get_bounded_index(ii-1)]
-	} else if (orient == diagDownLeft) {
-		return [this.get_bounded_index(i-1),this.get_bounded_index(ii+1)]
-	} else {
-		return [this.get_bounded_index(i-1),this.get_bounded_index(ii-1)]
-	}
+   var orient = thing.orientation;
+   if (orient == UP) {
+    return [i, this.get_bounded_index(ii-1)];
+  } else if (orient == DOWN) {
+    return [i, this.get_bounded_index(ii+1)];
+  } else if (orient == LEFT) {
+    return [this.get_bounded_index(i-1), ii];
+  } else if (orient == RIGHT) {
+    return [this.get_bounded_index(i+1), ii];
+  } else if (orient == diagDownRight) {
+    return [this.get_bounded_index(i+1),this.get_bounded_index(ii+1)]
+  } else if (orient == diagUpRight) {
+    return [this.get_bounded_index(i+1),this.get_bounded_index(ii-1)]
+  } else if (orient == diagDownLeft) {
+    return [this.get_bounded_index(i-1),this.get_bounded_index(ii+1)]
+  } else {
+    return [this.get_bounded_index(i-1),this.get_bounded_index(ii-1)]
+  }
 }
 
     this.get_coords_from_orientation_neighbors = function (thing, index) { //need this to because we have to use profile and not anchor
@@ -455,25 +456,25 @@ this.get_coords_from_orientation = function (thing) {
     	//var new_coords = this.get_coords_from_orientation(thing); 
     	var node = this.AStar(thing); //using AStar algorithm to get the best move
     	if (node == null) {
-    	  console.log("NO MOVE:");
-    	  return;
-    	}
-    
-  	  var new_coords = node.initial_step();
-  	   var exiti = 0;
-      var exitii = 0;
-  	  if(new_coords[0] < exiti || new_coords[1] < 0){ //need to add in grid length
-  	    removeItemOnce(this.population, new_coords);
-  	    this.temp_grid[0][0]= [];
+       console.log("NO MOVE:");
+       return;
+     }
+
+     var new_coords = node.initial_step();
+     var exiti = 0;
+     var exitii = 0;
+  	  if((new_coords[0] < exiti) || (new_coords[1] < exitii)){ //need to add in grid length
+       removeItemOnce(this.population, new_coords);
+       this.temp_grid[0][0]= [];
   	   // this.grid[new_coords] = [];
-  	  }
-  	  else{
-  	 	var j = new_coords[0];
-    	var jj = new_coords[1];
+    }
+    else{
+     var j = new_coords[0];
+     var jj = new_coords[1];
 
     // handles collisions by doing NOTHING. If spot that you are trying 
     // to move to DOESN'T HAVE a thing then you are free to move.
-    if (!this.temp_grid[j][jj].has_other_thing(thing)) {
+    if (!this.temp_grid[j+1][jj+1].has_other_thing(thing)) {
       var collision = 0; //maybe could have break if collides so doesn't have to keep going through loop
       for (var x = 0; x < thing.profile_i.length; x++) { //need to check all of the cells of the person
       	var new_neighbor_cords = this.get_coords_from_orientation_neighbors(thing, x)
@@ -484,7 +485,7 @@ this.get_coords_from_orientation = function (thing) {
         if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
           collision = collision + 1 ;//add one to collision
         }
-  	  }
+      }
     }
     
     //here we will handle collisions
@@ -552,7 +553,7 @@ this.get_coords_from_orientation = function (thing) {
   }
   
   **/
-    }
+}
 
     if (collision == 0){ //if no collision for any cells then can move whole piece
       // where thing is RIGHT NOW
@@ -568,8 +569,8 @@ this.get_coords_from_orientation = function (thing) {
     	// move into new one
     	thing.place_footprint(this);
     }
-    }   
- }
+  }   
+}
 
 
 
@@ -619,7 +620,7 @@ draw_cells();
     		_data[i][ii] = color_for_cell(data[i][ii]);
     	}
     }
-}
+  }
 
 
 // =====================================================
@@ -909,16 +910,16 @@ function initialize_simulation() {
     // state.draw_border();
     state.place_things();
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
-}
+  }
 
-function start_simulation(){
-  initialize_simulation();
-  var interval_id = setInterval(simulate_and_visualize, ms_between_updates);
+  function start_simulation(){
+    initialize_simulation();
+    var interval_id = setInterval(simulate_and_visualize, ms_between_updates);
 
-}
+  }
 
 
-function simulate_and_visualize() {
-	state.move_things();
-	draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
-}
+  function simulate_and_visualize() {
+   state.move_things();
+   draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
+ }
