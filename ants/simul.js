@@ -16,11 +16,11 @@ var grid_length = 150;
 // var max_ants_on_grid = 25;
 var max_children_on_grid = 50;
 var max_backpack_on_grid = 0;
-var max_adult_on_grid = 0;
-var max_bike_on_grid = 0;
+var max_adult_on_grid =0;
+var max_bike_on_grid =0;
 var max_obstacles_on_grid = 0;
 var max_exits_on_grid = 0;
-var ms_between_updates = 100;
+var ms_between_updates = 1000;
 
 //creating a priority queue, not totally sure where to put the functions
 const leftChild = (index) => index * 2 + 1;
@@ -918,8 +918,9 @@ function initialize_simulation() {
 
   }
 
-
   function simulate_and_visualize() {
    state.move_things();
    draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
+   simulate_and_visualize.counter += 1;
  }
+ simulate_and_visualize.counter = 0;

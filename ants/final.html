@@ -1,0 +1,47 @@
+<html>
+  <head><title>Final progress</title>
+    <link rel="stylesheet" href="final.css">
+</head>
+<body>
+  <form>
+  <input type = "button" value="start" onClick="JavaScript:start_simulation()">
+  <input type = "button" value="end" onClick="JavaScript:end_simulation()">
+  </form>
+
+<body>
+  <table>
+    <tr valign=top>
+      <td><canvas id="grid" width="600" height="600"></canvas></td>
+      <td valign=top>
+
+<h2>Controls</h2>
+
+<div class="slidecontainer">
+  <b>numChildren:</b> <input type="range" min="0" max="250" value="10" id="numChildren"><br>
+  <b>numBackPacks:</b> <input type="range" min="0" max="250" value="10" id="numBackPacks"><br>
+  <b>numAdults:</b> <input type="range" min="0" max="250" value="10" id="numAdults"><br>
+  <b>numBikes:</b> <input type="range" min="0" max="250" value="10" id="numBikes"><br>
+
+</div>
+
+<h2>Elements</h2>
+
+  <b>num obstacles:</b> <input type="range" min="0" max="500" value="10" id="numObstacles"><br>
+  <b>num X obstacles:</b> <input type="range" min="0" max="30" value="10" id="numXObstacles"><br>
+
+<h2>Take Snapshots</h2>
+
+  <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
+
+      </td>
+   </tr>
+  </table>
+
+  <script type='text/javascript' src='final.js'></script>
+
+<h1>Sample outputs</h1>
+
+</body>
+</html>
+      
+
