@@ -14,7 +14,6 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 
 var grid_length = 150;
-// var max_ants_on_grid = 25;
 var max_children_on_grid = 200;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
@@ -68,6 +67,9 @@ numXObstacles.oninput = function() {
 var takeSnapshotCheckbox = document.getElementById("takeSnapshot");
 if (take_snapshot) {
     takeSnapshotCheckbox.checked = true;
+}
+takeSnapshotCheckbox.oninput = function() {
+  take_snapshot = takeSnapshotCheckbox.checked;
 }
 
 
@@ -982,8 +984,9 @@ function simulate_and_visualize() {
 
 	canvas.toBlob(function(blob) {
 	    var newImg = document.createElement('img');
-	    newImg.height=100;
-	    newImg.width=100;
+	    // make smaller if you'd like
+	    //newImg.height=100;
+	    //newImg.width=100;
 	    url = URL.createObjectURL(blob);
 	    
 	    newImg.onload = function() {
