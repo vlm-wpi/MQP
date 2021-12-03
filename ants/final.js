@@ -21,7 +21,7 @@ var max_bike_on_grid = 0;
 var max_obstacles_on_grid = 500;
 var max_large_X_obstacles_on_grid = 0;
 var max_exits_on_grid = 0;
-var ms_between_updates = 33;
+var ms_between_updates = 1;
 var take_snapshot = false;
 
 // HOOK UP GUI ELEMENTS: BEGIN
