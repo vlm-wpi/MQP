@@ -14,20 +14,29 @@
       <td><canvas id="grid" width="600" height="600"></canvas></td>
       <td valign=top>
 
-<h2>Controls</h2>
+<h2>Pedestrian Controls</h2>
 
-<div class="slidecontainer">
-  <b>numChildren:</b> <input type="range" min="0" max="250" value="10" id="numChildren"><br>
-  <b>numBackPacks:</b> <input type="range" min="0" max="250" value="10" id="numBackPacks"><br>
-  <b>numAdults:</b> <input type="range" min="0" max="250" value="10" id="numAdults"><br>
-  <b>numBikes:</b> <input type="range" min="0" max="250" value="10" id="numBikes"><br>
+<form>
+  <label for="numChildren">Number of Children:</label><br>
+  <input type="text" id="numChildren" name="numChildren"><br>
+  <label for="numBackPacks">Number of Adults with Backpacks:</label><br>
+  <input type="text" id="numBackPacks" name="numBackPacks"><br>
+  <label for="numAdults">Number of Adults:</label><br>
+  <input type="text" id="numAdults" name="numAdults"><br>
+  <label for="numBikes">Number of Adults with Bikes:</label><br>
+  <input type="text" id="numBikes" name="numBikes">
+</form>
 
-</div>
+<h2>Object Controls</h2>
 
-<h2>Elements</h2>
-
-  <b>num obstacles:</b> <input type="range" min="0" max="500" value="10" id="numObstacles"><br>
-  <b>num X obstacles:</b> <input type="range" min="0" max="30" value="10" id="numXObstacles"><br>
+<form>
+  <label for="numExits">Number of Exits:</label><br>
+  <input type="text" id="numExits" name="numExits"><br>
+  <label for="numObstacles">Number of Obstacles:</label><br>
+  <input type="text" id="numObstacles" name="numObstacles"><br>
+  <label for="numXObstacles">Number of X-Shaped Obstacles:</label><br>
+  <input type="text" id="numXObstacles" name="numXObstacles">
+</form>
 
 <h2>Take Snapshots</h2>
 

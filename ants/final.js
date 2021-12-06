@@ -14,14 +14,14 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 
 var grid_length = 150;
-var max_children_on_grid = 200;
+var max_children_on_grid = 1;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
 var max_bike_on_grid = 0;
-var max_obstacles_on_grid = 500;
+var max_obstacles_on_grid = 100;
 var max_large_X_obstacles_on_grid = 0;
-var max_exits_on_grid = 0;
-var ms_between_updates = 33;
+var max_exits_on_grid = 4;
+var ms_between_updates = 1;
 var take_snapshot = false;
 
 // HOOK UP GUI ELEMENTS: BEGIN
@@ -34,7 +34,6 @@ numChildren.oninput = function() {
 
 var numBikesSlider = document.getElementById("numBikes");
 numBikesSlider.value = max_bike_on_grid;
-
 numBikesSlider.oninput = function() {
   max_bike_on_grid = this.value;
 }
@@ -51,12 +50,17 @@ numAdults.oninput = function() {
   max_adult_on_grid = this.value;
 }
 
+var numExits = document.getElementById("numExits");
+numExits.value = max_exits_on_grid;
+numExits.oninput = function() {
+  max_exits_on_grid = this.value;
+}
+
 var numObstacles = document.getElementById("numObstacles");
 numObstacles.value = max_obstacles_on_grid;
 numObstacles.oninput = function() {
   max_obstacles_on_grid = this.value;
 }
-
 
 var numXObstacles = document.getElementById("numXObstacles");
 numXObstacles.value = max_large_X_obstacles_on_grid;
@@ -340,11 +344,15 @@ function State() {
 	var open = new minHeap();
 	//step 2
 	var closed = {};
-	var open_hash = {}
+	var open_hash = {};
 	var anchorX = thing.anchor_i;
 	var anchorY = thing.anchor_ii;
-	var exiti = 0;
-	var exitii = 0;
+	var exiti = thing.min_exiti;
+	var exitii = thing.min_exitii;
+	console.log(exiti);
+	console.log(exitii);
+	// var exiti=0;
+	// var exitii=0;
 	var endi = 0;
 	var endii = 4;
 
@@ -431,26 +439,31 @@ function State() {
 		this.temp_grid[j-n][jj+n].thing = new Obstacle(j-n,jj+n);
 	    }
 	}
+	//added this in as part of exit distances
+	var exit_locations = [];
 
 	for (var n = 0; n < max_exits_on_grid; n++) {
 	    var obj =  new Exit(j,jj);
 	    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
 		var j = 0;
 		var jj = get_random_int(0, grid_length-3);
+		exit_locations.push([j,jj])
 	    }
 	    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
 		var j = grid_length;
 		var jj = get_random_int(0, grid_length-3);
+		exit_locations.push([j,jj])
 	    }
 	    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
 		var j = get_random_int(0, grid_length-3);
 		var jj = 0;
+		exit_locations.push([j,jj])
 	    }
 	    else {
 		var j = get_random_int(0, grid_length-3);
 		var jj = grid_length;
+		exit_locations.push([j,jj])
 	    }
-	    
 	    // this.population.push(obj);
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
       		var dj = obj.profile_i[p];
@@ -461,12 +474,43 @@ function State() {
 		this.temp_grid[safej][safejj].thing = obj;
 	    }
 	}
+console.log(exit_locations)
+
 	
 	for (var n = 0; n < max_children_on_grid; n++) {
     	    var j = get_random_int(0, grid_length)
     	    var jj = get_random_int(0, grid_length)
-	    
+
     	    var obj = new Child(j,jj);
+    	    //added this in as part of exit distances
+    	    exit_distances = [];
+    	    for (var exit=0; exit < exit_locations.length; exit++) {
+    	    	var exiti = exit_locations[exit][0]
+    	    	var exitii = exit_locations[exit][1]
+    	    	var current_distance = calc_distance(j,jj,exiti,exitii)
+    	    	list = [current_distance,exiti,exitii]
+    	    	exit_distances.push(list)
+    	    }
+console.log(exit_distances)
+    	    min_exit_distance = exit_distances[0][0];
+    	    min_exiti = exit_distances[0][1];
+    	    min_exitii = exit_distances[0][2];
+    	    console.log(min_exit_distance)
+    	    console.log(min_exiti)
+    	    console.log(min_exitii)
+    	    for (var exit=0; exit < exit_distances.length; exit++) {
+    	    	if (exit_distances[exit][0] < min_exit_distance) {
+    	    		var min_exit_distance = exit_distances[exit][0]
+    	    		var min_exiti = exit_distances[exit][1]
+    	    		var min_exitii = exit_distances[exit][2]
+    	    	}
+    	    }
+    	    console.log(min_exit_distance)
+    	    console.log(min_exiti)
+    	    console.log(min_exitii)
+    	    obj.min_exiti = min_exiti;
+    	    obj.min_exitii = min_exitii;
+
     	    this.population.push(obj);
     	    this.temp_grid[j][jj].thing = obj;
 	}
@@ -579,8 +623,8 @@ function State() {
 	}
 	
 	var new_coords = node.initial_step();
-	var exiti = 0;
-	var exitii = 0;
+	var exiti = thing.min_exiti;
+	var exitii = thing.min_exitii;
 
 	// hack to fix
         if (new_coords[0] >= node.exiti && new_coords[0] <= node.endi &&
@@ -750,7 +794,6 @@ function Exit(j,jj) {
 		this.profile_ii = [0,0,0,0];
 	}
 
-
 	this.color = function() {
 		return "rgb(139,69,19)";
 	}
@@ -789,7 +832,8 @@ function Child(j,jj) {
     this.orientation = random_orientation();
     this.anchor_i = j
     this.anchor_ii = jj
-    
+    this.min_exiti = 0;
+    this.min_exitii = 0;
     this.profile_i  = [0];
     this.profile_ii = [0];
 	
@@ -1004,4 +1048,3 @@ function simulate_and_visualize() {
 	});
     }	
 }
-    
