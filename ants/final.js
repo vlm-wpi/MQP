@@ -440,28 +440,34 @@ function State() {
 	    }
 	}
 	//added this in as part of exit distances
-	var exit_locations = [];
+	var exit_locations = []; //might need to be global variable
 
-	for (var n = 0; n < max_exits_on_grid; n++) {
+	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
+	//get 2 random ints from 0-gridlength-3 (for j and jj)
+	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
 	    var obj =  new Exit(j,jj);
 	    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
 		var j = 0;
 		var jj = get_random_int(0, grid_length-3);
+		var obj =  new Exit(j,jj);
 		exit_locations.push([j,jj])
 	    }
 	    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
 		var j = grid_length;
 		var jj = get_random_int(0, grid_length-3);
+		var obj =  new Exit(j,jj);
 		exit_locations.push([j,jj])
 	    }
 	    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
 		var j = get_random_int(0, grid_length-3);
 		var jj = 0;
+		var obj =  new Exit(j,jj);
 		exit_locations.push([j,jj])
 	    }
 	    else {
 		var j = get_random_int(0, grid_length-3);
 		var jj = grid_length;
+		var obj =  new Exit(j,jj);
 		exit_locations.push([j,jj])
 	    }
 	    // this.population.push(obj);
@@ -488,11 +494,11 @@ console.log(exit_locations)
     	    	var exiti = exit_locations[exit][0]
     	    	var exitii = exit_locations[exit][1]
     	    	var current_distance = calc_distance(j,jj,exiti,exitii)
-    	    	list = [current_distance,exiti,exitii]
+    	    	var list = [current_distance,exiti,exitii]
     	    	exit_distances.push(list)
     	    }
 console.log(exit_distances)
-    	    min_exit_distance = exit_distances[0][0];
+    	    min_exit_distance = exit_distances[0][0]; //this needs to be a var
     	    min_exiti = exit_distances[0][1];
     	    min_exitii = exit_distances[0][2];
     	    console.log(min_exit_distance)
@@ -784,7 +790,10 @@ function Exit(j,jj) {
 	this.orientation = random_orientation();
 	this.anchor_i = j;
 	this.anchor_ii = jj;
-
+	
+	//think we need to check anchor instead of orientation
+	//if anchor i is 0 or grid length -3 use 1st set of profiles (vertical exit)
+	//else use second set (makes them horizontal)
 	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation == RIGHT)) {
 		this.profile_i  = [0,0,0,0];
 		this.profile_ii = [-1,0,1,2];
