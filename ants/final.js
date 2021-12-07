@@ -445,45 +445,40 @@ function State() {
 	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
 	//get 2 random ints from 0-gridlength-3 (for j and jj)
 	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
-	    // var j = get_random_int(0,grid_length-3);
-	    // var jj = get_random_int(0,grid_length-3);
-	    // console.log(j)
-	    // console.log(jj)
-	    // if (j > jj) {
-	    // 	var jj = (grid_length*(Math.round(Math.random())))
-	    // }
-	    // else {
-	    // 	var j = (grid_length*(Math.round(Math.random())))
-	    // }
-	    // console.log(j)
-	    // console.log(jj)
-	    // var obj = new Exit(j,jj)
-	    // exit_locations.push([j,jj])
-	    var obj =  new Exit(j,jj);
-	    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
-		var j = 0;
-		var jj = get_random_int(0, grid_length-3);
-		var obj =  new Exit(j,jj);
-		exit_locations.push([j,jj])
-	    }
-	    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
-		var j = grid_length;
-		var jj = get_random_int(0, grid_length-3);
-		var obj =  new Exit(j,jj);
-		exit_locations.push([j,jj])
-	    }
-	    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
-		var j = get_random_int(0, grid_length-3);
-		var jj = 0;
-		var obj =  new Exit(j,jj);
-		exit_locations.push([j,jj])
+	    var j = get_random_int(0,grid_length-3);
+	    var jj = get_random_int(0,grid_length-3);
+	    if (j > jj) {
+	    	var j = j
+	    	var jj = (grid_length*(Math.round(Math.random())))
 	    }
 	    else {
-		var j = get_random_int(0, grid_length-3);
-		var jj = grid_length;
-		var obj =  new Exit(j,jj);
-		exit_locations.push([j,jj])
+	    	var j = (grid_length*(Math.round(Math.random())))
+	    	var jj = jj
 	    }
+	    var obj = new Exit(j,jj)
+	    exit_locations.push([j,jj])
+	
+	 //    var obj =  new Exit(j,jj);
+	 //    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
+		// var j = 0;
+		// var jj = get_random_int(0, grid_length-3);
+		// exit_locations.push([j,jj])
+	 //    }
+	 //    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
+		// var j = grid_length;
+		// var jj = get_random_int(0, grid_length-3);
+		// exit_locations.push([j,jj])
+	 //    }
+	 //    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
+		// var j = get_random_int(0, grid_length-3);
+		// var jj = 0;
+		// exit_locations.push([j,jj])
+	 //    }
+	 //    else {
+		// var j = get_random_int(0, grid_length-3);
+		// var jj = grid_length;
+		// exit_locations.push([j,jj])
+	 //    }
 	    // this.population.push(obj);
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
       		var dj = obj.profile_i[p];
@@ -496,12 +491,9 @@ function State() {
 	}
 console.log(exit_locations)
 
-	
 	for (var n = 0; n < max_children_on_grid; n++) {
     	    var j = get_random_int(0, grid_length)
     	    var jj = get_random_int(0, grid_length)
-
-    	    var obj = new Child(j,jj);
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -523,17 +515,22 @@ console.log(exit_distances)
     	    		var min_exit_distance = exit_distances[exit][0]
     	    		var min_exiti = exit_distances[exit][1]
     	    		var min_exitii = exit_distances[exit][2]
+    	    		console.log(min_exit_distance)
+    	    		console.log(min_exiti)
+    	    		console.log(min_exitii)
     	    	}
     	    }
-    	    console.log(min_exit_distance)
-    	    console.log(min_exiti)
-    	    console.log(min_exitii)
-    	    obj.min_exiti = min_exiti;
-    	    obj.min_exitii = min_exitii;
+
+    	    var obj = new Child(j,jj);
+    	    obj.min_exiti = min_exiti
+    	    obj.min_exitii = min_exitii
 
     	    this.population.push(obj);
     	    this.temp_grid[j][jj].thing = obj;
 	}
+	    	console.log(min_exit_distance)
+    	    console.log(min_exiti)
+    	    console.log(min_exitii)
 	
 	for (var n = 0; n < max_backpack_on_grid; n++) {
     	    var j = get_random_int(0, grid_length)
@@ -808,23 +805,22 @@ function Exit(j,jj) {
 	//think we need to check anchor instead of orientation
 	//if anchor i is 0 or grid length -3 use 1st set of profiles (vertical exit)
 	//else use second set (makes them horizontal)
-	// if ((this.anchor_i = 0) || (this.anchor_i = grid_length)) {
-	// 	this.profile_i  = [0,0,0,0];
-	// 	this.profile_ii = [-1,0,1,2];
-	// }
-	// else {
-	// 	this.profile_i  = [-1,0,1,2];
-	// 	this.profile_ii = [0,0,0,0];
-	// }
-	// console.log(this.profile_i)
-	if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation == RIGHT)) {
+	if ((this.anchor_i == 0) || (this.anchor_i == grid_length)) {
 		this.profile_i  = [0,0,0,0];
 		this.profile_ii = [-1,0,1,2];
-	} 
+	}
 	else {
 		this.profile_i  = [-1,0,1,2];
 		this.profile_ii = [0,0,0,0];
 	}
+	// if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation == RIGHT)) {
+	// 	this.profile_i  = [0,0,0,0];
+	// 	this.profile_ii = [-1,0,1,2];
+	// } 
+	// else {
+	// 	this.profile_i  = [-1,0,1,2];
+	// 	this.profile_ii = [0,0,0,0];
+	// }
 
 	this.color = function() {
 		return "rgb(139,69,19)";
