@@ -451,10 +451,10 @@ function State() {
 	    var jj = get_random_int(0,grid_length-3);
 	    if (j > jj) {
 	    	var j = j
-	    	var jj = (grid_length*(Math.round(Math.random())))
+	    	var jj = ((grid_length-1)*(Math.round(Math.random())))
 	    }
 	    else {
-	    	var j = (grid_length*(Math.round(Math.random())))
+	    	var j = ((grid_length-1)*(Math.round(Math.random())))
 	    	var jj = jj
 	    }
 	    var obj = new Exit(j,jj)
@@ -814,12 +814,12 @@ function Exit(j,jj) {
 	//think we need to check anchor instead of orientation
 	//if anchor i is 0 or grid length -3 use 1st set of profiles (vertical exit)
 	//else use second set (makes them horizontal)
-	if ((this.anchor_i == 0) || (this.anchor_i == grid_length)) {
+	if ((this.anchor_i == 0) || (this.anchor_i == grid_length-1)) {
 		this.profile_i  = [0,0,0,0];
-		this.profile_ii = [-1,0,1,2];
+		this.profile_ii = [0,1,2,3];
 	}
 	else {
-		this.profile_i  = [-1,0,1,2];
+		this.profile_i  = [0,1,2,3];
 		this.profile_ii = [0,0,0,0];
 	}
 	// if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation == RIGHT)) {
