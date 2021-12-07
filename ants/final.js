@@ -349,12 +349,14 @@ function State() {
 	var anchorY = thing.anchor_ii;
 	var exiti = thing.min_exiti;
 	var exitii = thing.min_exitii;
-	console.log(exiti);
-	console.log(exitii);
-	// var exiti=0;
-	// var exitii=0;
-	var endi = 0;
-	var endii = 4;
+	if (thing.profile_i[0]==0) {
+		var endi = exiti;
+		var endii = exitii+3;
+	}
+	else {
+		var endi = exiti+3;
+		var endii = exitii;
+	}
 
 	var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1);
 	open.insert(n);
@@ -526,7 +528,14 @@ console.log(exit_distances)
     	    obj.min_exitii = min_exitii
 
     	    this.population.push(obj);
-    	    this.temp_grid[j][jj].thing = obj;
+    	    for (var p = 0; p < obj.profile_i.length; p++) {  //
+      		var dj = obj.profile_i[p];
+      		var djj = obj.profile_ii[p];
+      		var safej = this.get_bounded_index(j+dj);
+      		var safejj = this.get_bounded_index(jj+djj);
+		
+      		this.temp_grid[safej][safejj].thing = obj;
+	    }
 	}
 	    	console.log(min_exit_distance)
     	    console.log(min_exiti)
