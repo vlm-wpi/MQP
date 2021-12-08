@@ -460,28 +460,6 @@ function State() {
 	    var obj = new Exit(j,jj)
 	    exit_locations.push([j,jj])
 	
-	 //    var obj =  new Exit(j,jj);
-	 //    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
-		// var j = 0;
-		// var jj = get_random_int(0, grid_length-3);
-		// exit_locations.push([j,jj])
-	 //    }
-	 //    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
-		// var j = grid_length;
-		// var jj = get_random_int(0, grid_length-3);
-		// exit_locations.push([j,jj])
-	 //    }
-	 //    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
-		// var j = get_random_int(0, grid_length-3);
-		// var jj = 0;
-		// exit_locations.push([j,jj])
-	 //    }
-	 //    else {
-		// var j = get_random_int(0, grid_length-3);
-		// var jj = grid_length;
-		// exit_locations.push([j,jj])
-	 //    }
-	    // this.population.push(obj);
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
       		var dj = obj.profile_i[p];
       		var djj = obj.profile_ii[p];
