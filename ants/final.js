@@ -12,8 +12,8 @@ var diagDownLeft = 225;
 var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
-
-var grid_length = 150;
+//
+var grid_length = 75;
 var max_children_on_grid = 1;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
@@ -409,18 +409,60 @@ function State() {
 	return null;
     }
     
-    this.place_things = function () {
+    this.place_things = function (random) {
+      //here will initialize a lecture hall
+      // 30 rows, after 15th 2 row spaces for ppl
+      //20 columns, 3 column spaces for ppl after 10
+      //26x68
+      //exits at (0,0) (0,44) (68,0) (68,44) 
+      //x values are columns
+      //y values are rows
+      
+      if (random==false){
+        //first quarter of the room
+        for (var col=0; col<10; col++){ //leaving row space for people
+          for (var row=0; row<30; row+=2){ //columns, next to each other
+            var obj = new Obstacle(col+10,row+10); //offsetting by 2,3
+            this.temp_grid[col+10][row+10].thing = obj;
+          }
+        }
+        //second quarter of the room, double row space after first quarter
+        for (var col=0; col<10; col++){ //leaving row space for people
+          for (var row=0; row<30; row+=2){ //columns, next to each other
+            var obj = new Obstacle(col+10,row+42); //offsetting by 2,32
+            this.temp_grid[col+10][row+42].thing = obj;
+          }
+        }
+        //third quarter of room
+        for (var col=0; col<10; col++){ //leaving row space for people
+          for (var row=0; row<30; row+=2){ //columns, next to each other
+            var obj = new Obstacle(col+27,row+10); //offsetting by 14,3
+            this.temp_grid[col+27][row+10].thing = obj;
+          }
+        }
+        //fourth quarter of the room
+        for (var col=0; col<10; col++){ //leaving row space for people
+          for (var row=0; row<30; row+=2){ //columns, next t0 each other
+            var obj = new Obstacle(col+27,row+42); //offsetting by 14,32
+            this.temp_grid[col+27][row+42].thing = obj;
+          }
+        }
+      }
+      else{
+        	
+      	for (var n = 0; n < max_obstacles_on_grid; n++) {
+      	    var j = get_random_int(0, grid_length)
+      	    var jj = get_random_int(0, grid_length)
+      	    
+      	    var obj = new Obstacle(j,jj);
+      	    // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
+      	    this.temp_grid[j][jj].thing = obj;
+      	}
+      }
+      
       //added this in as part of exit distances
       var exit_locations = []; //might need to be global variable
-	
-	for (var n = 0; n < max_obstacles_on_grid; n++) {
-	    var j = get_random_int(0, grid_length)
-	    var jj = get_random_int(0, grid_length)
-	    
-	    var obj = new Obstacle(j,jj);
-	    // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
-	    this.temp_grid[j][jj].thing = obj;
-	}
+
 	
 	// INSERT SQUARE
 	// -------------
@@ -550,8 +592,12 @@ console.log(exit_distances)
       		var djj = obj.profile_ii[p];
       		var safej = this.get_bounded_index(j+dj);
       		var safejj = this.get_bounded_index(jj+djj);
-		
-      		this.temp_grid[safej][safejj].thing = obj;
+      		if (this.temp_grid[safej][safejj].has_obstacle()) {
+            //do not place
+			    }
+			    else{
+			      this.temp_grid[safej][safejj].thing = obj; //need to fix to always have correct number on floor
+			    }
 	    }
 	}
 	    	console.log(min_exit_distance)
@@ -1062,7 +1108,7 @@ function initialize_simulation() {
 
     state.init_grids();
     // state.draw_border();
-    state.place_things();
+    state.place_things(false);
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
 }
 
