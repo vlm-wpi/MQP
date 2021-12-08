@@ -349,14 +349,16 @@ function State() {
 	var anchorY = thing.anchor_ii;
 	var exiti = thing.min_exiti;
 	var exitii = thing.min_exitii;
-	if (thing.profile_i[0]==0) {
-		var endi = exiti;
-		var endii = exitii+3;
-	}
-	else {
-		var endi = exiti+3;
-		var endii = exitii;
-	}
+	var endi = thing.endi;
+	var endii = thing.endii;
+	//if (thing.profile_i[0]==0) {
+	//	var endi = exiti;
+	//	var endii = exitii+3;
+//	}
+//	else {
+//		var endi = exiti+3;
+//		var endii = exitii;
+//	}
 
 	var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1);
 	open.insert(n);
@@ -408,6 +410,8 @@ function State() {
     }
     
     this.place_things = function () {
+      //added this in as part of exit distances
+      var exit_locations = []; //might need to be global variable
 	
 	for (var n = 0; n < max_obstacles_on_grid; n++) {
 	    var j = get_random_int(0, grid_length)
@@ -441,26 +445,56 @@ function State() {
 		this.temp_grid[j-n][jj+n].thing = new Obstacle(j-n,jj+n);
 	    }
 	}
-	//added this in as part of exit distances
-	var exit_locations = []; //might need to be global variable
 
+  //added this in as part of exit distances
+  var exit_locations = []; //might need to be global variable
+  
 	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
 	//get 2 random ints from 0-gridlength-3 (for j and jj)
 	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
 	    var j = get_random_int(0,grid_length-3);
 	    var jj = get_random_int(0,grid_length-3);
 	    if (j > jj) {
-	    	var j = j
-	    	var jj = ((grid_length-1)*(Math.round(Math.random())))
+	    	var j = j;
+	    	var jj = ((grid_length-1)*(Math.round(Math.random())));
 	    }
 	    else {
-	    	var j = ((grid_length-1)*(Math.round(Math.random())))
-	    	var jj = jj
+	    	var j = ((grid_length-1)*(Math.round(Math.random())));
+	    	var jj = jj;
 	    }
-	    var obj = new Exit(j,jj)
-	    exit_locations.push([j,jj])
+	    var obj = new Exit(j,jj);
+	    //want to push whole object so that it keeps track of the end
+	    exit_locations.push(obj); 
+	    //used so people can exit at all directions
+	    //could change to just the exit object added but did not want to change code below too much
 	
+<<<<<<< HEAD
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
+=======
+	 //    var obj =  new Exit(j,jj);
+	 //    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
+		// var j = 0;
+		// var jj = get_random_int(0, grid_length-3);
+		// exit_locations.push([j,jj])
+	 //    }
+	 //    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
+		// var j = grid_length;
+		// var jj = get_random_int(0, grid_length-3);
+		// exit_locations.push([j,jj])
+	 //    }
+	 //    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
+		// var j = get_random_int(0, grid_length-3);
+		// var jj = 0;
+		// exit_locations.push([j,jj])
+	 //    }
+	 //    else {
+		// var j = get_random_int(0, grid_length-3);
+		// var jj = grid_length;
+		// exit_locations.push([j,jj])
+	 //    }
+	    // this.population.push(obj);
+	    for (var p = 0; p < obj.profile_i.length; p++) {  //placing exits on the grid
+>>>>>>> 03efd41456f370367c2a48dd748792f3399f462e
       		var dj = obj.profile_i[p];
       		var djj = obj.profile_ii[p];
       		var safej = this.get_bounded_index(j+dj);
@@ -477,24 +511,31 @@ console.log(exit_locations)
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
-    	    	var exiti = exit_locations[exit][0]
-    	    	var exitii = exit_locations[exit][1]
+    	    	var exiti = exit_locations[exit].anchor_i;
+    	    	var exitii = exit_locations[exit].anchor_ii;
+    	    	var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
+    	    	var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
     	    	var current_distance = calc_distance(j,jj,exiti,exitii)
-    	    	var list = [current_distance,exiti,exitii]
+    	    	var list = [current_distance,exiti,exitii, local_endi, local_endii] //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
 console.log(exit_distances)
     	    var min_exit_distance = exit_distances[0][0]; //this needs to be a var
     	    var min_exiti = exit_distances[0][1];
     	    var min_exitii = exit_distances[0][2];
+    	    var min_endi = exit_distances[0][3];
+    	    var min_endii = exit_distances[0][4];
     	    console.log(min_exit_distance)
     	    console.log(min_exiti)
     	    console.log(min_exitii)
     	    for (var exit=0; exit < exit_distances.length; exit++) {
     	    	if (exit_distances[exit][0] < min_exit_distance) {
-    	    		var min_exit_distance = exit_distances[exit][0]
-    	    		var min_exiti = exit_distances[exit][1]
-    	    		var min_exitii = exit_distances[exit][2]
+    	    	  //change if needed
+    	    		min_exit_distance = exit_distances[exit][0];
+    	    		min_exiti = exit_distances[exit][1];
+    	    		min_exitii = exit_distances[exit][2];
+    	    		min_endi = exit_distances[exit][3];
+    	    		min_endii = exit_distances[exit][4];
     	    		console.log(min_exit_distance)
     	    		console.log(min_exiti)
     	    		console.log(min_exitii)
@@ -502,8 +543,10 @@ console.log(exit_distances)
     	    }
 
     	    var obj = new Child(j,jj);
-    	    obj.min_exiti = min_exiti
-    	    obj.min_exitii = min_exitii
+    	    obj.min_exiti = min_exiti;
+    	    obj.min_exitii = min_exitii;
+    	    obj.endi = min_endi;
+    	    obj.endii = min_endii;
 
     	    this.population.push(obj);
     	    for (var p = 0; p < obj.profile_i.length; p++) {  //
@@ -785,6 +828,7 @@ function Cell(i,ii) {
 }
 
 function Exit(j,jj) {
+  
 	this.orientation = random_orientation();
 	this.anchor_i = j;
 	this.anchor_ii = jj;
@@ -849,6 +893,8 @@ function Child(j,jj) {
     this.anchor_ii = jj
     this.min_exiti = 0;
     this.min_exitii = 0;
+    this.endi = 0; //initially
+    this.endii = 0; // initially
     this.profile_i  = [0];
     this.profile_ii = [0];
 	
