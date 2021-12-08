@@ -530,8 +530,8 @@ console.log(exit_distances)
     	    		min_exit_distance = exit_distances[exit][0];
     	    		min_exiti = exit_distances[exit][1];
     	    		min_exitii = exit_distances[exit][2];
-    	    		min_endi = exit_distances[0][3];
-    	    		min_endii = exit_distances[0][4];
+    	    		min_endi = exit_distances[exit][3];
+    	    		min_endii = exit_distances[exit][4];
     	    		console.log(min_exit_distance)
     	    		console.log(min_exiti)
     	    		console.log(min_exitii)
