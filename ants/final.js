@@ -13,7 +13,7 @@ var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 //
-var grid_length = 150;
+var grid_length = 75;
 var max_children_on_grid = 10;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 10;
@@ -410,6 +410,8 @@ return null;
 }
 
 this.place_things = function (random) {
+  	//added this in as part of exit distances
+  var exit_locations = []; //might need to be global variable
       //here will initialize a lecture hall
       // 30 rows, after 15th 2 row spaces for ppl
       //20 columns, 3 column spaces for ppl after 10
@@ -447,6 +449,46 @@ this.place_things = function (random) {
             this.temp_grid[col+27][row+42].thing = obj;
         }
     }
+    var obj1 = new Exit(0,0); //should probably make coordinates variables
+    exit_locations.push(obj1);
+     for (var p = 0; p < obj1.profile_i.length; p++) {  //placing exits on the grid
+	    	var dj = obj1.profile_i[p];
+	    	var djj = obj1.profile_ii[p];
+	    	var safej = this.get_bounded_index(0+dj);
+	    	var safejj = this.get_bounded_index(0+djj);
+
+	    	this.temp_grid[safej][safejj].thing = obj1;
+	    }
+	    var obj2 = new Exit(grid_length-3,0);
+	    exit_locations.push(obj2);
+	    for (var p = 0; p < obj2.profile_i.length; p++) {  //placing exits on the grid
+	    	var dj = obj2.profile_i[p];
+	    	var djj = obj2.profile_ii[p];
+	    	var safej = this.get_bounded_index(grid_length-3+dj);
+	    	var safejj = this.get_bounded_index(0+djj);
+
+	    	this.temp_grid[safej][safejj].thing = obj2;
+	    }
+	    var obj3 = new Exit(0,grid_length-1);
+	    exit_locations.push(obj3);
+	    for (var p = 0; p < obj3.profile_i.length; p++) {  //placing exits on the grid
+	    	var dj = obj3.profile_i[p];
+	    	var djj = obj3.profile_ii[p];
+	    	var safej = this.get_bounded_index(0+dj);
+	    	var safejj = this.get_bounded_index(grid_length-1+djj);
+
+	    	this.temp_grid[safej][safejj].thing = obj3;
+	    }
+	    var obj4 = new Exit(grid_length-3, grid_length-1);
+	    exit_locations.push(obj4);
+	    for (var p = 0; p < obj4.profile_i.length; p++) {  //placing exits on the grid
+	    	var dj = obj4.profile_i[p];
+	    	var djj = obj4.profile_ii[p];
+	    	var safej = this.get_bounded_index(grid_length-3+dj);
+	    	var safejj = this.get_bounded_index(grid_length-1+djj);
+
+	    	this.temp_grid[safej][safejj].thing = obj4;
+	    }
 }
 else{
 
@@ -457,14 +499,60 @@ else{
 		var obj = new Obstacle(j,jj);
       	    // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
       	    this.temp_grid[j][jj].thing = obj;
-      	}
-      }
-      
-      //added this in as part of exit distances
-      var exit_locations = []; //might need to be global variable
+  }
 
-
-	// INSERT SQUARE
+  
+	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
+	//get 2 random ints from 0-gridlength-3 (for j and jj)
+	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
+  	var j = get_random_int(0,grid_length-3);
+  	var jj = get_random_int(0,grid_length-3);
+  	if (j > jj) {
+  		var j = j;
+  		var jj = ((grid_length-1)*(Math.round(Math.random())));
+  	}
+  	else {
+  		var j = ((grid_length-1)*(Math.round(Math.random())));
+  		var jj = jj;
+  	}
+  	var obj = new Exit(j,jj);
+  	    //want to push whole object so that it keeps track of the end
+  	    exit_locations.push(obj); 
+  	    //used so people can exit at all directions
+  	    //could change to just the exit object added but did not want to change code below too much
+  
+  	 //    var obj =  new Exit(j,jj);
+  	 //    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
+  		// var j = 0;
+  		// var jj = get_random_int(0, grid_length-3);
+  		// exit_locations.push([j,jj])
+  	 //    }
+  	 //    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
+  		// var j = grid_length;
+  		// var jj = get_random_int(0, grid_length-3);
+  		// exit_locations.push([j,jj])
+  	 //    }
+  	 //    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
+  		// var j = get_random_int(0, grid_length-3);
+  		// var jj = 0;
+  		// exit_locations.push([j,jj])
+  	 //    }
+  	 //    else {
+  		// var j = get_random_int(0, grid_length-3);
+  		// var jj = grid_length;
+  		// exit_locations.push([j,jj])
+  	 //    }
+  	    // this.population.push(obj);
+  	    for (var p = 0; p < obj.profile_i.length; p++) {  //placing exits on the grid
+  	    	var dj = obj.profile_i[p];
+  	    	var djj = obj.profile_ii[p];
+  	    	var safej = this.get_bounded_index(j+dj);
+  	    	var safejj = this.get_bounded_index(jj+djj);
+  
+  	    	this.temp_grid[safej][safejj].thing = obj;
+  	    }
+  	}
+  		// INSERT SQUARE
 	// -------------
 //	for (var n = 10; n <= 50; n++) {
 //	    this.temp_grid[n][10].thing = new Obstacle(n,10);
@@ -474,73 +562,21 @@ else{
 //	    this.temp_grid[50][n].thing = new Obstacle(50,n);	
 //	}
 
-	// RANDOM Xs 
-	// -------------
-	for (var xx = 0; xx < max_large_X_obstacles_on_grid; xx++) {
-		var j = get_random_int(20, grid_length-20)
-		var jj = get_random_int(20, grid_length-20)
-
-		for (var n = 0; n <= 20; n++) {
-			this.temp_grid[j+n][jj+n].thing = new Obstacle(j+n,jj+n);
-			this.temp_grid[j-n][jj-n].thing = new Obstacle(j-n,jj-n);
-			this.temp_grid[j+n][jj-n].thing = new Obstacle(j+n,jj-n);
-			this.temp_grid[j-n][jj+n].thing = new Obstacle(j-n,jj+n);
-		}
-	}
-
-  //added this in as part of exit distances
-  var exit_locations = []; //might need to be global variable
+  	// RANDOM Xs 
+  	// -------------
+  	for (var xx = 0; xx < max_large_X_obstacles_on_grid; xx++) {
+  		var j = get_random_int(20, grid_length-20)
+  		var jj = get_random_int(20, grid_length-20)
   
-	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
-	//get 2 random ints from 0-gridlength-3 (for j and jj)
-	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
-	var j = get_random_int(0,grid_length-3);
-	var jj = get_random_int(0,grid_length-3);
-	if (j > jj) {
-		var j = j;
-		var jj = ((grid_length-1)*(Math.round(Math.random())));
-	}
-	else {
-		var j = ((grid_length-1)*(Math.round(Math.random())));
-		var jj = jj;
-	}
-	var obj = new Exit(j,jj);
-	    //want to push whole object so that it keeps track of the end
-	    exit_locations.push(obj); 
-	    //used so people can exit at all directions
-	    //could change to just the exit object added but did not want to change code below too much
-
-	 //    var obj =  new Exit(j,jj);
-	 //    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
-		// var j = 0;
-		// var jj = get_random_int(0, grid_length-3);
-		// exit_locations.push([j,jj])
-	 //    }
-	 //    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
-		// var j = grid_length;
-		// var jj = get_random_int(0, grid_length-3);
-		// exit_locations.push([j,jj])
-	 //    }
-	 //    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
-		// var j = get_random_int(0, grid_length-3);
-		// var jj = 0;
-		// exit_locations.push([j,jj])
-	 //    }
-	 //    else {
-		// var j = get_random_int(0, grid_length-3);
-		// var jj = grid_length;
-		// exit_locations.push([j,jj])
-	 //    }
-	    // this.population.push(obj);
-	    for (var p = 0; p < obj.profile_i.length; p++) {  //placing exits on the grid
-	    	var dj = obj.profile_i[p];
-	    	var djj = obj.profile_ii[p];
-	    	var safej = this.get_bounded_index(j+dj);
-	    	var safejj = this.get_bounded_index(jj+djj);
-
-	    	this.temp_grid[safej][safejj].thing = obj;
-	    }
-	}
+  		for (var n = 0; n <= 20; n++) {
+  			this.temp_grid[j+n][jj+n].thing = new Obstacle(j+n,jj+n);
+  			this.temp_grid[j-n][jj-n].thing = new Obstacle(j-n,jj-n);
+  			this.temp_grid[j+n][jj-n].thing = new Obstacle(j+n,jj-n);
+  			this.temp_grid[j-n][jj+n].thing = new Obstacle(j-n,jj+n);
+  		}
+  	}
+      	
+}
 	// console.log(exit_locations)
 
 	for (var n = 0; n < max_children_on_grid; n++) {
@@ -1153,7 +1189,7 @@ function initialize_simulation() {
 
 	state.init_grids();
     // state.draw_border();
-    state.place_things(true);
+    state.place_things(false);
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
 }
 
