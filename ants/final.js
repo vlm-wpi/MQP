@@ -616,25 +616,33 @@ else{
     	    	}
     	    }
 
-    	    var obj = new Child(j,jj);
-    	    obj.min_exiti = min_exiti;
-    	    obj.min_exitii = min_exitii;
-    	    obj.endi = min_endi;
-    	    obj.endii = min_endii;
+    	    var objChild = new Child(j,jj);
+    	    objChild.min_exiti = min_exiti;
+    	    objChild.min_exitii = min_exitii;
+    	    objChild.endi = min_endi;
+    	    objChild.endii = min_endii;
 
-    	    this.population.push(obj);
-    	    for (var p = 0; p < obj.profile_i.length; p++) {  //
-    	    	var dj = obj.profile_i[p];
-    	    	var djj = obj.profile_ii[p];
+    	    this.population.push(objChild);
+    	    var obstacle = 0;
+    	    for (var p = 0; p < objChild.profile_i.length; p++) {  //
+    	    	var dj = objChild.profile_i[p];
+    	    	var djj = objChild.profile_ii[p];
     	    	var safej = this.get_bounded_index(j+dj);
     	    	var safejj = this.get_bounded_index(jj+djj);
-    	    	if (this.temp_grid[safej][safejj].has_obstacle()) {
+    	    	if (this.temp_grid[safej][safejj].has_other_thing(objChild)){ //should be somewhere
+    	    	obstacle++;
             //do not place
-        }
-        else{
-			      this.temp_grid[safej][safejj].thing = obj; //need to fix to always have correct number on floor
-			  }
-			}
+            }
+			    }
+			    if (obstacle = 0){
+			       for (var p = 0; p < objChild.profile_i.length; p++) {  //
+      	    	var dj = objChild.profile_i[p];
+      	    	var djj = objChild.profile_ii[p];
+      	    	var safej = this.get_bounded_index(j+dj);
+      	    	var safejj = this.get_bounded_index(jj+djj);
+  			      this.temp_grid[safej][safejj].thing = objChild; //need to fix to always have correct number on floor
+  			    }
+			    }
 		}
 		// console.log(min_exit_distance)
 		// console.log(min_exiti)
