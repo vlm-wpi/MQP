@@ -13,7 +13,7 @@ var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 //
-var grid_length = 150;
+var grid_length = 75;
 var max_children_on_grid = 10;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 10;
@@ -652,7 +652,6 @@ this.place_things = function (random) {
     	    objChild.goali = goali;
     	    objChild.goalii = goalii;
 
-    	    this.population.push(objChild);
     	    var obstacle = 0;
     	    for (var p = 0; p < objChild.profile_i.length; p++) {  //
     	    	var dj = objChild.profile_i[p];
@@ -664,7 +663,7 @@ this.place_things = function (random) {
             //do not place
         }
     }
-    if (obstacle = 0){
+    if (obstacle == 0){
 			       for (var p = 0; p < objChild.profile_i.length; p++) {  //
 			       	var dj = objChild.profile_i[p];
 			       	var djj = objChild.profile_ii[p];
@@ -672,6 +671,7 @@ this.place_things = function (random) {
 			       	var safejj = this.get_bounded_index(jj+djj);
   			      this.temp_grid[safej][safejj].thing = objChild; //need to fix to always have correct number on floor
   			  }
+  			  this.population.push(objChild);
   			}
   		}
 		// console.log(min_exit_distance)
