@@ -13,7 +13,7 @@ var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 //
-var grid_length = 75;
+var grid_length = 150;
 var max_children_on_grid = 10;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 10;
@@ -23,6 +23,7 @@ var max_large_X_obstacles_on_grid = 0;
 var max_exits_on_grid = 4;
 var ms_between_updates = 1;
 var take_snapshot = false;
+var hall_layout = false;
 
 // HOOK UP GUI ELEMENTS: BEGIN
 // -----------------------------------------------------
@@ -74,6 +75,13 @@ if (take_snapshot) {
 }
 takeSnapshotCheckbox.oninput = function() {
 	take_snapshot = takeSnapshotCheckbox.checked;
+}
+var hallLayoutCheckbox = document.getElementById("hallLayout");
+if (hall_layout) {
+	hallLayoutCheckbox.checked = true;
+}
+takeSnapshotCheckbox.oninput = function() {
+	hall_layout = hallLayoutCheckbox.checked;
 }
 
 
@@ -1236,7 +1244,13 @@ function initialize_simulation() {
 
 	state.init_grids();
     // state.draw_border();
-    state.place_things(false);
+    if (hall_layout==true){
+      state.place_things(false);
+    }
+    else{
+      state.place_things(true);
+    }
+    
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
 }
 
