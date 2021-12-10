@@ -80,7 +80,7 @@ var hallLayoutCheckbox = document.getElementById("hallLayout");
 if (hall_layout) {
 	hallLayoutCheckbox.checked = true;
 }
-takeSnapshotCheckbox.oninput = function() {
+hallLayoutCheckbox.oninput = function() {
 	hall_layout = hallLayoutCheckbox.checked;
 }
 
@@ -108,7 +108,7 @@ function diagonal(x,y, goalX, goalY) {  //diagonal distance heuristic
 	return h;
 }
 
-function Node(j,jj,exiti, exitii, endi, endii, parent, direction) {
+function Node(j,jj,exiti, exitii, endi, endii, parent, direction, goali, goalii) {
 	this.i = j;
 	this.ii = jj;
 	this.direction = direction;
@@ -117,6 +117,8 @@ function Node(j,jj,exiti, exitii, endi, endii, parent, direction) {
 	this.exitii = exitii;
 	this.endi = endi;
 	this.endii = endii;
+	this.goali = goali;
+	this.goalii = goalii;
 
     // starting from the last node (which is the exit) go backwards until you
     // get to a node whose parent is the original, then return its locatino [i ,ii]
@@ -154,7 +156,7 @@ this.done = function() {
     // this ensures that two nodes can be compared using < operator.
     Node.prototype.valueOf=function() {
 	// f = g + h
-	var h = diagonal(this.i, this.ii, this.exiti, this.exitii);
+	var h = diagonal(this.i, this.ii, this.goali, this.goalii);
 	return this.g + h;
 }
 }
@@ -359,6 +361,8 @@ return parents;
 	var exitii = thing.min_exitii;
 	var endi = thing.endi;
 	var endii = thing.endii;
+	var goali = thing.goali;
+	var goalii = thing.goalii;
 	//if (thing.profile_i[0]==0) {
 	//	var endi = exiti;
 	//	var endii = exitii+3;
@@ -368,7 +372,7 @@ return parents;
 //		var endii = exitii;
 //	}
 
-var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1);
+var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii);
 open.insert(n);
 open_hash[n.key()] = n;
 
@@ -379,9 +383,16 @@ open_hash[n.key()] = n;
 	    //do i need to call heapify function?
 	    var q = open.extractMin(); //3a,b
 	    var successors = this.get_neighbors(q.i,q.ii,thing,this,others); //3c, this function only returns coordinates
-	    
+	    //shuffle array
+	    // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+	     for (var i = successors.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = successors[i];
+        successors[i] = successors[j];
+        successors[j] = temp;
+    } // does this do anything???
 	    for(i=0;i<successors.length;i++){
-	    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2]);
+	    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii);
 
 		if (succ.done()) { // matched the goal. reutrn this. last node
 			return succ;
@@ -588,8 +599,8 @@ this.place_things = function (random) {
 	// console.log(exit_locations)
 
 	for (var n = 0; n < max_children_on_grid; n++) {
-		var j = get_random_int(0, grid_length)
-		var jj = get_random_int(0, grid_length)
+		var j = get_random_int(0, grid_length);
+		var jj = get_random_int(0, grid_length);
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -598,7 +609,12 @@ this.place_things = function (random) {
     	    	var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
     	    	var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
     	    	var current_distance = calc_distance(j,jj,exiti,exitii)
-    	    	var list = [current_distance,exiti,exitii, local_endi, local_endii] //keeping track of the beginning and end of exit
+    	    	//randomly getting a specific exit cell goal
+    	    	var rand_x = get_random_int(0, 3);
+    	    	var rand_y = get_random_int(0, 3);
+    	    	var local_goali = exit_locations[exit].profile_i[rand_x]+ exit_locations[exit].anchor_i;
+    	    	var local_goalii = exit_locations[exit].profile_ii[rand_y]+ exit_locations[exit].anchor_ii;
+    	    	var list = [current_distance,exiti,exitii, local_endi, local_endii, local_goali, local_goalii] //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
     	    console.log(exit_distances)
@@ -607,6 +623,8 @@ this.place_things = function (random) {
     	    var min_exitii = exit_distances[0][2];
     	    var min_endi = exit_distances[0][3];
     	    var min_endii = exit_distances[0][4];
+    	    var goali = exit_distances[0][5];
+    	    var goalii = exit_distances[0][6];
     	    // console.log(min_exit_distance)
     	    // console.log(min_exiti)
     	    // console.log(min_exitii)
@@ -618,6 +636,8 @@ this.place_things = function (random) {
     	    	  min_exitii = exit_distances[exit][2];
     	    	  min_endi = exit_distances[exit][3];
     	    	  min_endii = exit_distances[exit][4];
+    	    	  goali = exit_distances[exit][5];
+    	    	  goalii = exit_distances[exit][6];
     	    	  // console.log(min_exit_distance)
     	    	  // console.log(min_exiti)
     	    	  // console.log(min_exitii)
@@ -629,6 +649,8 @@ this.place_things = function (random) {
     	    objChild.min_exitii = min_exitii;
     	    objChild.endi = min_endi;
     	    objChild.endii = min_endii;
+    	    objChild.goali = goali;
+    	    objChild.goalii = goalii;
 
     	    this.population.push(objChild);
     	    var obstacle = 0;
@@ -1065,6 +1087,8 @@ function Child(j,jj) {
 	this.anchor_ii = jj
 	this.min_exiti = 0;
 	this.min_exitii = 0;
+	this.goali = 0; //initially
+	this.goalii = 0; //initially
     this.endi = 0; //initially
     this.endii = 0; // initially
     this.profile_i  = [0];
