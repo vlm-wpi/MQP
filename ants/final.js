@@ -597,8 +597,8 @@ this.place_things = function (random) {
   	
   }
 	// console.log(exit_locations)
-
-	for (var n = 0; n < max_children_on_grid; n++) {
+  var num_children = 0;
+	while (num_children < max_children_on_grid) {
 		var j = get_random_int(0, grid_length);
 		var jj = get_random_int(0, grid_length);
     	    //added this in as part of exit distances
@@ -672,6 +672,7 @@ this.place_things = function (random) {
   			      this.temp_grid[safej][safejj].thing = objChild; //need to fix to always have correct number on floor
   			  }
   			  this.population.push(objChild);
+  			  num_children++;
   			}
   		}
 		// console.log(min_exit_distance)
