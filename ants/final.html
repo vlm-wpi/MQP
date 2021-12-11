@@ -8,7 +8,7 @@
   <input type = "button" value="end" onClick="JavaScript:end_simulation()">
   </form>
 
-<!--<body>-->
+<body>
   <table>
     <tr valign=top>
       <td><canvas id="grid" width="600" height="600"></canvas></td>
@@ -27,9 +27,13 @@
   <input type="text" id="numBikes" name="numBikes">
 </form>
 
-<h2>Object Controls</h2>
+<h2>Board Controls</h2>
 
 <form>
+  <label for="gridWidthi">Width of Grid:</label><br>
+  <input type="text" id="gridWidthi" name="gridWidthi"><br>
+  <label for="gridWidthii">Height of Grid:</label><br>
+  <input type="text" id="gridWidthii" name="gridWidthii"><br>
   <label for="numExits">Number of Exits:</label><br>
   <input type="text" id="numExits" name="numExits"><br>
   <label for="numObstacles">Number of Obstacles:</label><br>
@@ -41,12 +45,14 @@
 <h2>Take Snapshots</h2>
 
   <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
+
   
 <h2>Choose Initial Layout</h2>
 
   <b>Lecture Hall:</b> <input type="checkbox" id="hallLayout"><br>
   <b>Classroom:</b> <input type="checkbox" id="classroomLayout"><br>
   <b>Random:</b> <input type="checkbox" id="randomLayout"><br>
+
 
       </td>
    </tr>

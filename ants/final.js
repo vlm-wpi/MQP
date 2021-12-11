@@ -13,10 +13,12 @@ var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 //
-var grid_length = 150;
+// var grid_length = 150;
+var width_i = 100;
+var width_ii = 50;
 var max_children_on_grid = 10;
 var max_backpack_on_grid = 0;
-var max_adult_on_grid = 10;
+var max_adult_on_grid = 0;
 var max_bike_on_grid = 0;
 var max_obstacles_on_grid = 100;
 var max_large_X_obstacles_on_grid = 0;
@@ -51,6 +53,18 @@ numAdults.oninput = function() {
 	max_adult_on_grid = this.value;
 }
 
+var gridWidthi = document.getElementById("gridWidthi");
+gridWidthi.value = width_i;
+gridWidthi.oninput = function() {
+	width_i = this.value;
+}
+
+var gridWidthii = document.getElementById("gridWidthii");
+gridWidthii.value = width_ii;
+gridWidthii.oninput = function() {
+	width_ii = this.value;
+}
+
 var numExits = document.getElementById("numExits");
 numExits.value = max_exits_on_grid;
 numExits.oninput = function() {
@@ -80,7 +94,7 @@ var hallLayoutCheckbox = document.getElementById("hallLayout");
 if (hall_layout) {
 	hallLayoutCheckbox.checked = true;
 }
-takeSnapshotCheckbox.oninput = function() {
+hallLayoutCheckbox.oninput = function() {
 	hall_layout = hallLayoutCheckbox.checked;
 }
 
@@ -108,7 +122,7 @@ function diagonal(x,y, goalX, goalY) {  //diagonal distance heuristic
 	return h;
 }
 
-function Node(j,jj,exiti, exitii, endi, endii, parent, direction) {
+function Node(j,jj,exiti, exitii, endi, endii, parent, direction, goali, goalii) {
 	this.i = j;
 	this.ii = jj;
 	this.direction = direction;
@@ -117,6 +131,8 @@ function Node(j,jj,exiti, exitii, endi, endii, parent, direction) {
 	this.exitii = exitii;
 	this.endi = endi;
 	this.endii = endii;
+	this.goali = goali;
+	this.goalii = goalii;
 
     // starting from the last node (which is the exit) go backwards until you
     // get to a node whose parent is the original, then return its locatino [i ,ii]
@@ -154,7 +170,7 @@ this.done = function() {
     // this ensures that two nodes can be compared using < operator.
     Node.prototype.valueOf=function() {
 	// f = g + h
-	var h = diagonal(this.i, this.ii, this.exiti, this.exitii);
+	var h = diagonal(this.i, this.ii, this.goali, this.goalii);
 	return this.g + h;
 }
 }
@@ -239,22 +255,32 @@ function State() {
 	this.temp_grid = [];
 	this.population = [];
 
-	this.get_bounded_index = function (index) {
-		var bounded_index = index;
-		if (index < 0) 
-			{        bounded_index = 0;
-			}
-			if (index >= grid_length) {
-				bounded_index = grid_length-1;
-			}
-			return bounded_index;
+	this.get_bounded_index_i = function (index) {
+		var bounded_index_i = index;
+		if (index < 0) {
+			bounded_index_i = 0;
+		}
+		if (index >= width_i) {
+			bounded_index_i = width_i-1;
+		}
+		return bounded_index_i;
+		}
+	this.get_bounded_index_ii = function(index) {
+		var bounded_index_ii = index;
+		if (index < 0) {
+			bounded_index_ii = 0;
+		}
+		if (index >= width_ii) {
+			bounded_index_ii = width_ii-1;
+		}
+		return bounded_index_ii;
 		}
 
 		this.init_grids = function () {
-			for (var i = 0; i < grid_length; i = i + 1) {
+			for (var i = 0; i < width_i; i = i + 1) {
 				this.grid[i] = [];
 				this.temp_grid[i] = [];
-				for (var ii = 0; ii < grid_length; ii = ii + 1) {
+				for (var ii = 0; ii < width_ii; ii = ii + 1) {
 					this.grid[i][ii] = new Cell(i,ii);
 					this.temp_grid[i][ii] = new Cell(i,ii);
 				}
@@ -272,8 +298,8 @@ function State() {
 }
 
         // NEED THIS. This copies the footprint for drawing
-        for (var i = 0; i < grid_length; i = i + 1) {
-        	for (var ii = 0; ii < grid_length; ii = ii + 1) {
+        for (var i = 0; i < width_i; i = i + 1) {
+        	for (var ii = 0; ii < width_ii; ii = ii + 1) {
                 // adjust reference
                 this.grid[i][ii].thing = this.temp_grid[i][ii].thing; 
             }
@@ -299,8 +325,8 @@ function State() {
     			}
     			oix++;
 
-    			var safe_r = this.get_bounded_index(x+di);
-    			var safe_c = this.get_bounded_index(y+dii);
+    			var safe_r = this.get_bounded_index_i(x+di);
+    			var safe_c = this.get_bounded_index_ii(y+dii);
     			if (safe_r != x+di) { continue; }
     			if (safe_c != y+dii) { continue; }
 
@@ -308,8 +334,8 @@ function State() {
 		var safe = 1;
 		for (var p = 0; p < thing.profile_i.length; p++) {
 			var ss = this.get_coords_from_orientation_neighbors(thing, p, orientations[oix]);
-			var sr = this.get_bounded_index(x + ss[0]);
-			var sc = this.get_bounded_index(y + ss[1]);
+			var sr = this.get_bounded_index_i(x + ss[0]);
+			var sc = this.get_bounded_index_ii(y + ss[1]);
 
 		    // can't move off the board
 		    if (sr != x + ss[0]) { safe = 0; break; }
@@ -359,6 +385,8 @@ return parents;
 	var exitii = thing.min_exitii;
 	var endi = thing.endi;
 	var endii = thing.endii;
+	var goali = thing.goali;
+	var goalii = thing.goalii;
 	//if (thing.profile_i[0]==0) {
 	//	var endi = exiti;
 	//	var endii = exitii+3;
@@ -368,7 +396,7 @@ return parents;
 //		var endii = exitii;
 //	}
 
-var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1);
+var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii);
 open.insert(n);
 open_hash[n.key()] = n;
 
@@ -379,9 +407,16 @@ open_hash[n.key()] = n;
 	    //do i need to call heapify function?
 	    var q = open.extractMin(); //3a,b
 	    var successors = this.get_neighbors(q.i,q.ii,thing,this,others); //3c, this function only returns coordinates
-	    
+	    //shuffle array
+	    // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+	     for (var i = successors.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = successors[i];
+        successors[i] = successors[j];
+        successors[j] = temp;
+    } // does this do anything???
 	    for(i=0;i<successors.length;i++){
-	    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2]);
+	    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii);
 
 		if (succ.done()) { // matched the goal. reutrn this. last node
 			return succ;
@@ -462,38 +497,38 @@ this.place_things = function (random) {
      for (var p = 0; p < obj1.profile_i.length; p++) {  //placing exits on the grid
      	var dj = obj1.profile_i[p];
      	var djj = obj1.profile_ii[p];
-     	var safej = this.get_bounded_index(0+dj);
-     	var safejj = this.get_bounded_index(0+djj);
+     	var safej = this.get_bounded_index_i(0+dj);
+     	var safejj = this.get_bounded_index_ii(0+djj);
 
      	this.temp_grid[safej][safejj].thing = obj1;
      }
-     var obj2 = new Exit(grid_length-3,0);
+     var obj2 = new Exit(width_i-3,0);
      exit_locations.push(obj2);
 	    for (var p = 0; p < obj2.profile_i.length; p++) {  //placing exits on the grid
 	    	var dj = obj2.profile_i[p];
 	    	var djj = obj2.profile_ii[p];
-	    	var safej = this.get_bounded_index(grid_length-3+dj);
-	    	var safejj = this.get_bounded_index(0+djj);
+	    	var safej = this.get_bounded_index_i(width_i-3+dj);
+	    	var safejj = this.get_bounded_index_ii(0+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj2;
 	    }
-	    var obj3 = new Exit(0,grid_length-1);
+	    var obj3 = new Exit(0,width_ii-1);
 	    exit_locations.push(obj3);
 	    for (var p = 0; p < obj3.profile_i.length; p++) {  //placing exits on the grid
 	    	var dj = obj3.profile_i[p];
 	    	var djj = obj3.profile_ii[p];
-	    	var safej = this.get_bounded_index(0+dj);
-	    	var safejj = this.get_bounded_index(grid_length-1+djj);
+	    	var safej = this.get_bounded_index_i(0+dj);
+	    	var safejj = this.get_bounded_index_ii(width_ii-1+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj3;
 	    }
-	    var obj4 = new Exit(grid_length-3, grid_length-1);
+	    var obj4 = new Exit(width_i-3, width_ii-1);
 	    exit_locations.push(obj4);
 	    for (var p = 0; p < obj4.profile_i.length; p++) {  //placing exits on the grid
 	    	var dj = obj4.profile_i[p];
 	    	var djj = obj4.profile_ii[p];
-	    	var safej = this.get_bounded_index(grid_length-3+dj);
-	    	var safejj = this.get_bounded_index(grid_length-1+djj);
+	    	var safej = this.get_bounded_index_i(width_i-3+dj);
+	    	var safejj = this.get_bounded_index_ii(width_ii-1+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj4;
 	    }
@@ -501,8 +536,8 @@ this.place_things = function (random) {
 	else{
 
 		for (var n = 0; n < max_obstacles_on_grid; n++) {
-			var j = get_random_int(0, grid_length)
-			var jj = get_random_int(0, grid_length)
+			var j = get_random_int(0, width_i)
+			var jj = get_random_int(0, width_ii)
 
 			var obj = new Obstacle(j,jj);
       	    // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
@@ -513,14 +548,14 @@ this.place_things = function (random) {
 	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
 	//get 2 random ints from 0-gridlength-3 (for j and jj)
 	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
-	var j = get_random_int(0,grid_length-3);
-	var jj = get_random_int(0,grid_length-3);
+	var j = get_random_int(0,width_i-3);
+	var jj = get_random_int(0,width_ii-3);
 	if (j > jj) {
 		var j = j;
-		var jj = ((grid_length-1)*(Math.round(Math.random())));
+		var jj = ((width_ii-1)*(Math.round(Math.random())));
 	}
 	else {
-		var j = ((grid_length-1)*(Math.round(Math.random())));
+		var j = ((width_i-1)*(Math.round(Math.random())));
 		var jj = jj;
 	}
 	var obj = new Exit(j,jj);
@@ -554,8 +589,8 @@ this.place_things = function (random) {
   	    for (var p = 0; p < obj.profile_i.length; p++) {  //placing exits on the grid
   	    	var dj = obj.profile_i[p];
   	    	var djj = obj.profile_ii[p];
-  	    	var safej = this.get_bounded_index(j+dj);
-  	    	var safejj = this.get_bounded_index(jj+djj);
+  	    	var safej = this.get_bounded_index_i(j+dj);
+  	    	var safejj = this.get_bounded_index_ii(jj+djj);
   	    	
   	    	this.temp_grid[safej][safejj].thing = obj;
   	    }
@@ -573,8 +608,8 @@ this.place_things = function (random) {
   	// RANDOM Xs 
   	// -------------
   	for (var xx = 0; xx < max_large_X_obstacles_on_grid; xx++) {
-  		var j = get_random_int(20, grid_length-20)
-  		var jj = get_random_int(20, grid_length-20)
+  		var j = get_random_int(20, width_i-20)
+  		var jj = get_random_int(20, width_ii-20)
   		
   		for (var n = 0; n <= 20; n++) {
   			this.temp_grid[j+n][jj+n].thing = new Obstacle(j+n,jj+n);
@@ -586,10 +621,10 @@ this.place_things = function (random) {
   	
   }
 	// console.log(exit_locations)
-
-	for (var n = 0; n < max_children_on_grid; n++) {
-		var j = get_random_int(0, grid_length)
-		var jj = get_random_int(0, grid_length)
+  var num_children = 0;
+	while (num_children < max_children_on_grid) {
+		var j = get_random_int(0, width_i);
+		var jj = get_random_int(0, width_ii);
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -598,7 +633,12 @@ this.place_things = function (random) {
     	    	var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
     	    	var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
     	    	var current_distance = calc_distance(j,jj,exiti,exitii)
-    	    	var list = [current_distance,exiti,exitii, local_endi, local_endii] //keeping track of the beginning and end of exit
+    	    	//randomly getting a specific exit cell goal
+    	    	var rand_x = get_random_int(0, 3);
+    	    	var rand_y = get_random_int(0, 3);
+    	    	var local_goali = exit_locations[exit].profile_i[rand_x]+ exit_locations[exit].anchor_i;
+    	    	var local_goalii = exit_locations[exit].profile_ii[rand_y]+ exit_locations[exit].anchor_ii;
+    	    	var list = [current_distance,exiti,exitii, local_endi, local_endii, local_goali, local_goalii] //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
     	    console.log(exit_distances)
@@ -607,6 +647,8 @@ this.place_things = function (random) {
     	    var min_exitii = exit_distances[0][2];
     	    var min_endi = exit_distances[0][3];
     	    var min_endii = exit_distances[0][4];
+    	    var goali = exit_distances[0][5];
+    	    var goalii = exit_distances[0][6];
     	    // console.log(min_exit_distance)
     	    // console.log(min_exiti)
     	    // console.log(min_exitii)
@@ -618,6 +660,8 @@ this.place_things = function (random) {
     	    	  min_exitii = exit_distances[exit][2];
     	    	  min_endi = exit_distances[exit][3];
     	    	  min_endii = exit_distances[exit][4];
+    	    	  goali = exit_distances[exit][5];
+    	    	  goalii = exit_distances[exit][6];
     	    	  // console.log(min_exit_distance)
     	    	  // console.log(min_exiti)
     	    	  // console.log(min_exitii)
@@ -629,27 +673,30 @@ this.place_things = function (random) {
     	    objChild.min_exitii = min_exitii;
     	    objChild.endi = min_endi;
     	    objChild.endii = min_endii;
+    	    objChild.goali = goali;
+    	    objChild.goalii = goalii;
 
-    	    this.population.push(objChild);
     	    var obstacle = 0;
     	    for (var p = 0; p < objChild.profile_i.length; p++) {  //
     	    	var dj = objChild.profile_i[p];
     	    	var djj = objChild.profile_ii[p];
-    	    	var safej = this.get_bounded_index(j+dj);
-    	    	var safejj = this.get_bounded_index(jj+djj);
+    	    	var safej = this.get_bounded_index_i(j+dj);
+    	    	var safejj = this.get_bounded_index_ii(jj+djj);
     	    	if (this.temp_grid[safej][safejj].has_other_thing(objChild)){ //should be somewhere
     	    		obstacle++;
             //do not place
         }
     }
-    if (obstacle = 0){
+    if (obstacle == 0){
 			       for (var p = 0; p < objChild.profile_i.length; p++) {  //
 			       	var dj = objChild.profile_i[p];
 			       	var djj = objChild.profile_ii[p];
-			       	var safej = this.get_bounded_index(j+dj);
-			       	var safejj = this.get_bounded_index(jj+djj);
+			       	var safej = this.get_bounded_index_i(j+dj);
+			       	var safejj = this.get_bounded_index_ii(jj+djj);
   			      this.temp_grid[safej][safejj].thing = objChild; //need to fix to always have correct number on floor
   			  }
+  			  this.population.push(objChild);
+  			  num_children++;
   			}
   		}
 		// console.log(min_exit_distance)
@@ -657,8 +704,8 @@ this.place_things = function (random) {
 		// console.log(min_exitii)
 
 		for (var n = 0; n < max_backpack_on_grid; n++) {
-			var j = get_random_int(0, grid_length)
-			var jj = get_random_int(0, grid_length)
+			var j = get_random_int(0, width_i)
+			var jj = get_random_int(0, width_ii)
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -701,16 +748,16 @@ this.place_things = function (random) {
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
 	    	var dj = obj.profile_i[p];
 	    	var djj = obj.profile_ii[p];
-	    	var safej = this.get_bounded_index(j+dj);
-	    	var safejj = this.get_bounded_index(jj+djj);
+	    	var safej = this.get_bounded_index_i(j+dj);
+	    	var safejj = this.get_bounded_index_ii(jj+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj;
 	    }
 	}
 	
 	for (var n = 0; n < max_adult_on_grid; n++) {
-		var j = get_random_int(0, grid_length-1)
-		var jj = get_random_int(0, grid_length-1)
+		var j = get_random_int(0, width_i-1)
+		var jj = get_random_int(0, width_ii-1)
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -722,15 +769,15 @@ this.place_things = function (random) {
     	    	var list = [current_distance,exiti,exitii, local_endi, local_endii] //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
-// console.log(exit_distances)
+console.log(exit_distances)
     	    var min_exit_distance = exit_distances[0][0]; //this needs to be a var
     	    var min_exiti = exit_distances[0][1];
     	    var min_exitii = exit_distances[0][2];
     	    var min_endi = exit_distances[0][3];
     	    var min_endii = exit_distances[0][4];
-    	    // console.log(min_exit_distance)
-    	    // console.log(min_exiti)
-    	    // console.log(min_exitii)
+    	    console.log(min_exit_distance)
+    	    console.log(min_exiti)
+    	    console.log(min_exitii)
     	    for (var exit=0; exit < exit_distances.length; exit++) {
     	    	if (exit_distances[exit][0] < min_exit_distance) {
     	    	  //change if needed
@@ -739,9 +786,9 @@ this.place_things = function (random) {
     	    	  min_exitii = exit_distances[exit][2];
     	    	  min_endi = exit_distances[exit][3];
     	    	  min_endii = exit_distances[exit][4];
-    	    		// console.log(min_exit_distance)
-    	    		// console.log(min_exiti)
-    	    		// console.log(min_exitii)
+    	    		console.log(min_exit_distance)
+    	    		console.log(min_exiti)
+    	    		console.log(min_exitii)
     	    	}
     	    }
 
@@ -759,24 +806,24 @@ this.place_things = function (random) {
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
 	    	var dj = obj.profile_i[p];
 	    	var djj = obj.profile_ii[p];
-	    	var safej = this.get_bounded_index(j+dj);
-	    	var safejj = this.get_bounded_index(jj+djj);
+	    	var safej = this.get_bounded_index_i(j+dj);
+	    	var safejj = this.get_bounded_index_ii(jj+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj;
 	    }
 	}
 	
 	for (var n = 0; n < max_bike_on_grid; n++) {
-		var j = get_random_int(0, grid_length)
-		var jj = get_random_int(0, grid_length)
+		var j = get_random_int(0, width_i)
+		var jj = get_random_int(0, width_ii)
 
 		var obj =  new AdultBike(j,jj);
 		this.population.push(obj);
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
 	    	var dj = obj.profile_i[p];
 	    	var djj = obj.profile_ii[p];
-	    	var safej = this.get_bounded_index(j+dj);
-	    	var safejj = this.get_bounded_index(jj+djj);
+	    	var safej = this.get_bounded_index_i(j+dj);
+	    	var safejj = this.get_bounded_index_ii(jj+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj;
 	    }
@@ -789,21 +836,21 @@ this.get_coords_from_orientation = function (thing) {
 	
 	var orient = thing.orientation;
 	if (orient == UP) {
-		return [i, this.get_bounded_index(ii-1)];
+		return [i, this.get_bounded_index_ii(ii-1)];
 	} else if (orient == DOWN) {
-		return [i, this.get_bounded_index(ii+1)];
+		return [i, this.get_bounded_index_ii(ii+1)];
 	} else if (orient == LEFT) {
-		return [this.get_bounded_index(i-1), ii];
+		return [this.get_bounded_index_i(i-1), ii];
 	} else if (orient == RIGHT) {
-		return [this.get_bounded_index(i+1), ii];
+		return [this.get_bounded_index_i(i+1), ii];
 	} else if (orient == diagDownRight) {
-		return [this.get_bounded_index(i+1),this.get_bounded_index(ii+1)]
+		return [this.get_bounded_index_i(i+1),this.get_bounded_index_ii(ii+1)]
 	} else if (orient == diagUpRight) {
-		return [this.get_bounded_index(i+1),this.get_bounded_index(ii-1)]
+		return [this.get_bounded_index_i(i+1),this.get_bounded_index_ii(ii-1)]
 	} else if (orient == diagDownLeft) {
-		return [this.get_bounded_index(i-1),this.get_bounded_index(ii+1)]
+		return [this.get_bounded_index_i(i-1),this.get_bounded_index_ii(ii+1)]
 	} else {
-		return [this.get_bounded_index(i-1),this.get_bounded_index(ii-1)]
+		return [this.get_bounded_index_i(i-1),this.get_bounded_index_ii(ii-1)]
 	}
 }
 
@@ -873,8 +920,8 @@ this.get_coords_from_orientation = function (thing) {
 				var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
 				var r = new_deltas[0];
 				var c = new_deltas[1];
-				var safe_r = this.get_bounded_index(r + thing.anchor_i);
-				var safe_c = this.get_bounded_index(c + thing.anchor_ii);
+				var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
+				var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
 			    if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
 				collision = collision + 1 ;//add one to collision
 			}
@@ -909,9 +956,9 @@ var state = new State();
 
 function draw_grid(data) {
 	var width = 600;
-	var height = 600;
-	var width_cell = width/grid_length;
-	var height_cell = height/grid_length;
+	var height = 600*(width_ii/width_i);
+	var width_cell = width/width_i;
+	var height_cell = height/width_ii;
 
 	var canvas = document.getElementById("grid")
 
@@ -927,8 +974,8 @@ function draw_grid(data) {
     var context = canvas.getContext("2d");
     
     function draw_cells(){
-    	for (var i = 0; i < grid_length; i++) {
-    		for (var ii = 0; ii < grid_length; ii++) {
+    	for (var i = 0; i < width_i; i++) {
+    		for (var ii = 0; ii < width_ii; ii++) {
 		// only redraw when there is a change. Nice optimization
 		if (_data && _data[i][ii] === color_for_cell(data[i][ii])) {
 			continue;
@@ -945,9 +992,9 @@ draw_cells();
     if (!_data) {
     	_data = [];
     }
-    for (var i = 0; i < grid_length; i++) {
+    for (var i = 0; i < width_i; i++) {
     	_data[i] = [];
-    	for (var ii = 0; ii < grid_length; ii++){
+    	for (var ii = 0; ii < width_ii; ii++){
     		_data[i][ii] = color_for_cell(data[i][ii]);
     	}
     }
@@ -1008,7 +1055,7 @@ function Exit(j,jj) {
 	//think we need to check anchor instead of orientation
 	//if anchor i is 0 or grid length -3 use 1st set of profiles (vertical exit)
 	//else use second set (makes them horizontal)
-	if ((this.anchor_i == 0) || (this.anchor_i == grid_length-1)) {
+	if ((this.anchor_i == 0) || (this.anchor_i == width_i-1)) {
 		this.profile_i  = [0,0,0,0];
 		this.profile_ii = [0,1,2,3];
 	}
@@ -1065,6 +1112,8 @@ function Child(j,jj) {
 	this.anchor_ii = jj
 	this.min_exiti = 0;
 	this.min_exitii = 0;
+	this.goali = 0; //initially
+	this.goalii = 0; //initially
     this.endi = 0; //initially
     this.endii = 0; // initially
     this.profile_i  = [0];
@@ -1109,8 +1158,8 @@ function Adult(j,jj) {
 	for (var p = 0; p < this.profile_i.length; p++) {  //
 		var dj = this.profile_i[p];
 		var djj = this.profile_ii[p];
-		var safej = state.get_bounded_index(this.anchor_i+dj);
-		var safejj = state.get_bounded_index(this.anchor_ii+djj);
+		var safej = state.get_bounded_index_i(this.anchor_i+dj);
+		var safejj = state.get_bounded_index_ii(this.anchor_ii+djj);
 		state.temp_grid[safej][safejj].thing = this;
 	}
 }
@@ -1119,8 +1168,8 @@ this.remove_footprint = function(state) {
 	for (var p = 0; p < this.profile_i.length; p++) {  //
 		var dj = this.profile_i[p];
 		var djj = this.profile_ii[p];
-		var safei = state.get_bounded_index(this.anchor_i+dj);
-		var safeii = state.get_bounded_index(this.anchor_ii+djj);
+		var safei = state.get_bounded_index_i(this.anchor_i+dj);
+		var safeii = state.get_bounded_index_ii(this.anchor_ii+djj);
 		state.temp_grid[safei][safeii].thing = null;
 	}
 }
@@ -1146,8 +1195,8 @@ function AdultBackpack(j,jj) {
 	for (var p = 0; p < this.profile_i.length; p++) {  //
 		var dj = this.profile_i[p];
 		var djj = this.profile_ii[p];
-		var safej = state.get_bounded_index(this.anchor_i+dj);
-		var safejj = state.get_bounded_index(this.anchor_ii+djj);
+		var safej = state.get_bounded_index_i(this.anchor_i+dj);
+		var safejj = state.get_bounded_index_ii(this.anchor_ii+djj);
 		state.temp_grid[safej][safejj].thing = this;
 	}
 }
@@ -1156,8 +1205,8 @@ this.remove_footprint = function(state) {
 	for (var p = 0; p < this.profile_i.length; p++) {  //
 		var dj = this.profile_i[p];
 		var djj = this.profile_ii[p];
-		var safei = state.get_bounded_index(this.anchor_i+dj);
-		var safeii = state.get_bounded_index(this.anchor_ii+djj);
+		var safei = state.get_bounded_index_i(this.anchor_i+dj);
+		var safeii = state.get_bounded_index_ii(this.anchor_ii+djj);
 		state.temp_grid[safei][safeii].thing = null;
 	}
 }
@@ -1181,8 +1230,8 @@ function AdultBike(j,jj) {
 	for (var p = 0; p < this.profile_i.length; p++) {  //
 		var dj = this.profile_i[p];
 		var djj = this.profile_ii[p];
-		var safej = state.get_bounded_index(this.anchor_i+dj);
-		var safejj = state.get_bounded_index(this.anchor_ii+djj);
+		var safej = state.get_bounded_index_i(this.anchor_i+dj);
+		var safejj = state.get_bounded_index_ii(this.anchor_ii+djj);
 		state.temp_grid[safej][safejj].thing = this;
 	}
 }
@@ -1191,8 +1240,8 @@ this.remove_footprint = function(state) {
 	for (var p = 0; p < this.profile_i.length; p++) {  //
 		var dj = this.profile_i[p];
 		var djj = this.profile_ii[p];
-		var safei = state.get_bounded_index(this.anchor_i+dj);
-		var safeii = state.get_bounded_index(this.anchor_ii+djj);
+		var safei = state.get_bounded_index_i(this.anchor_i+dj);
+		var safeii = state.get_bounded_index_ii(this.anchor_ii+djj);
 		state.temp_grid[safei][safeii].thing = null;
 	}
 }
