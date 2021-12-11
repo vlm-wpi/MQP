@@ -88,8 +88,10 @@ if (take_snapshot) {
 takeSnapshotCheckbox.oninput = function() {
 	take_snapshot = takeSnapshotCheckbox.checked;
 }
+
 var hallLayoutCheckbox = document.getElementById("hallLayout");
 if (hall_layout) {
+	console.log(hall_layout)
 	hallLayoutCheckbox.checked = true;
 }
 hallLayoutCheckbox.oninput = function() {
@@ -258,7 +260,7 @@ function State() {
 			bounded_index_i = width_i-1;
 		}
 		return bounded_index_i;
-		}
+	}
 	this.get_bounded_index_ii = function(index) {
 		var bounded_index_ii = index;
 		if (index < 0) {
@@ -268,20 +270,20 @@ function State() {
 			bounded_index_ii = width_ii-1;
 		}
 		return bounded_index_ii;
-		}
+	}
 
-		this.init_grids = function () {
-			for (var i = 0; i < width_i; i = i + 1) {
-				this.grid[i] = [];
-				this.temp_grid[i] = [];
-				for (var ii = 0; ii < width_ii; ii = ii + 1) {
-					this.grid[i][ii] = new Cell(i,ii);
-					this.temp_grid[i][ii] = new Cell(i,ii);
-				}
+	this.init_grids = function () {
+		for (var i = 0; i < width_i; i = i + 1) {
+			this.grid[i] = [];
+			this.temp_grid[i] = [];
+			for (var ii = 0; ii < width_ii; ii = ii + 1) {
+				this.grid[i][ii] = new Cell(i,ii);
+				this.temp_grid[i][ii] = new Cell(i,ii);
 			}
 		}
+	}
 
-		this.move_things = function () {
+	this.move_things = function () {
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
         for (var p =  this.population.length-1; p >= 0; p--) {
@@ -383,9 +385,9 @@ return parents;
 	var goalii = thing.goalii;
 
 
-var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii);
-open.insert(n);
-open_hash[n.key()] = n;
+	var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii);
+	open.insert(n);
+	open_hash[n.key()] = n;
 
 	//step 3
 	var heapLength = open.heap.length;
@@ -396,14 +398,14 @@ open_hash[n.key()] = n;
 	    var successors = this.get_neighbors(q.i,q.ii,thing,this,others); //3c, this function only returns coordinates
 	    //shuffle array
 	    // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-	     for (var i = successors.length - 1; i > 0; i--) {
-        var j = Math.floor(Math.random() * (i + 1));
-        var temp = successors[i];
-        successors[i] = successors[j];
-        successors[j] = temp;
+	    for (var i = successors.length - 1; i > 0; i--) {
+	    	var j = Math.floor(Math.random() * (i + 1));
+	    	var temp = successors[i];
+	    	successors[i] = successors[j];
+	    	successors[j] = temp;
     } // does this do anything???
-	    for(i=0;i<successors.length;i++){
-	    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii);
+    for(i=0;i<successors.length;i++){
+    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii);
 
 		if (succ.done()) { // matched the goal. reutrn this. last node
 			return succ;
@@ -450,7 +452,7 @@ this.place_things = function (random) {
       //x values are columns
       //y values are rows
       
-      if ((hall_layout == true) & (random==false)){
+      if (hall_layout == true) {
       	width_i = 50;
       	width_ii = 75;
         //first quarter of the room
@@ -483,47 +485,47 @@ this.place_things = function (random) {
     }
     var obj1 = new Exit(0,0); //should probably make coordinates variables
     exit_locations.push(obj1);
-     for (var p = 0; p < obj1.profile_i.length; p++) {  //placing exits on the grid
-     	var dj = obj1.profile_i[p];
-     	var djj = obj1.profile_ii[p];
-     	var safej = this.get_bounded_index_i(0+dj);
-     	var safejj = this.get_bounded_index_ii(0+djj);
+    for (var p = 0; p < obj1.profile_i.length; p++) {  //placing exits on the grid
+    	var dj = obj1.profile_i[p];
+    	var djj = obj1.profile_ii[p];
+    	var safej = this.get_bounded_index_i(0+dj);
+    	var safejj = this.get_bounded_index_ii(0+djj);
 
-     	this.temp_grid[safej][safejj].thing = obj1;
-     }
-     var obj2 = new Exit(width_i-4,0);
-     exit_locations.push(obj2);
-	    for (var p = 0; p < obj2.profile_i.length; p++) {  //placing exits on the grid
-	    	var dj = obj2.profile_i[p];
-	    	var djj = obj2.profile_ii[p];
-	    	var safej = this.get_bounded_index_i(width_i-4+dj);
-	    	var safejj = this.get_bounded_index_ii(0+djj);
+    	this.temp_grid[safej][safejj].thing = obj1;
+    }
+    var obj2 = new Exit(width_i-4,0);
+    console.log(obj2)
+    exit_locations.push(obj2);
+	for (var p = 0; p < obj2.profile_i.length; p++) {  //placing exits on the grid
+		var dj = obj2.profile_i[p];
+	    var djj = obj2.profile_ii[p];
+	   	var safej = this.get_bounded_index_i(width_i-4+dj);
+	   	var safejj = this.get_bounded_index_ii(0+djj);
 
-	    	this.temp_grid[safej][safejj].thing = obj2;
-	    }
-	    var obj3 = new Exit(1,width_ii-1);
-	    exit_locations.push(obj3);
-	    for (var p = 0; p < obj3.profile_i.length; p++) {  //placing exits on the grid
-	    	var dj = obj3.profile_i[p];
-	    	var djj = obj3.profile_ii[p];
-	    	var safej = this.get_bounded_index_i(1+dj);
-	    	var safejj = this.get_bounded_index_ii(width_ii-1+djj);
+	   	this.temp_grid[safej][safejj].thing = obj2;
+    }
+	var obj3 = new Exit(1,width_ii-1);
+	exit_locations.push(obj3);
+	for (var p = 0; p < obj3.profile_i.length; p++) {  //placing exits on the grid
+	    var dj = obj3.profile_i[p];
+		var djj = obj3.profile_ii[p];
+    	var safej = this.get_bounded_index_i(1+dj);
+	    var safejj = this.get_bounded_index_ii(width_ii-1+djj);
 
-	    	this.temp_grid[safej][safejj].thing = obj3;
-	    }
-	    var obj4 = new Exit(width_i-4, width_ii-1);
-	    exit_locations.push(obj4);
-	    for (var p = 0; p < obj4.profile_i.length; p++) {  //placing exits on the grid
-	    	var dj = obj4.profile_i[p];
-	    	var djj = obj4.profile_ii[p];
-	    	var safej = this.get_bounded_index_i(width_i-4+dj);
-	    	var safejj = this.get_bounded_index_ii(width_ii-1+djj);
-
-	    	this.temp_grid[safej][safejj].thing = obj4;
-	    }
+	    this.temp_grid[safej][safejj].thing = obj3;
 	}
-	else{
+	var obj4 = new Exit(width_i-4, width_ii-1);
+    exit_locations.push(obj4);
+	for (var p = 0; p < obj4.profile_i.length; p++) {  //placing exits on the grid
+	    var dj = obj4.profile_i[p];
+	  	var djj = obj4.profile_ii[p];
+	   	var safej = this.get_bounded_index_i(width_i-4+dj);
+	    var safejj = this.get_bounded_index_ii(width_ii-1+djj);
 
+	   	this.temp_grid[safej][safejj].thing = obj4;
+	}
+	}
+	else {
 		for (var n = 0; n < max_obstacles_on_grid; n++) {
 			var j = get_random_int(0, width_i)
 			var jj = get_random_int(0, width_ii)
@@ -586,9 +588,9 @@ this.place_things = function (random) {
   	
   }
   var num_children = 0;
-	while (num_children < max_children_on_grid) {
-		var j = get_random_int(0, width_i);
-		var jj = get_random_int(0, width_ii);
+  while (num_children < max_children_on_grid) {
+  	var j = get_random_int(0, width_i);
+  	var jj = get_random_int(0, width_ii);
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -728,7 +730,7 @@ this.place_things = function (random) {
     	    	var list = [current_distance,exiti,exitii, local_endi, local_endii] //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
-console.log(exit_distances)
+    	    console.log(exit_distances)
     	    var min_exit_distance = exit_distances[0][0]; //this needs to be a var
     	    var min_exiti = exit_distances[0][1];
     	    var min_exitii = exit_distances[0][2];
@@ -745,9 +747,9 @@ console.log(exit_distances)
     	    	  min_exitii = exit_distances[exit][2];
     	    	  min_endi = exit_distances[exit][3];
     	    	  min_endii = exit_distances[exit][4];
-    	    		console.log(min_exit_distance)
-    	    		console.log(min_exiti)
-    	    		console.log(min_exitii)
+    	    	  console.log(min_exit_distance)
+    	    	  console.log(min_exiti)
+    	    	  console.log(min_exitii)
     	    	}
     	    }
 
@@ -757,7 +759,7 @@ console.log(exit_distances)
     	    obj.endi = min_endi;
     	    obj.endii = min_endii;
 
-	    this.population.push(obj);
+    	    this.population.push(obj);
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
 	    	var dj = obj.profile_i[p];
 	    	var djj = obj.profile_ii[p];
@@ -911,10 +913,11 @@ var state = new State();
 
 function draw_grid(data) {
 	if (hall_layout == true) {
-		var width_i = 50;
-		var width_ii = 75;
+		width_i = 50;
+		width_ii = 75;
 	}
-	if (width_i > width_ii) {
+
+	if (parseInt(width_i) > parseInt(width_ii)) {
 		var width = 600;
 		var height = 600*(width_ii/width_i);
 	}
@@ -922,6 +925,7 @@ function draw_grid(data) {
 		var width = 600*(width_i/width_ii);
 		var height = 600;
 	}
+
 	var width_cell = width/width_i;
 	var height_cell = height/width_ii;
 
@@ -1251,10 +1255,10 @@ function initialize_simulation() {
 	state.init_grids();
     // state.draw_border();
     if (hall_layout==true){
-      state.place_things(false);
+    	state.place_things(false);
     }
     else{
-      state.place_things(true);
+    	state.place_things(true);
     }
     
     draw_grid(state.grid.map(function(row) {return row.map(function(cell) {return cell;});}));
