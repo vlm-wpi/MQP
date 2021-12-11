@@ -13,9 +13,13 @@ var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 //
+<<<<<<< HEAD
 // var grid_length = 150;
 var width_i = 100;
 var width_ii = 50;
+=======
+var grid_length = 75;
+>>>>>>> e1dafb802e96629456f0d4b0a91e9a452c41065c
 var max_children_on_grid = 10;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
@@ -623,8 +627,13 @@ this.place_things = function (random) {
 	// console.log(exit_locations)
   var num_children = 0;
 	while (num_children < max_children_on_grid) {
+<<<<<<< HEAD
 		var j = get_random_int(0, width_i);
 		var jj = get_random_int(0, width_ii);
+=======
+		var j = get_random_int(0, grid_length);
+		var jj = get_random_int(0, grid_length);
+>>>>>>> e1dafb802e96629456f0d4b0a91e9a452c41065c
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
