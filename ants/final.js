@@ -12,10 +12,8 @@ var diagDownLeft = 225;
 var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
-//
-// var grid_length = 150;
-var width_i = 100;
-var width_ii = 50;
+var width_i = 150;
+var width_ii = 150;
 var max_children_on_grid = 10;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
@@ -101,10 +99,6 @@ hallLayoutCheckbox.oninput = function() {
 
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
-
-
-
-
 
 //creating a priority queue, not totally sure where to put the functions
 const leftChild = (index) => index * 2 + 1;
@@ -387,14 +381,7 @@ return parents;
 	var endii = thing.endii;
 	var goali = thing.goali;
 	var goalii = thing.goalii;
-	//if (thing.profile_i[0]==0) {
-	//	var endi = exiti;
-	//	var endii = exitii+3;
-//	}
-//	else {
-//		var endi = exiti+3;
-//		var endii = exitii;
-//	}
+
 
 var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii);
 open.insert(n);
@@ -463,7 +450,9 @@ this.place_things = function (random) {
       //x values are columns
       //y values are rows
       
-      if (random==false){
+      if ((hall_layout == true) & (random==false)){
+      	width_i = 50;
+      	width_ii = 75;
         //first quarter of the room
         for (var col=0; col<10; col++){ //leaving row space for people
           for (var row=0; row<30; row+=2){ //columns, next to each other
@@ -502,32 +491,32 @@ this.place_things = function (random) {
 
      	this.temp_grid[safej][safejj].thing = obj1;
      }
-     var obj2 = new Exit(width_i-3,0);
+     var obj2 = new Exit(width_i-4,0);
      exit_locations.push(obj2);
 	    for (var p = 0; p < obj2.profile_i.length; p++) {  //placing exits on the grid
 	    	var dj = obj2.profile_i[p];
 	    	var djj = obj2.profile_ii[p];
-	    	var safej = this.get_bounded_index_i(width_i-3+dj);
+	    	var safej = this.get_bounded_index_i(width_i-4+dj);
 	    	var safejj = this.get_bounded_index_ii(0+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj2;
 	    }
-	    var obj3 = new Exit(0,width_ii-1);
+	    var obj3 = new Exit(1,width_ii-1);
 	    exit_locations.push(obj3);
 	    for (var p = 0; p < obj3.profile_i.length; p++) {  //placing exits on the grid
 	    	var dj = obj3.profile_i[p];
 	    	var djj = obj3.profile_ii[p];
-	    	var safej = this.get_bounded_index_i(0+dj);
+	    	var safej = this.get_bounded_index_i(1+dj);
 	    	var safejj = this.get_bounded_index_ii(width_ii-1+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj3;
 	    }
-	    var obj4 = new Exit(width_i-3, width_ii-1);
+	    var obj4 = new Exit(width_i-4, width_ii-1);
 	    exit_locations.push(obj4);
 	    for (var p = 0; p < obj4.profile_i.length; p++) {  //placing exits on the grid
 	    	var dj = obj4.profile_i[p];
 	    	var djj = obj4.profile_ii[p];
-	    	var safej = this.get_bounded_index_i(width_i-3+dj);
+	    	var safej = this.get_bounded_index_i(width_i-4+dj);
 	    	var safejj = this.get_bounded_index_ii(width_ii-1+djj);
 
 	    	this.temp_grid[safej][safejj].thing = obj4;
@@ -561,31 +550,7 @@ this.place_things = function (random) {
 	var obj = new Exit(j,jj);
   	    //want to push whole object so that it keeps track of the end
   	    exit_locations.push(obj); 
-  	    //used so people can exit at all directions
-  	    //could change to just the exit object added but did not want to change code below too much
-  	    
-  	 //    var obj =  new Exit(j,jj);
-  	 //    if ((obj.orientation == DOWN) || (obj.orientation == UP)) {
-  		// var j = 0;
-  		// var jj = get_random_int(0, grid_length-3);
-  		// exit_locations.push([j,jj])
-  	 //    }
-  	 //    else if ((obj.orientation == LEFT) || (obj.orientation == RIGHT)) {
-  		// var j = grid_length;
-  		// var jj = get_random_int(0, grid_length-3);
-  		// exit_locations.push([j,jj])
-  	 //    }
-  	 //    else if ((obj.orientation == diagUpLeft) || (obj.orientation == diagDownLeft)) {
-  		// var j = get_random_int(0, grid_length-3);
-  		// var jj = 0;
-  		// exit_locations.push([j,jj])
-  	 //    }
-  	 //    else {
-  		// var j = get_random_int(0, grid_length-3);
-  		// var jj = grid_length;
-  		// exit_locations.push([j,jj])
-  	 //    }
-  	    // this.population.push(obj);
+
   	    for (var p = 0; p < obj.profile_i.length; p++) {  //placing exits on the grid
   	    	var dj = obj.profile_i[p];
   	    	var djj = obj.profile_ii[p];
@@ -620,7 +585,6 @@ this.place_things = function (random) {
   	}
   	
   }
-	// console.log(exit_locations)
   var num_children = 0;
 	while (num_children < max_children_on_grid) {
 		var j = get_random_int(0, width_i);
@@ -649,9 +613,7 @@ this.place_things = function (random) {
     	    var min_endii = exit_distances[0][4];
     	    var goali = exit_distances[0][5];
     	    var goalii = exit_distances[0][6];
-    	    // console.log(min_exit_distance)
-    	    // console.log(min_exiti)
-    	    // console.log(min_exitii)
+
     	    for (var exit=0; exit < exit_distances.length; exit++) {
     	    	if (exit_distances[exit][0] < min_exit_distance) {
     	    	  //change if needed
@@ -662,9 +624,6 @@ this.place_things = function (random) {
     	    	  min_endii = exit_distances[exit][4];
     	    	  goali = exit_distances[exit][5];
     	    	  goalii = exit_distances[exit][6];
-    	    	  // console.log(min_exit_distance)
-    	    	  // console.log(min_exiti)
-    	    	  // console.log(min_exitii)
     	    	}
     	    }
 
@@ -798,10 +757,6 @@ console.log(exit_distances)
     	    obj.endi = min_endi;
     	    obj.endii = min_endii;
 
-	    // var j = get_random_int(0, grid_length)
-	    // var jj = get_random_int(0, grid_length)
-	    
-	    // var obj =  new Adult(j,jj);
 	    this.population.push(obj);
 	    for (var p = 0; p < obj.profile_i.length; p++) {  //
 	    	var dj = obj.profile_i[p];
@@ -955,8 +910,18 @@ this.get_coords_from_orientation = function (thing) {
 var state = new State();
 
 function draw_grid(data) {
-	var width = 600;
-	var height = 600*(width_ii/width_i);
+	if (hall_layout == true) {
+		var width_i = 50;
+		var width_ii = 75;
+	}
+	if (width_i > width_ii) {
+		var width = 600;
+		var height = 600*(width_ii/width_i);
+	}
+	else {
+		var width = 600*(width_i/width_ii);
+		var height = 600;
+	}
 	var width_cell = width/width_i;
 	var height_cell = height/width_ii;
 
@@ -1063,14 +1028,6 @@ function Exit(j,jj) {
 		this.profile_i  = [0,1,2,3];
 		this.profile_ii = [0,0,0,0];
 	}
-	// if ((this.orientation == DOWN) || (this.orientation == UP) || (this.orientation == LEFT) || (this.orientation == RIGHT)) {
-	// 	this.profile_i  = [0,0,0,0];
-	// 	this.profile_ii = [-1,0,1,2];
-	// } 
-	// else {
-	// 	this.profile_i  = [-1,0,1,2];
-	// 	this.profile_ii = [0,0,0,0];
-	// }
 
 	this.color = function() {
 		return "rgb(139,69,19)";
