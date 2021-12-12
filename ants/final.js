@@ -14,7 +14,7 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 var width_i = 150;
 var width_ii = 150;
-var max_children_on_grid = 10;
+var max_children_on_grid = 100;
 var max_backpack_on_grid = 0;
 var max_adult_on_grid = 0;
 var max_bike_on_grid = 0;
@@ -24,6 +24,7 @@ var max_exits_on_grid = 4;
 var ms_between_updates = 1;
 var take_snapshot = false;
 var hall_layout = false;
+var fuller_lower = false;
 
 // HOOK UP GUI ELEMENTS: BEGIN
 // -----------------------------------------------------
@@ -91,13 +92,19 @@ takeSnapshotCheckbox.oninput = function() {
 
 var hallLayoutCheckbox = document.getElementById("hallLayout");
 if (hall_layout) {
-	console.log(hall_layout)
 	hallLayoutCheckbox.checked = true;
 }
 hallLayoutCheckbox.oninput = function() {
 	hall_layout = hallLayoutCheckbox.checked;
 }
 
+var fullerLowerCheckbox = document.getElementById("fullerLower");
+if (fuller_lower) {
+	fullerLowerCheckbox.checked = true;
+}
+fullerLowerCheckbox.oninput = function() {
+	fuller_lower = fullerLowerCheckbox.checked;
+}
 
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
@@ -525,6 +532,145 @@ this.place_things = function (random) {
 	   	this.temp_grid[safej][safejj].thing = obj4;
 	}
 	}
+
+	//setting up the default drawing for fuller lower lecture hall
+	else if (fuller_lower == true) {
+		width_i = 56;
+		width_ii = 45;
+		//first set of seats at the back of the room (left)
+		for (var col=6; col<26; col++) {
+			for (var row=0; row<2; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//first set of seats at the back of the room (right)
+		for (var col=29; col<50; col++) {
+			for (var row=0; row<2; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//second row of seats from the back (left)
+		for (var col=10; col<22; col++) {
+			for (var row=4; row<6; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//second row of seats from the back (right)
+		for (var col=33; col<46; col++) {
+			for (var row=4; row<6; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//third row of seats from the back (left)
+		for (var col=8; col<24; col++) {
+			for (var row=9; row<11; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//third row of seats from the back (right)
+		for (var col=31; col<48; col++) {
+			for (var row=9; row<11; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//fourth row of seats from the back (left)
+		for (var col=8; col<24; col++) {
+			for (var row=13; row<15; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//fourth row of seats from the back (right)
+		for (var col=31; col<48; col++) {
+			for (var row=13; row<15; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//fifth row of seats from the back (left)
+		for (var col=9; col<23; col++) {
+			for (var row=17; row<19; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//fifth row of seats from the back (right)
+		for (var col=32; col<47; col++) {
+			for (var row=17; row<19; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//sixth row of seats from the back (left)
+		for (var col=9; col<23; col++) {
+			for (var row=21; row<23; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//sixth row of seats from the back (right)
+		for (var col=32; col<47; col++) {
+			for (var row=21; row<23; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//seventh row from back (railing at front - left)
+		for (var col=9; col<23; col++) {
+			for (var row=25; row<26; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//side railing front left
+		for (var col=9; col<10; col++) {
+			for (var row=26; row<28; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//seventh row from back (railing at front - right)
+		for (var col=32; col<47; col++) {
+			for (var row=25; row<26; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//side railing front right
+		for (var col=46; col<47; col++) {
+			for (var row=26; row<28; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//podium front right
+		for (var col=38; col<42; col++) {
+			for (var row=35; row<38; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//railing down the middle (top)
+		for (var col=27; col<28; col++) {
+			for (var row=2; row<7; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//railing down the middle (bottom)
+		for (var col=27; col<28; col++) {
+			for (var row=10; row<26; row++) {
+				var obj = new Obstacle(col, row);
+				this.temp_grid[col][row].thing=obj; }}
+		//first exit in the top left
+		var obj01 = new Exit(1,0)
+		exit_locations.push(obj01)
+		for (var p=0; p<obj01.profile_i.length; p++) {
+			var dj = obj01.profile_i[p];
+    		var djj = obj01.profile_ii[p];
+    		var safej = this.get_bounded_index_i(1+dj);
+    		var safejj = this.get_bounded_index_ii(0+djj);
+    		this.temp_grid[safej][safejj].thing = obj01;}    
+		//second exit in the top right
+		var obj02 = new Exit(width_i-4,0)
+		exit_locations.push(obj02)
+		for (var p=0; p<obj02.profile_i.length; p++) {
+			var dj = obj02.profile_i[p];
+    		var djj = obj02.profile_ii[p];
+    		var safej = this.get_bounded_index_i(width_i-4+dj);
+    		var safejj = this.get_bounded_index_ii(0+djj);
+    		this.temp_grid[safej][safejj].thing = obj02;}
+		//third exit bottom left
+		var obj03 = new Exit(0,width_ii-9)
+		exit_locations.push(obj03)
+		for (var p=0; p<obj03.profile_i.length; p++) {
+			var dj = obj03.profile_i[p];
+    		var djj = obj03.profile_ii[p];
+    		var safej = this.get_bounded_index_i(0+dj);
+    		var safejj = this.get_bounded_index_ii(width_ii-9+djj);
+    		this.temp_grid[safej][safejj].thing = obj03;}
+		//fourth exit bottom left
+		var obj04 = new Exit(0,width_ii-5)
+		exit_locations.push(obj04)
+		for (var p=0; p<obj04.profile_i.length; p++) {
+			var dj = obj04.profile_i[p];
+    		var djj = obj04.profile_ii[p];
+    		var safej = this.get_bounded_index_i(0+dj);
+    		var safejj = this.get_bounded_index_ii(width_ii-5+djj);
+    		this.temp_grid[safej][safejj].thing = obj04;}
+    		console.log(exit_locations)
+	}
+
 	else {
 		for (var n = 0; n < max_obstacles_on_grid; n++) {
 			var j = get_random_int(0, width_i)
@@ -534,8 +680,6 @@ this.place_things = function (random) {
       	    // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
       	    this.temp_grid[j][jj].thing = obj;
       	}
-
-      	
 	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
 	//get 2 random ints from 0-gridlength-3 (for j and jj)
 	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
@@ -916,6 +1060,10 @@ function draw_grid(data) {
 		width_i = 50;
 		width_ii = 75;
 	}
+	if (fuller_lower == true) {
+		width_i = 56;
+		width_ii = 45;
+	}
 
 	if (parseInt(width_i) > parseInt(width_ii)) {
 		var width = 600;
@@ -1254,7 +1402,7 @@ function initialize_simulation() {
 
 	state.init_grids();
     // state.draw_border();
-    if (hall_layout==true){
+    if ((hall_layout == true) || (fuller_lower == true)) {
     	state.place_things(false);
     }
     else{
