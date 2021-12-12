@@ -133,7 +133,7 @@ function diagonal(x,y, goalX, goalY) {  //diagonal distance heuristic
 	return h;
 }
 
-function Node(j,jj,exiti, exitii, endi, endii, parent, direction, goali, goalii) {
+function Node(j,jj,exiti, exitii, endi, endii, parent, direction, goali, goalii, profilei, profileii) {
 	this.i = j;
 	this.ii = jj;
 	this.direction = direction;
@@ -144,9 +144,11 @@ function Node(j,jj,exiti, exitii, endi, endii, parent, direction, goali, goalii)
 	this.endii = endii;
 	this.goali = goali;
 	this.goalii = goalii;
+	this.profile_i = profilei;
+	this.profile_ii = profileii;
 
     // starting from the last node (which is the exit) go backwards until you
-    // get to a node whose parent is the original, then return its locatino [i ,ii]
+    // get to a node whose parent is the original, then return its location [i ,ii]
     this.initial_step = function () {
     	var n = this;
 	if (this.parent === null) { return []; }   // sanity check
@@ -157,16 +159,21 @@ function Node(j,jj,exiti, exitii, endi, endii, parent, direction, goali, goalii)
 		n = n.parent;
 	}
 	
-	return [n.i, n.ii, n.direction];
+	return [n.i, n.ii, n.direction, n.profile_i, n.profile_ii];
 }
 
 this.key = function() { 
 	return "" + this.i + "," + this.ii;
 }
 
+//checking if any part of the person is touching an exit
 this.done = function() {
-	return (this.i >= this.exiti && this.i <= this.endi &&
-		this.ii >= this.exitii && this.ii <= this.endii);
+  for(index=0; index<this.profile_i.length; index++){
+    if((this.profile_i[index]+this.i) >= this.exiti && (this.profile_i[index]+this.i) <= this.endi &&
+		(this.profile_ii[index]+this.ii) >= this.exitii && (this.profile_ii[index]+this.ii) <= this.endii){
+		  return true; // if any part of the person is in an exit
+		}
+  }
 }
 
     // how many steps fromo starting spot.
@@ -423,9 +430,10 @@ return parents;
 	var endii = thing.endii;
 	var goali = thing.goali;
 	var goalii = thing.goalii;
+  var profilei = thing.profile_i;
+  var profileii = thing.profile_ii
 
-
-	var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii);
+	var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii, profilei, profileii);
 	open.insert(n);
 	open_hash[n.key()] = n;
 
@@ -445,7 +453,7 @@ return parents;
 	    	successors[j] = temp;
     } // does this do anything???
     for(i=0;i<successors.length;i++){
-    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii);
+    	var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii, q.profile_i, q.profile_ii);
 
 		if (succ.done()) { // matched the goal. reutrn this. last node
 			return succ;
@@ -904,8 +912,8 @@ this.place_things = function (random) {
 	    	this.temp_grid[safej][safejj].thing = obj;
 	    }
 	}
-	
-	for (var n = 0; n < max_adult_on_grid; n++) {
+	var num_adult = 0;
+	while (num_adult < max_adult_on_grid) {
 		var j = get_random_int(0, width_i-1)
 		var jj = get_random_int(0, width_ii-1)
     	    //added this in as part of exit distances
@@ -916,18 +924,23 @@ this.place_things = function (random) {
     	    	var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
     	    	var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
     	    	var current_distance = calc_distance(j,jj,exiti,exitii)
-    	    	var list = [current_distance,exiti,exitii, local_endi, local_endii] //keeping track of the beginning and end of exit
+    	    	//randomly getting a specific exit cell goal
+            var rand_x = get_random_int(0, 3);
+            var rand_y = get_random_int(0, 3);
+            var local_goali = exit_locations[exit].profile_i[rand_x]+ exit_locations[exit].anchor_i;
+            var local_goalii = exit_locations[exit].profile_ii[rand_y]+ exit_locations[exit].anchor_ii;
+    	    	var list = [current_distance,exiti,exitii, local_endi, local_endii, local_goali, local_goalii]; //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
     	    console.log(exit_distances)
-    	    var min_exit_distance = exit_distances[0][0]; //this needs to be a var
+    	    var min_exit_distance = exit_distances[0][0];
     	    var min_exiti = exit_distances[0][1];
     	    var min_exitii = exit_distances[0][2];
     	    var min_endi = exit_distances[0][3];
     	    var min_endii = exit_distances[0][4];
-    	    console.log(min_exit_distance)
-    	    console.log(min_exiti)
-    	    console.log(min_exitii)
+    	    var goali = exit_distances[0][5];
+          var goalii = exit_distances[0][6];
+
     	    for (var exit=0; exit < exit_distances.length; exit++) {
     	    	if (exit_distances[exit][0] < min_exit_distance) {
     	    	  //change if needed
@@ -936,27 +949,42 @@ this.place_things = function (random) {
     	    	  min_exitii = exit_distances[exit][2];
     	    	  min_endi = exit_distances[exit][3];
     	    	  min_endii = exit_distances[exit][4];
-    	    	  console.log(min_exit_distance)
-    	    	  console.log(min_exiti)
-    	    	  console.log(min_exitii)
+    	    	  goali = exit_distances[exit][5];
+              goalii = exit_distances[exit][6];
     	    	}
     	    }
 
-    	    var obj = new Adult(j,jj);
-    	    obj.min_exiti = min_exiti;
-    	    obj.min_exitii = min_exitii;
-    	    obj.endi = min_endi;
-    	    obj.endii = min_endii;
-
-    	    this.population.push(obj);
-	    for (var p = 0; p < obj.profile_i.length; p++) {  //
-	    	var dj = obj.profile_i[p];
-	    	var djj = obj.profile_ii[p];
-	    	var safej = this.get_bounded_index_i(j+dj);
-	    	var safejj = this.get_bounded_index_ii(jj+djj);
-
-	    	this.temp_grid[safej][safejj].thing = obj;
-	    }
+    	    var objAdult = new Adult(j,jj);
+    	    objAdult.min_exiti = min_exiti;
+    	    objAdult.min_exitii = min_exitii;
+    	    objAdult.endi = min_endi;
+    	    objAdult.endii = min_endii;
+    	    objAdult.goali = goali;
+          objAdult.goalii = goalii;
+          
+          //check if valid place to put adult
+          var obstacle = 0;
+          for (var p = 0; p < objAdult.profile_i.length; p++) {  //
+            var dj = objAdult.profile_i[p];
+            var djj = objAdult.profile_ii[p];
+            var safej = this.get_bounded_index_i(j+dj);
+            var safejj = this.get_bounded_index_ii(jj+djj);
+            if (this.temp_grid[safej][safejj].has_other_thing(objAdult)){ //should be somewhere
+              obstacle++;
+              //do not place
+            }
+          }
+          if (obstacle == 0){
+            for (var p = 0; p < objAdult.profile_i.length; p++) {  //
+                var dj = objAdult.profile_i[p];
+                var djj = objAdult.profile_ii[p];
+                var safej = this.get_bounded_index_i(j+dj);
+                var safejj = this.get_bounded_index_ii(jj+djj);
+                this.temp_grid[safej][safejj].thing = objAdult;
+            }
+            this.population.push(objAdult);
+            num_adult++;
+          }
 	}
 	
 	for (var n = 0; n < max_bike_on_grid; n++) {
@@ -1130,7 +1158,7 @@ function draw_grid(data) {
     	canvas.id = "grid";
     	canvas.width = width;
     	canvas.height = height;
-    	document.getElementsByTagName('body')[0].appendChild(canvas);
+    	document.getElementsByTagName('body')[0].appendChild(canvas); //not sure what this is doing
     }
 
     var context = canvas.getContext("2d");
@@ -1298,14 +1326,23 @@ function Adult(j,jj) {
 	this.anchor_ii = jj
 	this.min_exiti = 0;
 	this.min_exitii = 0;
+	this.goali = 0; //initially
+	this.goalii = 0; //initially
     this.endi = 0; //initially
     this.endii = 0; // initially
     // my projection 
     this.profile_i  = [1, 0]
     this.profile_ii = [0, 0]
     
+    this.stuck = 0;
+
     this.color = function() {
+    	if (this.stuck == 0) {
+    	//	return "rgb(255,165,0)";
     	return "rgb(0,0,255)";
+    	} else {
+    		return "rgb(255,0,0)";
+    	}
     }
     
     this.place_footprint = function(state) {
@@ -1495,7 +1532,7 @@ function simulate_and_visualize() {
 	var label = document.createTextNode("Label " + _indexCounter);
 	_indexCounter++;
 	header.appendChild(label);
-	document.body.appendChild(header);
+	document.body.appendChild(header); //different than our child object type?
 	document.body.appendChild(newImg);
 });
 	}	
