@@ -14,10 +14,14 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 var width_i = 150;
 var width_ii = 150;
-var max_children_on_grid = 100;
+var max_children_on_grid = 5;
+var current_num_children = max_children_on_grid;
 var max_backpack_on_grid = 0;
+var current_num_backpack = max_backpack_on_grid;
 var max_adult_on_grid = 0;
+var current_num_adult = max_adult_on_grid;
 var max_bike_on_grid = 0;
+var current_num_bike = max_bike_on_grid;
 var max_obstacles_on_grid = 100;
 var max_large_X_obstacles_on_grid = 0;
 var max_exits_on_grid = 4;
@@ -32,24 +36,28 @@ var numChildren = document.getElementById("numChildren");
 numChildren.value = max_children_on_grid;
 numChildren.oninput = function() {
 	max_children_on_grid = this.value;
+	current_num_children = max_children_on_grid;
 }
 
-var numBikesSlider = document.getElementById("numBikes");
-numBikesSlider.value = max_bike_on_grid;
-numBikesSlider.oninput = function() {
+var numBikes = document.getElementById("numBikes");
+numBikes.value = max_bike_on_grid;
+numBikes.oninput = function() {
 	max_bike_on_grid = this.value;
+	current_num_bike = max_bike_on_grid;
 }
 
 var numBackPacks = document.getElementById("numBackPacks");
 numBackPacks.value = max_backpack_on_grid;
 numBackPacks.oninput = function() {
 	max_backpack_on_grid = this.value;
+	current_num_backpack = max_backpack_on_grid;
 }
 
 var numAdults = document.getElementById("numAdults");
 numAdults.value = max_adult_on_grid;
 numAdults.oninput = function() {
 	max_adult_on_grid = this.value;
+	current_num_adult = max_adult_on_grid;
 }
 
 var gridWidthi = document.getElementById("gridWidthi");
@@ -289,14 +297,39 @@ function State() {
 			}
 		}
 	}
+    total_population_over_time = [];
 
 	this.move_things = function () {
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
         for (var p =  this.population.length-1; p >= 0; p--) {
         	var thing = this.population[p];
+        	// console.log("population: " + this.population)
+        	// console.log("thing: " + thing)
         	if (this.move_thing(thing)) {
-		this.population.splice(p, 1); // remove
+        	this.population.splice(p, 1); // remove
+        	var current_population = this.population.length
+        	total_population_over_time.push(current_population)
+	        // if (thing == Child) {
+    	    // 	current_num_children = current_num_children-1;
+    	    // 	console.log("current_num_children inside if statement: " + current_num_children)
+        	// }
+        	// else if (thing == Adult) {
+        	// 	current_num_adult = current_num_adult-1;
+        	// }
+        	// else if (thing == AdultBackpack) {
+        	// 	current_num_backpack = current_num_backpack-1;
+        	// }
+        	// else if (thing == AdultBike) {
+        	// 	current_num_bike = current_num_bike-1;
+        	// }
+			console.log("current_population: " + current_population)
+			console.log(total_population_over_time)
+        	// console.log("current_num_children: " + current_num_children)
+        	// console.log("current_num_adult: " + current_num_adult)
+        	// console.log("current_num_backpack: " + current_num_backpack)
+        	// console.log("current_num_bike: " + current_num_bike)
+
 	}
 }
 
@@ -501,7 +534,7 @@ this.place_things = function (random) {
     	this.temp_grid[safej][safejj].thing = obj1;
     }
     var obj2 = new Exit(width_i-4,0);
-    console.log(obj2)
+    // console.log(obj2)
     exit_locations.push(obj2);
 	for (var p = 0; p < obj2.profile_i.length; p++) {  //placing exits on the grid
 		var dj = obj2.profile_i[p];
@@ -668,7 +701,7 @@ this.place_things = function (random) {
     		var safej = this.get_bounded_index_i(0+dj);
     		var safejj = this.get_bounded_index_ii(width_ii-5+djj);
     		this.temp_grid[safej][safejj].thing = obj04;}
-    		console.log(exit_locations)
+    		// console.log(exit_locations)
 	}
 
 	else {
@@ -677,10 +710,9 @@ this.place_things = function (random) {
 			var jj = get_random_int(0, width_ii)
 
 			var obj = new Obstacle(j,jj);
-      	    // this.population.push(obj);  //do we want this?  do we want to save the obstacles to the population?
       	    this.temp_grid[j][jj].thing = obj;
       	}
-	for (var n = 0; n < max_exits_on_grid; n++) { //logic needs to be changed
+	for (var n = 0; n < max_exits_on_grid; n++) { 
 	//get 2 random ints from 0-gridlength-3 (for j and jj)
 	//which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
 	var j = get_random_int(0,width_i-3);
@@ -751,7 +783,7 @@ this.place_things = function (random) {
     	    	var list = [current_distance,exiti,exitii, local_endi, local_endii, local_goali, local_goalii] //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
-    	    console.log(exit_distances)
+    	    // console.log(exit_distances)
     	    var min_exit_distance = exit_distances[0][0]; //this needs to be a var
     	    var min_exiti = exit_distances[0][1];
     	    var min_exitii = exit_distances[0][2];
@@ -774,6 +806,7 @@ this.place_things = function (random) {
     	    }
 
     	    var objChild = new Child(j,jj);
+    	    // console.log(objChild)
     	    objChild.min_exiti = min_exiti;
     	    objChild.min_exitii = min_exitii;
     	    objChild.endi = min_endi;
@@ -801,9 +834,21 @@ this.place_things = function (random) {
   			      this.temp_grid[safej][safejj].thing = objChild; //need to fix to always have correct number on floor
   			  }
   			  this.population.push(objChild);
+  			  console.log(this.population)
   			  num_children++;
-  			}
-  		}
+  		// for (var p =  this.population.length-1; p >= 0; p--) {
+    //     	var thing = this.population[p];
+    //     	console.log("population: " + this.population)
+    //     	console.log("type of thing: " + typeof thing)
+    //     	if (this.move_thing(thing)) {
+	   //      if (thing == Child) {
+    // 	    	current_num_children = current_num_children-1;
+    // 	    	console.log("current_num_children inside if statement: " + current_num_children)
+    //     	}
+  		// 	}
+  		// }
+  	}
+  }
 		// console.log(min_exit_distance)
 		// console.log(min_exiti)
 		// console.log(min_exitii)
