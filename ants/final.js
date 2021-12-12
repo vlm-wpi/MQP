@@ -1416,6 +1416,10 @@ function end_simulation() {
 	clearInterval(interval_id);
 }
 
+function clear_simulation() {
+	window.location.reload()
+}
+
 function start_simulation() {
 	initialize_simulation();
 	interval_id = setInterval(simulate_and_visualize, ms_between_updates);
