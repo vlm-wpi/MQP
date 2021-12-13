@@ -855,10 +855,17 @@ this.place_things = function (random) {
 		// console.log(min_exit_distance)
 		// console.log(min_exiti)
 		// console.log(min_exitii)
+<<<<<<< HEAD
 		var num_backpack = 0;
 		while (num_backpack < max_backpack_on_grid) {
 			var j = get_random_int(0, width_i-1)
 			var jj = get_random_int(0, width_ii-1)
+=======
+    var num_adultbackpack = 0;
+		while (num_adultbackpack< max_backpack_on_grid) {
+			var j = get_random_int(0, width_i)
+			var jj = get_random_int(0, width_ii)
+>>>>>>> 8c9383e8a2f214ac3910aa1303ab14fafa8c9df3
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -866,12 +873,17 @@ this.place_things = function (random) {
     	    	var exitii = exit_locations[exit].anchor_ii;
     	    	var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
     	    	var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
+    	    	var local_goali = exit_locations[exit].profile_i[rand_x]+ exit_locations[exit].anchor_i;
+    	    	var local_goalii = exit_locations[exit].profile_ii[rand_y]+ exit_locations[exit].anchor_ii;
     	    	var current_distance = calc_distance(j,jj,exiti,exitii)
+<<<<<<< HEAD
     	    	//randomly getting a specific exit cell goal
     	    	var rand_x = get_random_int(0, 3);
     	    	var rand_y = get_random_int(0, 3);
     	    	var local_goali = exit_locations[exit].profile_i[rand_x]+ exit_locations[exit].anchor_i;
     	    	var local_goalii = exit_locations[exit].profile_ii[rand_y]+ exit_locations[exit].anchor_ii;
+=======
+>>>>>>> 8c9383e8a2f214ac3910aa1303ab14fafa8c9df3
     	    	var list = [current_distance,exiti,exitii, local_endi, local_endii, local_goali, local_goalii]; //keeping track of the beginning and end of exit
     	    	exit_distances.push(list)
     	    }
@@ -883,7 +895,13 @@ this.place_things = function (random) {
     	    var min_endii = exit_distances[0][4];
     	    var goali = exit_distances[0][5];
     	    var goalii = exit_distances[0][6];
+<<<<<<< HEAD
 
+=======
+    	    // console.log(min_exit_distance)
+    	    // console.log(min_exiti)
+    	    // console.log(min_exitii)
+>>>>>>> 8c9383e8a2f214ac3910aa1303ab14fafa8c9df3
     	    for (var exit=0; exit < exit_distances.length; exit++) {
     	    	if (exit_distances[exit][0] < min_exit_distance) {
     	    	  //change if needed
@@ -894,6 +912,7 @@ this.place_things = function (random) {
     	    	  min_endii = exit_distances[exit][4];
     	    	  goali = exit_distances[exit][5];
     	    	  goalii = exit_distances[exit][6];
+<<<<<<< HEAD
     	    	}
     	    }
 
@@ -934,6 +953,49 @@ this.place_things = function (random) {
     while (num_adult < max_adult_on_grid) {
     	var j = get_random_int(0, width_i-1)
     	var jj = get_random_int(0, width_ii-1)
+=======
+    	    		// console.log(min_exit_distance)
+    	    		// console.log(min_exiti)
+    	    		// console.log(min_exitii)
+    	    	}
+    	    }
+    	    var obj =  new AdultBackpack(j,jj);
+    	    obj.min_exiti = min_exiti;
+    	    obj.min_exitii = min_exitii;
+    	    obj.endi = min_endi;
+    	    obj.endii = min_endii;
+    	    obj.goali = goali;
+    	    obj.goalii = goalii;
+    	    
+    	   var obstacle = 0;
+    	    for (var p = 0; p < obj.profile_i.length; p++) {  //
+    	    	var dj = obj.profile_i[p];
+    	    	var djj = obj.profile_ii[p];
+    	    	var safej = this.get_bounded_index_i(j+dj);
+    	    	var safejj = this.get_bounded_index_ii(jj+djj);
+    	    	if (this.temp_grid[safej][safejj].has_other_thing(obj)){ //should be somewhere
+    	    		obstacle++;
+            //do not place
+        }
+    }
+    if (obstacle == 0){
+			       for (var p = 0; p < obj.profile_i.length; p++) {  //
+			       	var dj = obj.profile_i[p];
+			       	var djj = obj.profile_ii[p];
+			       	var safej = this.get_bounded_index_i(j+dj);
+			       	var safejj = this.get_bounded_index_ii(jj+djj);
+  			      this.temp_grid[safej][safejj].thing = obj; //need to fix to always have correct number on floor
+  			  }
+  			  this.population.push([obj,'AdultBackpack']);
+  			  // console.log(this.population)
+  			  num_adultbackpack++;
+  	}
+	}
+	var num_adult = 0;
+	while (num_adult < max_adult_on_grid) {
+		var j = get_random_int(0, width_i-1)
+		var jj = get_random_int(0, width_ii-1)
+>>>>>>> 8c9383e8a2f214ac3910aa1303ab14fafa8c9df3
     	    //added this in as part of exit distances
     	    exit_distances = [];
     	    for (var exit=0; exit < exit_locations.length; exit++) {
@@ -1065,6 +1127,7 @@ this.place_things = function (random) {
             	obstacle++;
               //do not place
           }
+<<<<<<< HEAD
       }
       if (obstacle == 0){
             for (var p = 0; p < objBike.profile_i.length; p++) {  //
@@ -1078,6 +1141,85 @@ this.place_things = function (random) {
             num_bike++;
         }
     }
+=======
+	}
+	
+	var num_bike = 0;
+	while (num_bike< max_bike_on_grid) {
+      var j = get_random_int(0, width_i)
+			var jj = get_random_int(0, width_ii)
+	    //added this in as part of exit distances
+	    exit_distances = [];
+	    for (var exit=0; exit < exit_locations.length; exit++) {
+	    	var exiti = exit_locations[exit].anchor_i;
+	    	var exitii = exit_locations[exit].anchor_ii;
+	    	var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
+	    	var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
+	    	var local_goali = exit_locations[exit].profile_i[rand_x]+ exit_locations[exit].anchor_i;
+	    	var local_goalii = exit_locations[exit].profile_ii[rand_y]+ exit_locations[exit].anchor_ii;
+	    	var current_distance = calc_distance(j,jj,exiti,exitii) //change?
+	    	var list = [current_distance,exiti,exitii, local_endi, local_endii, local_goali, local_goalii]; //keeping track of the beginning and end of exit
+	    	exit_distances.push(list)
+	    }
+// console.log(exit_distances)
+	    var min_exit_distance = exit_distances[0][0]; //this needs to be a var
+	    var min_exiti = exit_distances[0][1];
+	    var min_exitii = exit_distances[0][2];
+	    var min_endi = exit_distances[0][3];
+	    var min_endii = exit_distances[0][4];
+	    var goali = exit_distances[0][5];
+	    var goalii = exit_distances[0][6];
+	    // console.log(min_exit_distance)
+	    // console.log(min_exiti)
+	    // console.log(min_exitii)
+	    for (var exit=0; exit < exit_distances.length; exit++) {
+	    	if (exit_distances[exit][0] < min_exit_distance) {
+	    	  //change if needed
+	    	  min_exit_distance = exit_distances[exit][0];
+	    	  min_exiti = exit_distances[exit][1];
+	    	  min_exitii = exit_distances[exit][2];
+	    	  min_endi = exit_distances[exit][3];
+	    	  min_endii = exit_distances[exit][4];
+	    	  goali = exit_distances[exit][5];
+	    	  goalii = exit_distances[exit][6];
+	    		// console.log(min_exit_distance)
+	    		// console.log(min_exiti)
+	    		// console.log(min_exitii)
+	    	}
+	    }
+	    var obj =  new AdultBike(j,jj);
+	    obj.min_exiti = min_exiti;
+	    obj.min_exitii = min_exitii;
+	    obj.endi = min_endi;
+	    obj.endii = min_endii;
+	    obj.goali = goali;
+	    obj.goalii = goalii;
+	    
+	   var obstacle = 0;
+	    for (var p = 0; p < obj.profile_i.length; p++) {  //
+	    	var dj = obj.profile_i[p];
+	    	var djj = obj.profile_ii[p];
+	    	var safej = this.get_bounded_index_i(j+dj);
+	    	var safejj = this.get_bounded_index_ii(jj+djj);
+	    	if (this.temp_grid[safej][safejj].has_other_thing(obj)){ //should be somewhere
+	    		obstacle++;
+        //do not place
+    }
+}
+    if (obstacle == 0){
+      for (var p = 0; p < obj.profile_i.length; p++) {  //
+       	var dj = obj.profile_i[p];
+       	var djj = obj.profile_ii[p];
+       	var safej = this.get_bounded_index_i(j+dj);
+       	var safejj = this.get_bounded_index_ii(jj+djj);
+        this.temp_grid[safej][safejj].thing = obj; //need to fix to always have correct number on floor
+    }
+    this.population.push([obj,'AdultBike']);
+    // console.log(this.population)
+    num_bike++;
+    }
+  }
+>>>>>>> 8c9383e8a2f214ac3910aa1303ab14fafa8c9df3
 }
 // 	for (var n = 0; n < max_bike_on_grid; n++) {
 // 		var j = get_random_int(0, width_i)
@@ -1472,6 +1614,8 @@ function AdultBackpack(j,jj) {
 	this.anchor_ii = jj
 	this.min_exiti = 0;
 	this.min_exitii = 0;
+	this.goali = 0; //initially
+	this.goalii = 0; //initially
     this.endi = 0; //initially
     this.endii = 0;
     // my projection 
