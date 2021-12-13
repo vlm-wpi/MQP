@@ -998,7 +998,7 @@ this.place_things = function (random) {
                 var safejj = this.get_bounded_index_ii(jj+djj);
                 this.temp_grid[safej][safejj].thing = objAdult;
             }
-            this.population.push(objAdult);
+            this.population.push([objAdult, "Adult"]);
             num_adult++;
           }
 	}
