@@ -1253,13 +1253,14 @@ function State() {
                         thing.anchor_ii = jj;
 
                         // move into new one
+                        thing.wait =0;
                         thing.place_footprint(this);
                     }
                     else{
-                          		  //add one to its still
+                      //add one to its still
                 		  thing.wait++;
                 		  //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
-                		  if(thing.wait>5){
+                		  if(thing.wait>5){ //can play around with this number
                 		    //get random orientation and try to move there
                 		    var orientation = random_orientation();
                 		    var can_move = true;
@@ -1275,8 +1276,10 @@ function State() {
                 		    }
                 		    if (can_move){
                 		      //change anchor and call place footprint
+                		      var place_holder = thing.orientation
                 		      thing.orientation = orientation;
                 		      next_coords = this.get_coords_from_orientation(thing); 
+                		      thing.orientation = place_holder;
                 		      thing.anchor_i = next_coords[0];
                 		      thing.anchor_ii = next_coords[1];
                 		      thing.place_footprint(this);
