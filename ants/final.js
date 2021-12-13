@@ -14,13 +14,13 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 var width_i = 150;
 var width_ii = 150;
-var max_children_on_grid = 2;
+var max_children_on_grid = 10;
 var current_num_children = max_children_on_grid;
-var max_backpack_on_grid = 2;
+var max_backpack_on_grid = 10;
 var current_num_backpack = max_backpack_on_grid;
-var max_adult_on_grid = 2;
+var max_adult_on_grid = 10;
 var current_num_adult = max_adult_on_grid;
-var max_bike_on_grid = 2;
+var max_bike_on_grid = 10;
 var current_num_bike = max_bike_on_grid;
 var total_peds_at_start = 0;
 var max_obstacles_on_grid = 100;
@@ -32,10 +32,15 @@ var hall_layout = false;
 var fuller_lower = false;
 
 var total_child_collisions = 0;
+var avg_child_collisions = 0;
 var total_adult_collisions = 0;
+var avg_adult_collisions = 0;
 var total_backpack_collisions = 0;
+var avg_backpack_collisions = 0;
 var total_bike_collisions = 0;
+var avg_bike_collisions = 0;
 var total_collisions = 0;
+var avg_collisions_total = 0;
 
 var current_population = 0;
 
@@ -343,9 +348,26 @@ function State() {
                     current_num_bike = 0;
                     end_simulation()
                     console.log('I ended')
+                    avg_collisions_total = total_collisions/total_peds_at_start;
+                    avg_child_collisions = total_child_collisions/max_children_on_grid;
+                    avg_adult_collisions = total_adult_collisions/max_adult_on_grid;
+                    avg_backpack_collisions = total_backpack_collisions/max_backpack_on_grid;
+                    avg_bike_collisions = total_bike_collisions/max_bike_on_grid;
+                    console.log("total collisions: " + total_collisions)
+                    console.log("total peds at start: " + total_peds_at_start)
+                    console.log("average collisions total: " + avg_collisions_total)                    
+                    console.log("total child collisions: " + total_child_collisions)
+                    console.log("average child: " + avg_child_collisions)
+                    console.log("total adult collisions: " + total_adult_collisions)
+                    console.log("average adult: " + avg_adult_collisions)
+                    console.log("total backpack collisions: " + total_backpack_collisions)
+                    console.log("average backpack: " + avg_backpack_collisions)
+                    console.log("total bike collisions: " + total_bike_collisions)
+                    console.log("average bike: " + avg_bike_collisions)
+
                 }
-                console.log("current_population: " + current_population)
-                console.log(total_population_over_time)
+                // console.log("current_population: " + current_population)
+                // console.log(total_population_over_time)
                 // console.log("current_num_children: " + current_num_children)
                 // console.log("current_num_adult: " + current_num_adult)
                 // console.log("current_num_backpack: " + current_num_backpack)
@@ -1252,26 +1274,26 @@ function State() {
                                 if (thing.type == 'Child') {
                                     total_child_collisions = total_child_collisions + 1;
                                     total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_child_collisions: " + total_child_collisions)
+                                    // console.log("num collisions: " + total_collisions)
+                                    // console.log("total_child_collisions: " + total_child_collisions)
                                 }
                                 if (thing.type == 'Adult') {
                                     total_adult_collisions = total_adult_collisions + 1;
                                     total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_adult_collisions: " + total_adult_collisions)
+                                    // console.log("num collisions: " + total_collisions)
+                                    // console.log("total_adult_collisions: " + total_adult_collisions)
                                 }
                                 if (thing.type == 'AdultBackpack') {
                                     total_backpack_collisions = total_backpack_collisions + 1;
                                     total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_backpack_collisions: " + total_backpack_collisions)
+                                    // console.log("num collisions: " + total_collisions)
+                                    // console.log("total_backpack_collisions: " + total_backpack_collisions)
                                 }
                                 if (thing.type == 'AdultBike') {
                                     total_bike_collisions = total_bike_collisions + 1;
                                     total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_bike_collisions: " + total_bike_collisions)
+                                    // console.log("num collisions: " + total_collisions)
+                                    // console.log("total_bike_collisions: " + total_bike_collisions)
                                 }
                             }
                         }
