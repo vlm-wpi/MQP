@@ -14,13 +14,13 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 var width_i = 150;
 var width_ii = 150;
-var max_children_on_grid = 25;
+var max_children_on_grid = 2;
 var current_num_children = max_children_on_grid;
-var max_backpack_on_grid = 25;
+var max_backpack_on_grid = 2;
 var current_num_backpack = max_backpack_on_grid;
-var max_adult_on_grid = 25;
+var max_adult_on_grid = 2;
 var current_num_adult = max_adult_on_grid;
-var max_bike_on_grid = 25;
+var max_bike_on_grid = 2;
 var current_num_bike = max_bike_on_grid;
 var total_peds_at_start = 0;
 var max_obstacles_on_grid = 100;
@@ -30,12 +30,6 @@ var ms_between_updates = 1;
 var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
-
-var total_child_collisions = 0;
-var total_adult_collisions = 0;
-var total_backpack_collisions = 0;
-var total_bike_collisions = 0;
-var total_collisions = 0;
 
 // HOOK UP GUI ELEMENTS: BEGIN
 // -----------------------------------------------------
@@ -341,7 +335,7 @@ function State() {
                     current_num_bike = 0;
                 }
                 // console.log("current_population: " + current_population)
-                // console.log(total_population_over_time)
+                console.log(total_population_over_time)
                 // console.log("current_num_children: " + current_num_children)
                 // console.log("current_num_adult: " + current_num_adult)
                 // console.log("current_num_backpack: " + current_num_backpack)
@@ -1243,32 +1237,6 @@ function State() {
                             var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
                             if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something in the cell
                                 collision = collision + 1; //add one to collision
-                                // console.log(collision)
-                                // console.log(thing.type)
-                                if (thing.type == 'Child') {
-                                    total_child_collisions = total_child_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_child_collisions: " + total_child_collisions)
-                                }
-                                if (thing.type == 'Adult') {
-                                    total_adult_collisions = total_adult_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_adult_collisions: " + total_adult_collisions)
-                                }
-                                if (thing.type == 'AdultBackpack') {
-                                    total_backpack_collisions = total_backpack_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_backpack_collisions: " + total_backpack_collisions)
-                                }
-                                if (thing.type == 'AdultBike') {
-                                    total_bike_collisions = total_bike_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    console.log("num collisions: " + total_collisions)
-                                    console.log("total_bike_collisions: " + total_bike_collisions)
-                                }
                             }
                         }
                     }
@@ -1285,35 +1253,38 @@ function State() {
                         thing.anchor_ii = jj;
 
                         // move into new one
+                        thing.wait =0;
                         thing.place_footprint(this);
                     }
                     else{
-                          		  //add one to its still
-                		  thing.wait++;
-                		  //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
-                		  if(thing.wait>5){
-                		    //get random orientation and try to move there
-                		    var orientation = random_orientation();
-                		    var can_move = true;
-                		    for (var x = 0; x < thing.profile_i.length; x++) { 
-                  				var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
-                  				var r = new_deltas[0];
-                  				var c = new_deltas[1];
-                  				var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
-                  				var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
-                  			    if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
-                  			      can_move = false;
-                		        }
-                		    }
-                		    if (can_move){
-                		      //change anchor and call place footprint
-                		      thing.orientation = orientation;
-                		      next_coords = this.get_coords_from_orientation(thing); 
-                		      thing.anchor_i = next_coords[0];
-                		      thing.anchor_ii = next_coords[1];
-                		      thing.place_footprint(this);
-                		    }
-                	    }
+                      //add one to its still
+                          thing.wait++;
+                          //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
+                          if(thing.wait>5){ //can play around with this number
+                            //get random orientation and try to move there
+                            var orientation = random_orientation();
+                            var can_move = true;
+                            for (var x = 0; x < thing.profile_i.length; x++) { 
+                                var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
+                                var r = new_deltas[0];
+                                var c = new_deltas[1];
+                                var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
+                                var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
+                                if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
+                                  can_move = false;
+                                }
+                            }
+                            if (can_move){
+                              //change anchor and call place footprint
+                              var place_holder = thing.orientation
+                              thing.orientation = orientation;
+                              next_coords = this.get_coords_from_orientation(thing); 
+                              thing.orientation = place_holder;
+                              thing.anchor_i = next_coords[0];
+                              thing.anchor_ii = next_coords[1];
+                              thing.place_footprint(this);
+                            }
+                        }
                     }
                 }
             } catch (error) {
@@ -1503,7 +1474,6 @@ function Child(j, jj) {
     this.profile_ii = [0];
     this.wait = 0;
     this.stuck = 0;
-    this.type = 'Child';
 
     this.color = function() {
         if (this.stuck == 0) {
@@ -1536,8 +1506,6 @@ function Adult(j, jj) {
     // my projection
     this.profile_i = [1, 0]
     this.profile_ii = [0, 0]
-    this.type = 'Adult';
-
 
     this.stuck = 0;
 
@@ -1585,7 +1553,6 @@ function AdultBackpack(j, jj) {
     // my projection
     this.profile_i = [0, 0, 1, 1];
     this.profile_ii = [0, 1, 0, 1];
-    this.type = 'AdultBackpack';
 
     this.color = function() {
         return "rgb(0,128,0)";
@@ -1615,13 +1582,12 @@ function AdultBackpack(j, jj) {
 
 function AdultBike(j, jj) {
     this.orientation = random_orientation();
-    this.anchor_i = j;
-    this.anchor_ii = jj;
+    this.anchor_i = j
+    this.anchor_ii = jj
 
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
     this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
-    this.type = 'AdultBike';
 
     this.color = function() {
         return "rgb(220,20,60)";
