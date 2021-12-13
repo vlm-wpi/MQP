@@ -1349,8 +1349,8 @@ function State() {
             } catch (error) {
                 console.error(error);
             }
-        }
-
+        
+}
         return false; // do not remove
     }
 }
