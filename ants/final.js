@@ -1308,42 +1308,17 @@ function State() {
                             }
                             if (can_move){
                               //change anchor and call place footprint
-                              var place_holder = thing.orientation
+                              // clear old one
+                              thing.remove_footprint(this);
+                              //var place_holder = thing.orientation
                               thing.orientation = orientation;
                               next_coords = this.get_coords_from_orientation(thing); 
-                              thing.orientation = place_holder;
+                              //thing.orientation = place_holder;
                               thing.anchor_i = next_coords[0];
                               thing.anchor_ii = next_coords[1];
                               thing.place_footprint(this);
                             }
                         }
-                		  thing.wait++;
-                		  //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
-                		  if(thing.wait>5){ //can play around with this number
-                		    //get random orientation and try to move there
-                		    var orientation = random_orientation();
-                		    var can_move = true;
-                		    for (var x = 0; x < thing.profile_i.length; x++) { 
-                  				var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
-                  				var r = new_deltas[0];
-                  				var c = new_deltas[1];
-                  				var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
-                  				var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
-                  			    if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
-                  			      can_move = false;
-                		        }
-                		    }
-                		    if (can_move){
-                		      //change anchor and call place footprint
-                		      var place_holder = thing.orientation
-                		      thing.orientation = orientation;
-                		      next_coords = this.get_coords_from_orientation(thing); 
-                		      thing.orientation = place_holder;
-                		      thing.anchor_i = next_coords[0];
-                		      thing.anchor_ii = next_coords[1];
-                		      thing.place_footprint(this);
-                		    }
-                	    }
                     }
                 }
             } catch (error) {
