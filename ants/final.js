@@ -31,6 +31,12 @@ var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
 
+var total_child_collisions = 0;
+var total_adult_collisions = 0;
+var total_backpack_collisions = 0;
+var total_bike_collisions = 0;
+var total_collisions = 0;
+
 // HOOK UP GUI ELEMENTS: BEGIN
 // -----------------------------------------------------
 var numChildren = document.getElementById("numChildren");
@@ -335,7 +341,7 @@ function State() {
                     current_num_bike = 0;
                 }
                 // console.log("current_population: " + current_population)
-                console.log(total_population_over_time)
+                // console.log(total_population_over_time)
                 // console.log("current_num_children: " + current_num_children)
                 // console.log("current_num_adult: " + current_num_adult)
                 // console.log("current_num_backpack: " + current_num_backpack)
@@ -1237,6 +1243,32 @@ function State() {
                             var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
                             if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something in the cell
                                 collision = collision + 1; //add one to collision
+                                // console.log(collision)
+                                // console.log(thing.type)
+                                if (thing.type == 'Child') {
+                                    total_child_collisions = total_child_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_child_collisions: " + total_child_collisions)
+                                }
+                                if (thing.type == 'Adult') {
+                                    total_adult_collisions = total_adult_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_adult_collisions: " + total_adult_collisions)
+                                }
+                                if (thing.type == 'AdultBackpack') {
+                                    total_backpack_collisions = total_backpack_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_backpack_collisions: " + total_backpack_collisions)
+                                }
+                                if (thing.type == 'AdultBike') {
+                                    total_bike_collisions = total_bike_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_bike_collisions: " + total_bike_collisions)
+                                }
                             }
                         }
                     }
@@ -1258,7 +1290,6 @@ function State() {
                     }
                     else{
                       //add one to its still
-<<<<<<< HEAD
                           thing.wait++;
                           //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
                           if(thing.wait>5){ //can play around with this number
@@ -1286,7 +1317,6 @@ function State() {
                               thing.place_footprint(this);
                             }
                         }
-=======
                 		  thing.wait++;
                 		  //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
                 		  if(thing.wait>5){ //can play around with this number
@@ -1314,7 +1344,6 @@ function State() {
                 		      thing.place_footprint(this);
                 		    }
                 	    }
->>>>>>> f3e83fb5f5f5f0779415171b9645f084280f7290
                     }
                 }
             } catch (error) {
@@ -1504,6 +1533,8 @@ function Child(j, jj) {
     this.profile_ii = [0];
     this.wait = 0;
     this.stuck = 0;
+    this.type = 'Child';
+
 
     this.color = function() {
         if (this.stuck == 0) {
@@ -1536,6 +1567,8 @@ function Adult(j, jj) {
     // my projection
     this.profile_i = [1, 0]
     this.profile_ii = [0, 0]
+    this.type = 'Adult';
+
 
     this.stuck = 0;
 
@@ -1583,6 +1616,8 @@ function AdultBackpack(j, jj) {
     // my projection
     this.profile_i = [0, 0, 1, 1];
     this.profile_ii = [0, 1, 0, 1];
+    this.type = 'AdultBackpack';
+
 
     this.color = function() {
         return "rgb(0,128,0)";
@@ -1618,6 +1653,8 @@ function AdultBike(j, jj) {
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
     this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
+    this.type = 'AdultBike';
+
 
     this.color = function() {
         return "rgb(220,20,60)";
