@@ -1168,17 +1168,17 @@ this.get_coords_from_orientation = function (thing) {
 	// hack to fix
 	var count = 0;
 		for(index=0; index<node.profile_i.length; index++){
+		  //check if at exit
 		  	if ((new_coords[0]+node.profile_i[index]) >= node.exiti && (new_coords[0]+node.profile_i[index]) <= node.endi &&
       		(new_coords[1]+node.profile_ii[index]) >= node.exitii && (new_coords[1]+node.profile_ii[index]) <= node.endii) {
       		  count++;
-
         }
 		}
 		if (count>0){
-  		thing.remove_footprint(this);
+  		thing.remove_footprint(this); //remove object if any part of the object is touching the exit
         return true; // remove
 		}
-
+    //now make sure that you can move to the place you want to
     else{
     	var j = new_coords[0];
     	var jj = new_coords[1];
@@ -1193,21 +1193,21 @@ this.get_coords_from_orientation = function (thing) {
 	    	} else {
 	    		if (!next.has_other_thing(thing)) {
 
-			// maybe could have break if collides so doesn't
-			// have to keep going through loop. need to check
-			// all of the cells of the thing
-			var collision = 0;
-			for (var x = 0; x < thing.profile_i.length; x++) { 
-				var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
-				var r = new_deltas[0];
-				var c = new_deltas[1];
-				var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
-				var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
-			    if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
-				collision = collision + 1 ;//add one to collision
-			}
-		}
-	}
+      			// maybe could have break if collides so doesn't
+      			// have to keep going through loop. need to check
+      			// all of the cells of the thing
+      			var collision = 0;
+      			for (var x = 0; x < thing.profile_i.length; x++) { 
+      				var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
+      				var r = new_deltas[0];
+      				var c = new_deltas[1];
+      				var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
+      				var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
+      			    if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
+      				collision = collision + 1 ;//add one to collision
+      			}
+      		}
+      	}
 
 		    if (collision == 0){ //if no collision for any cells then can move whole piece
 			// where thing is RIGHT NOW
@@ -1219,12 +1219,41 @@ this.get_coords_from_orientation = function (thing) {
 
     			thing.anchor_i = j;
     			thing.anchor_ii = jj;
-
+          thing.wait = 0; //reset the amount of time waiting
     			// move into new one
     			thing.place_footprint(this);
+    			
     		}
-    	}
-    } catch (error) {
+    		else{
+    		  //add one to its still
+    		  thing.wait++;
+    		  //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
+    		  if(thing.wait>5){
+    		    //get random orientation and try to move there
+    		    var orientation = random_orientation();
+    		    var can_move = true;
+    		    for (var x = 0; x < thing.profile_i.length; x++) { 
+      				var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
+      				var r = new_deltas[0];
+      				var c = new_deltas[1];
+      				var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
+      				var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
+      			    if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
+      			      can_move = false;
+    		        }
+    		    }
+    		    if (can_move){
+    		      //change anchor and call place footprint
+    		      thing.orientation = orientation;
+    		      next_coords = this.get_coords_from_orientation(thing); 
+    		      thing.anchor_i = next_coords[0];
+    		      thing.anchor_ii = next_coords[1];
+    		      thing.place_footprint(this);
+    		    }
+    	    }
+    }
+	    	}
+    }catch (error) {
     	console.error(error);
     }
 }
@@ -1407,7 +1436,7 @@ function Child(j,jj) {
     this.endii = 0; // initially
     this.profile_i  = [0];
     this.profile_ii = [0];
-
+    this.wait = 0;
     this.stuck = 0;
 
     this.color = function() {
@@ -1440,7 +1469,7 @@ function Adult(j,jj) {
     // my projection 
     this.profile_i  = [1, 0]
     this.profile_ii = [0, 0]
-    
+    this.wait = 0;
     this.stuck = 0;
 
     this.color = function() {
@@ -1483,6 +1512,7 @@ function AdultBackpack(j,jj) {
 	this.goalii = 0; //initially
     this.endi = 0; //initially
     this.endii = 0;
+    this.wait = 0;
     // my projection 
     this.profile_i  = [0, 0, 1, 1];
     this.profile_ii = [0, 1, 0, 1];
@@ -1517,7 +1547,13 @@ function AdultBike(j,jj) {
 	this.orientation = random_orientation();
 	this.anchor_i = j
 	this.anchor_ii = jj
-
+	this.min_exiti = 0;
+	this.min_exitii = 0;
+	this.goali = 0; //initially
+	this.goalii = 0; //initially
+  this.endi = 0; //initially
+  this.endii = 0;
+  this.wait = 0;
     // my projection 
     this.profile_i  = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
     this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
