@@ -14,13 +14,13 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 var width_i = 150;
 var width_ii = 150;
-var max_children_on_grid = 2;
+var max_children_on_grid = 25;
 var current_num_children = max_children_on_grid;
-var max_backpack_on_grid = 2;
+var max_backpack_on_grid = 25;
 var current_num_backpack = max_backpack_on_grid;
-var max_adult_on_grid = 2;
+var max_adult_on_grid = 25;
 var current_num_adult = max_adult_on_grid;
-var max_bike_on_grid = 2;
+var max_bike_on_grid = 25;
 var current_num_bike = max_bike_on_grid;
 var total_peds_at_start = 0;
 var max_obstacles_on_grid = 100;
@@ -30,6 +30,12 @@ var ms_between_updates = 1;
 var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
+
+var total_child_collisions = 0;
+var total_adult_collisions = 0;
+var total_backpack_collisions = 0;
+var total_bike_collisions = 0;
+var total_collisions = 0;
 
 // HOOK UP GUI ELEMENTS: BEGIN
 // -----------------------------------------------------
@@ -335,7 +341,7 @@ function State() {
                     current_num_bike = 0;
                 }
                 // console.log("current_population: " + current_population)
-                console.log(total_population_over_time)
+                // console.log(total_population_over_time)
                 // console.log("current_num_children: " + current_num_children)
                 // console.log("current_num_adult: " + current_num_adult)
                 // console.log("current_num_backpack: " + current_num_backpack)
@@ -1237,6 +1243,32 @@ function State() {
                             var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
                             if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something in the cell
                                 collision = collision + 1; //add one to collision
+                                // console.log(collision)
+                                // console.log(thing.type)
+                                if (thing.type == 'Child') {
+                                    total_child_collisions = total_child_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_child_collisions: " + total_child_collisions)
+                                }
+                                if (thing.type == 'Adult') {
+                                    total_adult_collisions = total_adult_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_adult_collisions: " + total_adult_collisions)
+                                }
+                                if (thing.type == 'AdultBackpack') {
+                                    total_backpack_collisions = total_backpack_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_backpack_collisions: " + total_backpack_collisions)
+                                }
+                                if (thing.type == 'AdultBike') {
+                                    total_bike_collisions = total_bike_collisions + 1;
+                                    total_collisions = total_collisions + 1;
+                                    console.log("num collisions: " + total_collisions)
+                                    console.log("total_bike_collisions: " + total_bike_collisions)
+                                }
                             }
                         }
                     }
@@ -1471,6 +1503,7 @@ function Child(j, jj) {
     this.profile_ii = [0];
     this.wait = 0;
     this.stuck = 0;
+    this.type = 'Child';
 
     this.color = function() {
         if (this.stuck == 0) {
@@ -1503,6 +1536,8 @@ function Adult(j, jj) {
     // my projection
     this.profile_i = [1, 0]
     this.profile_ii = [0, 0]
+    this.type = 'Adult';
+
 
     this.stuck = 0;
 
@@ -1550,6 +1585,7 @@ function AdultBackpack(j, jj) {
     // my projection
     this.profile_i = [0, 0, 1, 1];
     this.profile_ii = [0, 1, 0, 1];
+    this.type = 'AdultBackpack';
 
     this.color = function() {
         return "rgb(0,128,0)";
@@ -1579,12 +1615,13 @@ function AdultBackpack(j, jj) {
 
 function AdultBike(j, jj) {
     this.orientation = random_orientation();
-    this.anchor_i = j
-    this.anchor_ii = jj
+    this.anchor_i = j;
+    this.anchor_ii = jj;
 
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
     this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
+    this.type = 'AdultBike';
 
     this.color = function() {
         return "rgb(220,20,60)";
