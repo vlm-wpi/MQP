@@ -16,17 +16,17 @@ var width_i = 150;
 var width_ii = 150;
 var max_children_on_grid = 10;
 var current_num_children = max_children_on_grid;
-var max_backpack_on_grid = 10;
-var current_num_backpack = max_backpack_on_grid;
 var max_adult_on_grid = 10;
 var current_num_adult = max_adult_on_grid;
+var max_backpack_on_grid = 10;
+var current_num_backpack = max_backpack_on_grid;
 var max_bike_on_grid = 10;
 var current_num_bike = max_bike_on_grid;
 var total_peds_at_start = 0;
 var max_obstacles_on_grid = 100;
 var max_large_X_obstacles_on_grid = 0;
 var max_exits_on_grid = 4;
-var ms_between_updates = 50;
+var ms_between_updates = 1;
 var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
@@ -53,11 +53,11 @@ numChildren.oninput = function() {
     current_num_children = max_children_on_grid;
 }
 
-var numBikes = document.getElementById("numBikes");
-numBikes.value = max_bike_on_grid;
-numBikes.oninput = function() {
-    max_bike_on_grid = this.value;
-    current_num_bike = max_bike_on_grid;
+var numAdults = document.getElementById("numAdults");
+numAdults.value = max_adult_on_grid;
+numAdults.oninput = function() {
+    max_adult_on_grid = this.value;
+    current_num_adult = max_adult_on_grid;
 }
 
 var numBackPacks = document.getElementById("numBackPacks");
@@ -67,12 +67,19 @@ numBackPacks.oninput = function() {
     current_num_backpack = max_backpack_on_grid;
 }
 
-var numAdults = document.getElementById("numAdults");
-numAdults.value = max_adult_on_grid;
-numAdults.oninput = function() {
-    max_adult_on_grid = this.value;
-    current_num_adult = max_adult_on_grid;
+var numBikes = document.getElementById("numBikes");
+numBikes.value = max_bike_on_grid;
+numBikes.oninput = function() {
+    max_bike_on_grid = this.value;
+    current_num_bike = max_bike_on_grid;
 }
+
+var ms_speed_slider = document.getElementById("ms_speed");
+ms_speed_slider.value = ms_between_updates;
+ms_speed_slider.oninput = function() {
+  ms_between_updates = this.value;
+}
+
 
 var gridWidthi = document.getElementById("gridWidthi");
 gridWidthi.value = width_i;

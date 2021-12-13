@@ -20,10 +20,10 @@
           <form>
             <label for="numChildren">Number of Children:</label><br>
             <input type="text" id="numChildren" name="numChildren"><br>
-            <label for="numBackPacks">Number of Adults with Backpacks:</label><br>
-            <input type="text" id="numBackPacks" name="numBackPacks"><br>
             <label for="numAdults">Number of Adults:</label><br>
             <input type="text" id="numAdults" name="numAdults"><br>
+            <label for="numBackPacks">Number of Adults with Backpacks:</label><br>
+            <input type="text" id="numBackPacks" name="numBackPacks"><br>
             <label for="numBikes">Number of Adults with Bikes:</label><br>
             <input type="text" id="numBikes" name="numBikes">
           </form>
@@ -31,6 +31,9 @@
           <h2>Board Controls</h2>
 
           <form>
+            <div class="slidecontainer">
+              <b>Simulation speed:</b> <input type="range" min="1" max="500" value="1" id="ms_speed"><br>
+            </div>
             <label for="gridWidthi">Width of Grid:</label><br>
             <input type="text" id="gridWidthi" name="gridWidthi"><br>
             <label for="gridWidthii">Height of Grid:</label><br>
