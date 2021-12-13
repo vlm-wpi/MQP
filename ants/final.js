@@ -798,7 +798,7 @@ this.place_things = function (random) {
     	    	var exitii = exit_locations[exit].anchor_ii;
     	    	var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
     	    	var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
-    	    	var current_distance = calc_distance(j,jj,exiti,exitii)
+    	    	var current_distance = calc_distance(j,jj,exiti,exitii) //should calculate to goal?
     	    	//randomly getting a specific exit cell goal
     	    	var rand_x = get_random_int(0, 3);
     	    	var rand_y = get_random_int(0, 3);
@@ -1083,14 +1083,22 @@ this.get_coords_from_orientation = function (thing) {
 	var exitii = thing.min_exitii;
 
 	// hack to fix
-	if (new_coords[0] >= node.exiti && new_coords[0] <= node.endi &&
-		new_coords[1] >= node.exitii && new_coords[1] <= node.endii) {
-		thing.remove_footprint(this);
-            return true; // remove
+	var count = 0;
+		for(index=0; index<node.profile_i.length; index++){
+		  	if ((new_coords[0]+node.profile_i[index]) >= node.exiti && (new_coords[0]+node.profile_i[index]) <= node.endi &&
+      		(new_coords[1]+node.profile_ii[index]) >= node.exitii && (new_coords[1]+node.profile_ii[index]) <= node.endii) {
+      		  count++;
+
         }
-        else{
-        	var j = new_coords[0];
-        	var jj = new_coords[1];
+		}
+		if (count>0){
+  		thing.remove_footprint(this);
+        return true; // remove
+		}
+
+    else{
+    	var j = new_coords[0];
+    	var jj = new_coords[1];
 	    var orientation = new_coords[2]; // direction to aim
 	    // handles collisions by doing NOTHING. If spot that you are
 	    // trying to move to DOESN'T HAVE a thing then you are free to
