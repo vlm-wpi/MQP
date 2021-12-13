@@ -22,7 +22,7 @@ var max_adult_on_grid = 2;
 var current_num_adult = max_adult_on_grid;
 var max_bike_on_grid = 2;
 var current_num_bike = max_bike_on_grid;
-var total_peds = 0;
+var total_peds_at_start = 0;
 var max_obstacles_on_grid = 100;
 var max_large_X_obstacles_on_grid = 0;
 var max_exits_on_grid = 4;
@@ -268,7 +268,7 @@ function minHeap() {
 }
 
 function State() {
-    var total_peds = parseInt(max_children_on_grid) + parseInt(max_adult_on_grid) + parseInt(max_backpack_on_grid) + parseInt(max_bike_on_grid);
+    var total_peds_at_start = parseInt(max_children_on_grid) + parseInt(max_adult_on_grid) + parseInt(max_backpack_on_grid) + parseInt(max_bike_on_grid);
     this.grid = [];
     this.temp_grid = [];
     this.population = [];
@@ -304,7 +304,7 @@ function State() {
             }
         }
     }
-    total_population_over_time = [total_peds];
+    total_population_over_time = [total_peds_at_start];
 
     this.move_things = function() {
         // move everyone at TOP level of abstraction
