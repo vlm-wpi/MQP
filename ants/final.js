@@ -26,7 +26,7 @@ var total_peds_at_start = 0;
 var max_obstacles_on_grid = 100;
 var max_large_X_obstacles_on_grid = 0;
 var max_exits_on_grid = 4;
-var ms_between_updates = 1;
+var ms_between_updates = 50;
 var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
@@ -36,6 +36,8 @@ var total_adult_collisions = 0;
 var total_backpack_collisions = 0;
 var total_bike_collisions = 0;
 var total_collisions = 0;
+
+var current_population = 0;
 
 // HOOK UP GUI ELEMENTS: BEGIN
 // -----------------------------------------------------
@@ -339,9 +341,11 @@ function State() {
                     current_num_adult = 0;
                     current_num_backpack = 0;
                     current_num_bike = 0;
+                    end_simulation()
+                    console.log('I ended')
                 }
-                // console.log("current_population: " + current_population)
-                // console.log(total_population_over_time)
+                console.log("current_population: " + current_population)
+                console.log(total_population_over_time)
                 // console.log("current_num_children: " + current_num_children)
                 // console.log("current_num_adult: " + current_num_adult)
                 // console.log("current_num_backpack: " + current_num_backpack)
