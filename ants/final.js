@@ -335,8 +335,8 @@ function State() {
             if (this.move_thing(thing)) {
                 this.population.splice(p, 1); // remove
                 // console.log("population: " + this.population)
-                var current_population = this.population.length
-                total_population_over_time.push(current_population)
+                var current_population = this.population.length;
+                total_population_over_time.push(current_population);
                 if (current_population > 0) {
                     // console.log(object_type)
                     if (object_type == 'Child') {
@@ -954,6 +954,9 @@ function State() {
             var jj = get_random_int(0, width_ii)
             //added this in as part of exit distances
             exit_distances = [];
+            //randomly getting a specific exit cell goal
+            var rand_x = get_random_int(0, 3);
+            var rand_y = get_random_int(0, 3);
             for (var exit = 0; exit < exit_locations.length; exit++) {
                 var exiti = exit_locations[exit].anchor_i;
                 var exitii = exit_locations[exit].anchor_ii;
@@ -1100,8 +1103,8 @@ function State() {
 
         var num_bike = 0;
         while (num_bike < max_bike_on_grid) {
-            var j = get_random_int(0, width_i)
-            var jj = get_random_int(0, width_ii)
+            var j = get_random_int(0, width_i-3);
+            var jj = get_random_int(3, width_ii-2);
             //added this in as part of exit distances
             exit_distances = [];
             for (var exit = 0; exit < exit_locations.length; exit++) {
