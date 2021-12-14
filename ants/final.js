@@ -12,22 +12,22 @@ var diagDownLeft = 225;
 var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
-var width_i = 150;
-var width_ii = 150;
-var max_children_on_grid = 10;
+var width_i = 50;
+var width_ii = 50;
+var max_children_on_grid = 1;
 var current_num_children = max_children_on_grid;
-var max_adult_on_grid = 10;
+var max_adult_on_grid = 1;
 var current_num_adult = max_adult_on_grid;
-var max_backpack_on_grid = 10;
+var max_backpack_on_grid = 1;
 var current_num_backpack = max_backpack_on_grid;
-var max_bike_on_grid = 10;
+var max_bike_on_grid = 1;
 var current_num_bike = max_bike_on_grid;
 var total_peds_at_start = 0;
-var max_obstacles_on_grid = 100;
+var max_obstacles_on_grid = 25;
 var max_large_X_obstacles_on_grid = 0;
-var max_exits_on_grid = 4;
+var max_exits_on_grid = 3;
 var ms_between_updates = 1;
-var take_snapshot = false;
+var take_snapshot = true;
 var hall_layout = false;
 var fuller_lower = false;
 
@@ -193,9 +193,9 @@ function Node(j, jj, exiti, exitii, endi, endii, parent, direction, goali, goali
             if ((this.profile_i[index] + this.i) >= this.exiti && (this.profile_i[index] + this.i) <= this.endi &&
                 (this.profile_ii[index] + this.ii) >= this.exitii && (this.profile_ii[index] + this.ii) <= this.endii) {
                 return true; // if any part of the person is in an exit
-            }
         }
     }
+}
 
     // how many steps fromo starting spot.
     this.parent = parent;
@@ -1244,9 +1244,9 @@ function State() {
             if ((new_coords[0] + node.profile_i[index]) >= node.exiti && (new_coords[0] + node.profile_i[index]) <= node.endi &&
                 (new_coords[1] + node.profile_ii[index]) >= node.exitii && (new_coords[1] + node.profile_ii[index]) <= node.endii) {
                 count++;
-            }
         }
-        if (count > 0) {
+    }
+    if (count > 0) {
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove
         }
@@ -1318,12 +1318,12 @@ function State() {
                         thing.anchor_ii = jj;
 
                         // move into new one
-                        thing.wait =0;
+                        thing.wait = 0;
                         thing.place_footprint(this);
                     }
-                    else{
+                    else {
                       //add one to its still
-                          thing.wait++;
+                      thing.wait++;
                           //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
                           if(thing.wait>5){ //can play around with this number
                             //get random orientation and try to move there
@@ -1337,9 +1337,9 @@ function State() {
                                 var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
                                 if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
                                   can_move = false;
-                                }
-                            }
-                            if (can_move){
+                              }
+                          }
+                          if (can_move){
                               //change anchor and call place footprint
                               // clear old one
                               thing.remove_footprint(this);
@@ -1350,15 +1350,15 @@ function State() {
                               thing.anchor_i = next_coords[0];
                               thing.anchor_ii = next_coords[1];
                               thing.place_footprint(this);
-                            }
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error(error);
-            }
+                          }
+                      }
+                  }
+              }
+          } catch (error) {
+            console.error(error);
+        }
         
-}
+    }
         return false; // do not remove
     }
 }
@@ -1657,6 +1657,13 @@ function AdultBike(j, jj) {
     this.orientation = random_orientation();
     this.anchor_i = j
     this.anchor_ii = jj
+    this.min_exiti = 0;
+    this.min_exitii = 0;
+    this.goali = 0; //initially
+    this.goalii = 0; //initially
+    this.endi = 0; //initially
+    this.endii = 0;
+    this.wait = 0;
 
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
@@ -1747,8 +1754,9 @@ function initialize_simulation() {
         });
     }));
 }
-
+var end_sim_counter = 0;
 function end_simulation() {
+    end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
 }
 
@@ -1760,9 +1768,8 @@ function start_simulation() {
     initialize_simulation();
     interval_id = setInterval(simulate_and_visualize, ms_between_updates);
 }
-
-var _indexCounter = 0;
-
+// var _indexCounter = 0;
+// var encoder = function() {return;};
 function simulate_and_visualize() {
     state.move_things();
     draw_grid(state.grid.map(function(row) {
@@ -1773,36 +1780,49 @@ function simulate_and_visualize() {
 
     if (take_snapshot) {
         var canvas = document.getElementById('grid');
+        var context = canvas.getContext('2d');
+        var encoder = GIFEncoder();
+        encoder.setRepeat(0); //0  -> loop forever
+                        //1+ -> loop n times then stop
+        encoder.setDelay(1); //go to next frame every n milliseconds
+        encoder.start();
+        console.log('end sim counter was 1')
+        encoder.addFrame(context);
+        encoder.finish();
+        encoder.download("download.gif","image/gif");
+        
+        // canvas.toBlob(function(blob) {
+        //     var newImg = document.createElement('img');
+        //     // make smaller if you'd like
+        //     //newImg.height=100;
+        //     //newImg.width=100;
+        //     url = URL.createObjectURL(blob);
 
-        canvas.toBlob(function(blob) {
-            var newImg = document.createElement('img');
-            // make smaller if you'd like
-            //newImg.height=100;
-            //newImg.width=100;
-            url = URL.createObjectURL(blob);
+        //     newImg.onload = function() {
+        //         // no longer need to read the blob so it's revoked
+        //         URL.revokeObjectURL(url);
+        //     };
 
-            newImg.onload = function() {
-                // no longer need to read the blob so it's revoked
-                URL.revokeObjectURL(url);
-            };
+        //     newImg.src = url;
+        //     var header = document.createElement("H2");
+        //     var label = document.createTextNode("Label " + _indexCounter);
+        //     _indexCounter++;
+        //     header.appendChild(label);
+        //     document.body.appendChild(header); //different than our child object type?
+        //     document.body.appendChild(newImg);
 
-            newImg.src = url;
-            var header = document.createElement("H2");
-            var label = document.createTextNode("Label " + _indexCounter);
-            _indexCounter++;
-            header.appendChild(label);
-            document.body.appendChild(header); //different than our child object type?
-            document.body.appendChild(newImg);
-        });
-    }
+
+        // encoder.setRepeat(0); //0  -> loop forever
+        //                 //1+ -> loop n times then stop
+        // encoder.setDelay(1); //go to next frame every n milliseconds
+        // encoder.start();
+        // encoder.addFrame(context);
+        // encoder.finish();
+        // if (end_sim_counter == 1) {
+        //     console.log('end sim counter was 1')
+        //     encoder.download("download.gif","image/gif");
+        // }
+    //     });
+    // }
 }
-
-//right now, pedestrians don't exit the board if their non-anchor
-//point makes contact with the exit - goal of this is to change
-//but right now it's just pseudocode
-
-// for ((j,jj) in (obj.profile_i,obj.profile_ii)) {
-//            if (j,jj in contact with exit) {
-//                            remove_footprint(obj)
-//            }
-// }
+}
