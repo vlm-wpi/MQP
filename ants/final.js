@@ -1371,7 +1371,7 @@ function State() {
                       //add one to its still
                       thing.wait++;
                           //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
-                          if(thing.wait>5){ //can play around with this number
+                          if(thing.wait>5){ //can play around with this number, could maybe have show up on board
                             //get random orientation and try to move there
                             var orientation = random_orientation();
                             var can_move = true;
@@ -1381,10 +1381,19 @@ function State() {
                                 var c = new_deltas[1];
                                 var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
                                 var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
+                                //i think need to also check if off grid
                                 if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
                                   can_move = false;
                               }
-                          }
+                              //if move puts you off the grid you cannot move in this orientation
+                              // can't move off the board
+                              else if (safe_r != thing.anchor_i + r) {
+                                  can_move = false;
+                              }
+                              else if (safe_c != thing.anchor_ii + c) {
+                                  can_move = false;
+                              }
+                                    }
                           if (can_move){
                               //change anchor and call place footprint
                               // clear old one
