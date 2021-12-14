@@ -916,15 +916,15 @@ function State() {
             var jj = get_random_int(0, width_ii);
             //added this in as part of exit distances
             exit_distances = [];
+            //randomly getting a specific exit cell goal
+            var rand_x = get_random_int(0, 3);
+            var rand_y = get_random_int(0, 3);
             for (var exit = 0; exit < exit_locations.length; exit++) {
                 var exiti = exit_locations[exit].anchor_i;
                 var exitii = exit_locations[exit].anchor_ii;
                 var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
                 var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
                 var current_distance = calc_distance(j, jj, exiti, exitii) //should calculate to goal?
-                //randomly getting a specific exit cell goal
-                var rand_x = get_random_int(0, 3);
-                var rand_y = get_random_int(0, 3);
                 var local_goali = exit_locations[exit].profile_i[rand_x] + exit_locations[exit].anchor_i;
                 var local_goalii = exit_locations[exit].profile_ii[rand_y] + exit_locations[exit].anchor_ii;
                 var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii] //keeping track of the beginning and end of exit
@@ -972,13 +972,13 @@ function State() {
                     //do not place
                 }
             }
-            if (obstacle == 0) {
+            if (obstacle == 0) {//if can place
                 for (var p = 0; p < objChild.profile_i.length; p++) { //
                     var dj = objChild.profile_i[p];
                     var djj = objChild.profile_ii[p];
                     var safej = this.get_bounded_index_i(j + dj);
                     var safejj = this.get_bounded_index_ii(jj + djj);
-                    this.temp_grid[safej][safejj].thing = objChild; //need to fix to always have correct number on floor
+                    this.temp_grid[safej][safejj].thing = objChild; 
                 }
                 this.population.push([objChild, 'Child']);
                 // console.log(this.population)
@@ -1072,15 +1072,15 @@ function State() {
             var jj = get_random_int(0, width_ii - 1)
             //added this in as part of exit distances
             exit_distances = [];
+            //randomly getting a specific exit cell goal
+            var rand_x = get_random_int(0, 3);
+            var rand_y = get_random_int(0, 3);
             for (var exit = 0; exit < exit_locations.length; exit++) {
                 var exiti = exit_locations[exit].anchor_i;
                 var exitii = exit_locations[exit].anchor_ii;
                 var local_endi = exit_locations[exit].profile_i[3] + exit_locations[exit].anchor_i;
                 var local_endii = exit_locations[exit].profile_ii[3] + exit_locations[exit].anchor_ii;
                 var current_distance = calc_distance(j, jj, exiti, exitii)
-                //randomly getting a specific exit cell goal
-                var rand_x = get_random_int(0, 3);
-                var rand_y = get_random_int(0, 3);
                 var local_goali = exit_locations[exit].profile_i[rand_x] + exit_locations[exit].anchor_i;
                 var local_goalii = exit_locations[exit].profile_ii[rand_y] + exit_locations[exit].anchor_ii;
                 var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii]; //keeping track of the beginning and end of exit
@@ -1147,6 +1147,9 @@ function State() {
             var jj = get_random_int(3, width_ii-2);
             //added this in as part of exit distances
             exit_distances = [];
+            //randomly getting a specific exit cell goal
+            var rand_x = get_random_int(0, 3);
+            var rand_y = get_random_int(0, 3);
             for (var exit = 0; exit < exit_locations.length; exit++) {
                 var exiti = exit_locations[exit].anchor_i;
                 var exitii = exit_locations[exit].anchor_ii;
