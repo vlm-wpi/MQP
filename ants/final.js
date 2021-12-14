@@ -354,23 +354,23 @@ function State() {
                     current_num_backpack = 0;
                     current_num_bike = 0;
                     end_simulation()
-                    console.log('I ended')
+                    // console.log('I ended')
                     avg_collisions_total = total_collisions/total_peds_at_start;
                     avg_child_collisions = total_child_collisions/max_children_on_grid;
                     avg_adult_collisions = total_adult_collisions/max_adult_on_grid;
                     avg_backpack_collisions = total_backpack_collisions/max_backpack_on_grid;
                     avg_bike_collisions = total_bike_collisions/max_bike_on_grid;
-                    console.log("total collisions: " + total_collisions)
-                    console.log("total peds at start: " + total_peds_at_start)
-                    console.log("average collisions total: " + avg_collisions_total)                    
-                    console.log("total child collisions: " + total_child_collisions)
-                    console.log("average child: " + avg_child_collisions)
-                    console.log("total adult collisions: " + total_adult_collisions)
-                    console.log("average adult: " + avg_adult_collisions)
-                    console.log("total backpack collisions: " + total_backpack_collisions)
-                    console.log("average backpack: " + avg_backpack_collisions)
-                    console.log("total bike collisions: " + total_bike_collisions)
-                    console.log("average bike: " + avg_bike_collisions)
+                    // console.log("total collisions: " + total_collisions)
+                    // console.log("total peds at start: " + total_peds_at_start)
+                    // console.log("average collisions total: " + avg_collisions_total)                    
+                    // console.log("total child collisions: " + total_child_collisions)
+                    // console.log("average child: " + avg_child_collisions)
+                    // console.log("total adult collisions: " + total_adult_collisions)
+                    // console.log("average adult: " + avg_adult_collisions)
+                    // console.log("total backpack collisions: " + total_backpack_collisions)
+                    // console.log("average backpack: " + avg_backpack_collisions)
+                    // console.log("total bike collisions: " + total_bike_collisions)
+                    // console.log("average bike: " + avg_bike_collisions)
 
                 }
                 // console.log("current_population: " + current_population)
