@@ -14,13 +14,13 @@ var diagUpLeft = 315;
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
 var width_i = 150;
 var width_ii = 150;
-var max_children_on_grid = 50;
+var max_children_on_grid = 0;
 var current_num_children = max_children_on_grid;
-var max_adult_on_grid = 50;
+var max_adult_on_grid = 0;
 var current_num_adult = max_adult_on_grid;
-var max_backpack_on_grid = 50;
+var max_backpack_on_grid = 0;
 var current_num_backpack = max_backpack_on_grid;
-var max_bike_on_grid = 50;
+var max_bike_on_grid = 0;
 var current_num_bike = max_bike_on_grid;
 var total_peds_at_start = 0;
 var max_obstacles_on_grid = 50;
@@ -30,6 +30,7 @@ var ms_between_updates = 1;
 var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
+var classroom = true;
 
 var total_child_collisions = 0;
 var avg_child_collisions = 0;
@@ -135,6 +136,13 @@ fullerLowerCheckbox.oninput = function() {
     fuller_lower = fullerLowerCheckbox.checked;
 }
 
+var classroomCheckbox = document.getElementById("classroom");
+if (classroom) {
+    classroomCheckbox.checked = true;
+}
+classroomCheckbox.oninput = function() {
+    classroom = classroomCheckbox.checked;
+}
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
 
@@ -813,7 +821,28 @@ function State() {
                 this.temp_grid[safej][safejj].thing = obj04;
             }
             // console.log(exit_locations)
-        } else {
+        } else if (classroom == true) {
+            width_i = 40;
+            width_ii = 40;
+            //railing down the middle (bottom)
+            for (var col = 10; col < 15; col++) {
+                for (var row = 10; row < 15; row++) {
+                    var obj = new Obstacle(col, row);
+                    this.temp_grid[col][row].thing = obj;
+                }
+            }
+                        //first exit in the top left
+            var obj01 = new Exit(0, 0)
+            exit_locations.push(obj01)
+            for (var p = 0; p < obj01.profile_i.length; p++) {
+                var dj = obj01.profile_i[p];
+                var djj = obj01.profile_ii[p];
+                var safej = this.get_bounded_index_i(1 + dj);
+                var safejj = this.get_bounded_index_ii(0 + djj);
+                this.temp_grid[safej][safejj].thing = obj01;
+            }
+        }
+        else {
             for (var n = 0; n < max_obstacles_on_grid; n++) {
                 var j = get_random_int(0, width_i)
                 var jj = get_random_int(0, width_ii)
@@ -1374,6 +1403,10 @@ function draw_grid(data) {
         width_i = 56;
         width_ii = 45;
     }
+    if (classroom == true) {
+        width_i = 40;
+        width_ii = 40;
+    }
 
     if (parseInt(width_i) > parseInt(width_ii)) {
         var width = 600;
@@ -1742,7 +1775,7 @@ function initialize_simulation() {
 
     state.init_grids();
     // state.draw_border();
-    if ((hall_layout == true) || (fuller_lower == true)) {
+    if ((hall_layout == true) || (fuller_lower == true) || (classroom == true)) {
         state.place_things(false);
     } else {
         state.place_things(true);
