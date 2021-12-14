@@ -823,21 +823,32 @@ function State() {
             // console.log(exit_locations)
         } else if (classroom == true) {
             width_i = 40;
-            width_ii = 40;
-            //railing down the middle (bottom)
-            for (var col = 10; col < 15; col++) {
-                for (var row = 10; row < 15; row++) {
+            width_ii = 35;
+            //podium at front of classroom
+            for (var col = 34; col < 38; col++) {
+                for (var row = 3; row < 6; row++) {
                     var obj = new Obstacle(col, row);
                     this.temp_grid[col][row].thing = obj;
                 }
             }
-                        //first exit in the top left
+            //desks
+            for (var col0 = 0; col0 < width_i-1; col0+=5) {
+                for (var row0 = 8; row0 < width_ii-1; row0+=6) {
+                    for (var col = col0; col < col0+3; col++) {
+                        for (var row = row0; row < row0+3; row++) {
+                            var obj = new Obstacle(col, row);
+                            this.temp_grid[col][row].thing = obj;
+                }
+            }
+                }
+            }
+
             var obj01 = new Exit(0, 0)
             exit_locations.push(obj01)
             for (var p = 0; p < obj01.profile_i.length; p++) {
                 var dj = obj01.profile_i[p];
                 var djj = obj01.profile_ii[p];
-                var safej = this.get_bounded_index_i(1 + dj);
+                var safej = this.get_bounded_index_i(0 + dj);
                 var safejj = this.get_bounded_index_ii(0 + djj);
                 this.temp_grid[safej][safejj].thing = obj01;
             }
@@ -1405,7 +1416,7 @@ function draw_grid(data) {
     }
     if (classroom == true) {
         width_i = 40;
-        width_ii = 40;
+        width_ii = 35;
     }
 
     if (parseInt(width_i) > parseInt(width_ii)) {
