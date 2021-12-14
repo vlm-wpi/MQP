@@ -12,22 +12,22 @@ var diagDownLeft = 225;
 var diagUpLeft = 315;
 
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
-var width_i = 50;
-var width_ii = 50;
-var max_children_on_grid = 1;
+var width_i = 150;
+var width_ii = 150;
+var max_children_on_grid = 50;
 var current_num_children = max_children_on_grid;
-var max_adult_on_grid = 1;
+var max_adult_on_grid = 50;
 var current_num_adult = max_adult_on_grid;
-var max_backpack_on_grid = 1;
+var max_backpack_on_grid = 50;
 var current_num_backpack = max_backpack_on_grid;
-var max_bike_on_grid = 1;
+var max_bike_on_grid = 50;
 var current_num_bike = max_bike_on_grid;
 var total_peds_at_start = 0;
-var max_obstacles_on_grid = 25;
+var max_obstacles_on_grid = 50;
 var max_large_X_obstacles_on_grid = 0;
-var max_exits_on_grid = 3;
+var max_exits_on_grid = 4;
 var ms_between_updates = 1;
-var take_snapshot = true;
+var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
 
@@ -1770,6 +1770,14 @@ function start_simulation() {
 }
 // var _indexCounter = 0;
 // var encoder = function() {return;};
+// var context_list = [];
+// var encoder = function() {return;}
+// function GIF() {
+//     console.log('i called gif()')
+//     const encoder = GIFEncoder();
+// }
+// var encoder = GIFEncoder();
+take_snapshot_calls = 0;
 function simulate_and_visualize() {
     state.move_things();
     draw_grid(state.grid.map(function(row) {
@@ -1781,15 +1789,54 @@ function simulate_and_visualize() {
     if (take_snapshot) {
         var canvas = document.getElementById('grid');
         var context = canvas.getContext('2d');
-        var encoder = GIFEncoder();
+        var encoder = new GIFEncoder();
         encoder.setRepeat(0); //0  -> loop forever
                         //1+ -> loop n times then stop
         encoder.setDelay(1); //go to next frame every n milliseconds
         encoder.start();
-        console.log('end sim counter was 1')
-        encoder.addFrame(context);
+        encoder.addFrame(context)
         encoder.finish();
         encoder.download("download.gif","image/gif");
+
+        // if(take_snapshot_calls = 0) {
+        //     encoder.start();
+
+        //     // encoder.addFrame(context)
+        //     take_snapshot_calls = take_snapshot_calls + 1;
+        // }
+        // else {
+        //     encoder.setProperties(true,true)
+        // }
+        // encoder.addFrame(context)
+        // if(current_population == 0) {
+        //     encoder.finish();
+        //     encoder.download("download.gif","image/gif");
+        // }
+        // encoder.finish();
+        // encoder.download("download.gif","image/gif");
+
+        // var canvas = document.getElementById('grid');
+        // for (var i=0; i<____; i++) {
+            // var canvas = document.getElementById('grid');
+            // var context = canvas.getContext('2d');
+            // context_list.push(context)
+        }
+    
+}
+        // var context = canvas.getContext('2d');
+        // var encoder = GIFEncoder();
+        // encoder.setRepeat(0); //0  -> loop forever
+        //                 //1+ -> loop n times then stop
+        // encoder.setDelay(1); //go to next frame every n milliseconds
+        // encoder.start();
+        // console.log('end sim counter was 1')
+        // for (var i=0; i < context_list.length; i++) {
+        //     encoder.addFrame(context, true);
+
+        // }
+        // // encoder.addFrame(context);
+        // encoder.finish();
+        // encoder.download("download.gif","image/gif");
         
         // canvas.toBlob(function(blob) {
         //     var newImg = document.createElement('img');
@@ -1823,6 +1870,6 @@ function simulate_and_visualize() {
         //     encoder.download("download.gif","image/gif");
         // }
     //     });
-    // }
-}
-}
+//     // }
+// }
+// }
