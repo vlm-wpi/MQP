@@ -27,6 +27,7 @@ var max_obstacles_on_grid = 50;
 var max_large_X_obstacles_on_grid = 0;
 var max_exits_on_grid = 4;
 var ms_between_updates = 1;
+var wait_before_random_move = 5;
 var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
@@ -94,6 +95,11 @@ ms_speed_slider.oninput = function() {
   ms_between_updates = this.value;
 }
 
+var wait_speed_slider = document.getElementById("wait_speed");
+wait_speed_slider.value = wait_before_random_move;
+wait_speed_slider.oninput = function() {
+  wait_before_random_move = this.value;
+}
 
 var gridWidthi = document.getElementById("gridWidthi");
 gridWidthi.value = width_i;
@@ -926,7 +932,7 @@ function State() {
         var num_children = 0;
         var times_not_placed = 0;
         while (num_children < max_children_on_grid) {
-          if (times_not_placed>1000){ //not sure what is a good number, have it at 1000 right now
+          if (times_not_placed>(width_i*width_ii)){ //not sure what is a good number, have it at 1000 right now, changed to area
             window.alert("Cannot place this many children on the grid, please reset and choose another number");
             break;
           }
@@ -1420,7 +1426,7 @@ function State() {
                       //add one to its still
                       thing.wait++;
                           //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
-                          if(thing.wait>5){ //can play around with this number, could maybe have show up on board
+                          if(thing.wait>wait_before_random_move){ //can play around with this number, could maybe have show up on board
                             //get random orientation and try to move there
                             var orientation = random_orientation();
                             var can_move = true;
