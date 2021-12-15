@@ -351,6 +351,7 @@ function minHeap() {
 
 function State() {
     var total_peds_at_start = parseInt(max_children_on_grid) + parseInt(max_adult_on_grid) + parseInt(max_backpack_on_grid) + parseInt(max_bike_on_grid);
+    document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
     this.grid = [];
     this.temp_grid = [];
     this.population = [];
