@@ -910,14 +910,14 @@ function State() {
                 this.temp_grid[j][jj].thing = obj;
             }
             for (var n = 0; n < max_exits_on_grid; n++) {
-                //get 2 random ints from 0-gridlength-3 (for j and jj)
-                //which ever one is bigger we keep and change the other one to 0 or grid_length (so it goes to an edge)
                 var j = get_random_int(0, width_i - 3);
                 var jj = get_random_int(0, width_ii - 3);
-                if (j > jj) {
+                var choose = Math.round(Math.random());
+                if (choose == 0) {
                     var j = j;
                     var jj = ((width_ii - 1) * (Math.round(Math.random())));
-                } else {
+                }
+                else if (choose == 1) {
                     var j = ((width_i - 1) * (Math.round(Math.random())));
                     var jj = jj;
                 }
@@ -1964,7 +1964,7 @@ function simulate_and_visualize() {
             // var context = canvas.getContext('2d');
             // context_list.push(context)
         }
-        
+
     }
         // var context = canvas.getContext('2d');
         // var encoder = GIFEncoder();
