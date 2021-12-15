@@ -50,6 +50,9 @@ var current_population = 0;
 var numChildren = document.getElementById("numChildren");
 numChildren.value = max_children_on_grid;
 numChildren.oninput = function() {
+    if(this.value>(width_i*width_ii)){//right now just have if it greater than the area
+      window.alert("Cannot fit this many children on the grid, please choose another number");
+    }
     max_children_on_grid = this.value;
     current_num_children = max_children_on_grid;
 }
@@ -57,6 +60,9 @@ numChildren.oninput = function() {
 var numAdults = document.getElementById("numAdults");
 numAdults.value = max_adult_on_grid;
 numAdults.oninput = function() {
+    if(this.value>(width_i*width_ii)/2){//right now just have if it greater than the area
+    window.alert("Cannot fit this many adults on the grid, please choose another number");
+    }
     max_adult_on_grid = this.value;
     current_num_adult = max_adult_on_grid;
 }
@@ -64,6 +70,9 @@ numAdults.oninput = function() {
 var numBackPacks = document.getElementById("numBackPacks");
 numBackPacks.value = max_backpack_on_grid;
 numBackPacks.oninput = function() {
+    if(this.value>(width_i*width_ii)/4){//right now just have if it greater than the area
+    window.alert("Cannot fit this many adults with backpacks on the grid, please choose another number");
+    }
     max_backpack_on_grid = this.value;
     current_num_backpack = max_backpack_on_grid;
 }
@@ -71,6 +80,10 @@ numBackPacks.oninput = function() {
 var numBikes = document.getElementById("numBikes");
 numBikes.value = max_bike_on_grid;
 numBikes.oninput = function() {
+    if(this.value>(width_i*width_ii)/14){//right now just have if it greater than the area
+    //make it floor?
+    window.alert("Cannot fit this many bikes on the grid, please choose another number");
+    }
     max_bike_on_grid = this.value;
     current_num_bike = max_bike_on_grid;
 }
@@ -911,7 +924,12 @@ function State() {
             }
         }
         var num_children = 0;
+        var times_not_placed = 0;
         while (num_children < max_children_on_grid) {
+          if (times_not_placed>1000){ //not sure what is a good number, have it at 1000 right now
+            window.alert("Cannot place this many children on the grid, please reset and choose another number");
+            break;
+          }
             var j = get_random_int(0, width_i);
             var jj = get_random_int(0, width_ii);
             //added this in as part of exit distances
@@ -983,13 +1001,22 @@ function State() {
                 this.population.push([objChild, 'Child']);
                 // console.log(this.population)
                 num_children++;
+                times_not_placed = 0;
+            }
+            else{
+              times_not_placed++;
             }
         }
         // console.log(min_exit_distance)
         // console.log(min_exiti)
         // console.log(min_exitii)
         var num_adultbackpack = 0;
+        var times_not_placed_backpack = 0;
         while (num_adultbackpack < max_backpack_on_grid) {
+          if (times_not_placed_backpack>1000){ //not sure what is a good number, have it at 1000 right now
+            window.alert("Cannot place this many adults with a backpack on the grid, please reset and choose another number");
+            break;
+          }
             var j = get_random_int(0, width_i)
             var jj = get_random_int(0, width_ii)
             //added this in as part of exit distances
@@ -1064,10 +1091,19 @@ function State() {
                 this.population.push([obj, 'AdultBackpack']);
                 // console.log(this.population)
                 num_adultbackpack++;
+                times_not_placed_backpack = 0;
+            }
+            else{
+              times_not_placed_backpack++;
             }
         }
         var num_adult = 0;
+        times_not_placed_adult = 0;
         while (num_adult < max_adult_on_grid) {
+          if (times_not_placed_adult>1000){ //not sure what is a good number, have it at 1000 right now
+            window.alert("Cannot place this many adults with a backpack on the grid, please reset and choose another number");
+            break;
+          }
             var j = get_random_int(0, width_i - 1)
             var jj = get_random_int(0, width_ii - 1)
             //added this in as part of exit distances
@@ -1138,11 +1174,20 @@ function State() {
                 }
                 this.population.push([objAdult, "Adult"]);
                 num_adult++;
+                times_not_placed_adult = 0;
+            }
+            else{
+              times_not_placed_adult++;
             }
         }
 
         var num_bike = 0;
+        times_not_placed_bike = 0;
         while (num_bike < max_bike_on_grid) {
+          if (times_not_placed_bike>1000){ //not sure what is a good number, have it at 1000 right now
+            window.alert("Cannot place this many children on the grid, please reset and choose another number");
+            break;
+          }
             var j = get_random_int(0, width_i-3);
             var jj = get_random_int(3, width_ii-2);
             //added this in as part of exit distances
@@ -1217,6 +1262,10 @@ function State() {
                 this.population.push([obj, 'AdultBike']);
                 // console.log(this.population)
                 num_bike++;
+                times_not_placed_bike = 0; //reeset because moving onto another person
+            }
+            else{
+              times_not_placed_bike++;
             }
         }
     }
