@@ -31,6 +31,7 @@ var take_snapshot = false;
 var hall_layout = false;
 var fuller_lower = false;
 var classroom = false;
+var num_checked = 0;
 
 var total_child_collisions = 0;
 var avg_child_collisions = 0;
@@ -51,17 +52,17 @@ var numChildren = document.getElementById("numChildren");
 numChildren.value = max_children_on_grid;
 numChildren.oninput = function() {
     if(this.value>(width_i*width_ii)){//right now just have if it greater than the area
-      window.alert("Cannot fit this many children on the grid, please choose another number");
-    }
-    max_children_on_grid = this.value;
-    current_num_children = max_children_on_grid;
+      window.alert("Cannot fit this many objects on the grid, please choose another number.");
+  }
+  max_children_on_grid = this.value;
+  current_num_children = max_children_on_grid;
 }
 
 var numAdults = document.getElementById("numAdults");
 numAdults.value = max_adult_on_grid;
 numAdults.oninput = function() {
     if(this.value>(width_i*width_ii)/2){//right now just have if it greater than the area
-    window.alert("Cannot fit this many adults on the grid, please choose another number");
+        window.alert("Cannot fit this many objects on the grid, please choose another number.");
     }
     max_adult_on_grid = this.value;
     current_num_adult = max_adult_on_grid;
@@ -71,7 +72,7 @@ var numBackPacks = document.getElementById("numBackPacks");
 numBackPacks.value = max_backpack_on_grid;
 numBackPacks.oninput = function() {
     if(this.value>(width_i*width_ii)/4){//right now just have if it greater than the area
-    window.alert("Cannot fit this many adults with backpacks on the grid, please choose another number");
+        window.alert("Cannot fit this many adults with backpacks on the grid, please choose another number");
     }
     max_backpack_on_grid = this.value;
     current_num_backpack = max_backpack_on_grid;
@@ -82,10 +83,10 @@ numBikes.value = max_bike_on_grid;
 numBikes.oninput = function() {
     if(this.value>(width_i*width_ii)/14){//right now just have if it greater than the area
     //make it floor?
-    window.alert("Cannot fit this many bikes on the grid, please choose another number");
-    }
-    max_bike_on_grid = this.value;
-    current_num_bike = max_bike_on_grid;
+    window.alert("Cannot fit this many objects on the grid, please choose another number.");
+}
+max_bike_on_grid = this.value;
+current_num_bike = max_bike_on_grid;
 }
 
 var ms_speed_slider = document.getElementById("ms_speed");
@@ -110,13 +111,21 @@ gridWidthii.oninput = function() {
 var numExits = document.getElementById("numExits");
 numExits.value = max_exits_on_grid;
 numExits.oninput = function() {
-    max_exits_on_grid = this.value;
+    if(this.value>((2*width_i)+(2*width_ii))) {//right now just have if it greater than the area
+    //make it floor?
+    window.alert("Cannot fit this many exits on the grid, please choose another number.");
+}
+max_exits_on_grid = this.value;
 }
 
 var numObstacles = document.getElementById("numObstacles");
 numObstacles.value = max_obstacles_on_grid;
 numObstacles.oninput = function() {
-    max_obstacles_on_grid = this.value;
+    if(this.value>(width_i*width_ii)){//right now just have if it greater than the area
+    //make it floor?
+    window.alert("Cannot fit this many objects on the grid, please choose another number.");
+}
+max_obstacles_on_grid = this.value;
 }
 
 var numXObstacles = document.getElementById("numXObstacles");
@@ -139,7 +148,15 @@ if (hall_layout) {
 }
 hallLayoutCheckbox.oninput = function() {
     hall_layout = hallLayoutCheckbox.checked;
+    if (hall_layout ==  true) {
+        num_checked = num_checked + 1;
+        console.log("lecture hall " + num_checked)
+        if(num_checked > 1) {
+            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
+        }
+    }
 }
+
 
 var fullerLowerCheckbox = document.getElementById("fullerLower");
 if (fuller_lower) {
@@ -147,6 +164,14 @@ if (fuller_lower) {
 }
 fullerLowerCheckbox.oninput = function() {
     fuller_lower = fullerLowerCheckbox.checked;
+    if (fuller_lower ==  true) {
+        num_checked = num_checked + 1;
+        console.log("fuller lower " + num_checked)
+        if(num_checked > 1) {
+            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
+        }
+    }
+    
 }
 
 var classroomCheckbox = document.getElementById("classroom");
@@ -155,7 +180,17 @@ if (classroom) {
 }
 classroomCheckbox.oninput = function() {
     classroom = classroomCheckbox.checked;
+    if (classroom ==  true) {
+        num_checked = num_checked + 1;
+        console.log("classroom " + num_checked)
+        if(num_checked > 1) {
+            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
+        }
+    }   
 }
+//     (hall_layout && fuller_lower) || (hall_layout && classroom) || (fuller_lower && classroom) || (hall_layout && fuller_lower && classroom)) {
+//     window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
+// }
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
 
@@ -851,8 +886,8 @@ function State() {
                         for (var row = row0; row < row0+3; row++) {
                             var obj = new Obstacle(col, row);
                             this.temp_grid[col][row].thing = obj;
-                }
-            }
+                        }
+                    }
                 }
             }
 
@@ -929,9 +964,9 @@ function State() {
           if (times_not_placed>1000){ //not sure what is a good number, have it at 1000 right now
             window.alert("Cannot place this many children on the grid, please reset and choose another number");
             break;
-          }
-            var j = get_random_int(0, width_i);
-            var jj = get_random_int(0, width_ii);
+        }
+        var j = get_random_int(0, width_i);
+        var jj = get_random_int(0, width_ii);
             //added this in as part of exit distances
             exit_distances = [];
             //randomly getting a specific exit cell goal
@@ -1005,8 +1040,8 @@ function State() {
             }
             else{
               times_not_placed++;
-            }
-        }
+          }
+      }
         // console.log(min_exit_distance)
         // console.log(min_exiti)
         // console.log(min_exitii)
@@ -1016,9 +1051,9 @@ function State() {
           if (times_not_placed_backpack>1000){ //not sure what is a good number, have it at 1000 right now
             window.alert("Cannot place this many adults with a backpack on the grid, please reset and choose another number");
             break;
-          }
-            var j = get_random_int(0, width_i)
-            var jj = get_random_int(0, width_ii)
+        }
+        var j = get_random_int(0, width_i)
+        var jj = get_random_int(0, width_ii)
             //added this in as part of exit distances
             exit_distances = [];
             //randomly getting a specific exit cell goal
@@ -1095,17 +1130,17 @@ function State() {
             }
             else{
               times_not_placed_backpack++;
-            }
-        }
-        var num_adult = 0;
-        times_not_placed_adult = 0;
-        while (num_adult < max_adult_on_grid) {
+          }
+      }
+      var num_adult = 0;
+      times_not_placed_adult = 0;
+      while (num_adult < max_adult_on_grid) {
           if (times_not_placed_adult>1000){ //not sure what is a good number, have it at 1000 right now
             window.alert("Cannot place this many adults with a backpack on the grid, please reset and choose another number");
             break;
-          }
-            var j = get_random_int(0, width_i - 1)
-            var jj = get_random_int(0, width_ii - 1)
+        }
+        var j = get_random_int(0, width_i - 1)
+        var jj = get_random_int(0, width_ii - 1)
             //added this in as part of exit distances
             exit_distances = [];
             //randomly getting a specific exit cell goal
@@ -1178,18 +1213,18 @@ function State() {
             }
             else{
               times_not_placed_adult++;
-            }
-        }
+          }
+      }
 
-        var num_bike = 0;
-        times_not_placed_bike = 0;
-        while (num_bike < max_bike_on_grid) {
+      var num_bike = 0;
+      times_not_placed_bike = 0;
+      while (num_bike < max_bike_on_grid) {
           if (times_not_placed_bike>1000){ //not sure what is a good number, have it at 1000 right now
             window.alert("Cannot place this many children on the grid, please reset and choose another number");
             break;
-          }
-            var j = get_random_int(0, width_i-3);
-            var jj = get_random_int(3, width_ii-2);
+        }
+        var j = get_random_int(0, width_i-3);
+        var jj = get_random_int(3, width_ii-2);
             //added this in as part of exit distances
             exit_distances = [];
             //randomly getting a specific exit cell goal
@@ -1266,33 +1301,33 @@ function State() {
             }
             else{
               times_not_placed_bike++;
-            }
-        }
-    }
+          }
+      }
+  }
 
-    this.get_coords_from_orientation = function(thing) {
-        var i = thing.anchor_i;
-        var ii = thing.anchor_ii;
+  this.get_coords_from_orientation = function(thing) {
+    var i = thing.anchor_i;
+    var ii = thing.anchor_ii;
 
-        var orient = thing.orientation;
-        if (orient == UP) {
-            return [i, this.get_bounded_index_ii(ii - 1)];
-        } else if (orient == DOWN) {
-            return [i, this.get_bounded_index_ii(ii + 1)];
-        } else if (orient == LEFT) {
-            return [this.get_bounded_index_i(i - 1), ii];
-        } else if (orient == RIGHT) {
-            return [this.get_bounded_index_i(i + 1), ii];
-        } else if (orient == diagDownRight) {
-            return [this.get_bounded_index_i(i + 1), this.get_bounded_index_ii(ii + 1)]
-        } else if (orient == diagUpRight) {
-            return [this.get_bounded_index_i(i + 1), this.get_bounded_index_ii(ii - 1)]
-        } else if (orient == diagDownLeft) {
-            return [this.get_bounded_index_i(i - 1), this.get_bounded_index_ii(ii + 1)]
-        } else {
-            return [this.get_bounded_index_i(i - 1), this.get_bounded_index_ii(ii - 1)]
-        }
+    var orient = thing.orientation;
+    if (orient == UP) {
+        return [i, this.get_bounded_index_ii(ii - 1)];
+    } else if (orient == DOWN) {
+        return [i, this.get_bounded_index_ii(ii + 1)];
+    } else if (orient == LEFT) {
+        return [this.get_bounded_index_i(i - 1), ii];
+    } else if (orient == RIGHT) {
+        return [this.get_bounded_index_i(i + 1), ii];
+    } else if (orient == diagDownRight) {
+        return [this.get_bounded_index_i(i + 1), this.get_bounded_index_ii(ii + 1)]
+    } else if (orient == diagUpRight) {
+        return [this.get_bounded_index_i(i + 1), this.get_bounded_index_ii(ii - 1)]
+    } else if (orient == diagDownLeft) {
+        return [this.get_bounded_index_i(i - 1), this.get_bounded_index_ii(ii + 1)]
+    } else {
+        return [this.get_bounded_index_i(i - 1), this.get_bounded_index_ii(ii - 1)]
     }
+}
 
     //need this to because we have to use profile and not anchor
     this.get_coords_from_orientation_neighbors = function(thing, index, orient) {
@@ -1442,7 +1477,7 @@ function State() {
                               else if (safe_c != thing.anchor_ii + c) {
                                   can_move = false;
                               }
-                                    }
+                          }
                           if (can_move){
                               //change anchor and call place footprint
                               // clear old one
@@ -1929,8 +1964,8 @@ function simulate_and_visualize() {
             // var context = canvas.getContext('2d');
             // context_list.push(context)
         }
-    
-}
+        
+    }
         // var context = canvas.getContext('2d');
         // var encoder = GIFEncoder();
         // encoder.setRepeat(0); //0  -> loop forever
