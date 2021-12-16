@@ -33,6 +33,10 @@ var hall_layout = false;
 var fuller_lower = false;
 var classroom = false;
 var num_checked = 0;
+var num_checked_h = 0; //this is weird
+var diagonal = true; //initialize heuristoc using diagonal distance
+var manhattan = false;
+var euclidean = false;
 
 var total_child_collisions = 0;
 var avg_child_collisions = 0;
@@ -194,6 +198,51 @@ classroomCheckbox.oninput = function() {
         }
     }   
 }
+
+var diagonalCheckbox = document.getElementById("diagonal");
+if (diagonal) {
+    diagonalCheckbox.checked = true;
+}
+diagonalCheckbox.oninput = function() {
+    diagonal = diagonalCheckbox.checked;
+    if (diagonal ==  true) {
+        num_checked_h = num_checked_h + 1;
+        console.log("diagonal" + num_checked_h)
+        if(num_checked_h > 1) {
+            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again.")
+        }
+    }   
+}
+
+var manhattanCheckbox = document.getElementById("manhattan");
+if (manhattan) {
+    manhattanCheckbox.checked = true;
+}
+manhattanCheckbox.oninput = function() {
+    manhattan = manhattanCheckbox.checked;
+    if (manhattan ==  true) {
+        num_checked_h = num_checked_h + 1;
+        console.log("manhattan" + num_checked_h)
+        if(num_checked_h > 1) {
+            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again.")
+        }
+    }   
+}
+
+var euclideanCheckbox = document.getElementById("euclidean");
+if (euclidean) {
+    euclideanCheckbox.checked = true;
+}
+euclideanCheckbox.oninput = function() {
+    euclidean = euclideanCheckbox.checked;
+    if (euclidean ==  true) {
+        num_checked_h = num_checked_h + 1;
+        console.log("euclidean" + num_checked_h)
+        if(num_checked_h > 1) {
+            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again.")
+        }
+    }   
+}
 //     (hall_layout && fuller_lower) || (hall_layout && classroom) || (fuller_lower && classroom) || (hall_layout && fuller_lower && classroom)) {
 //     window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
 // }
@@ -208,12 +257,24 @@ var D = 1;
 var D2 = Math.sqrt(2);
 
 
-function diagonal(x, y, goalX, goalY) { //diagonal distance heuristic
+function diagonald(x, y, goalX, goalY) { //diagonal distance heuristic
     var dx = Math.abs(x - goalX);
     var dy = Math.abs(y - goalY);
 
     var h = D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
     return h;
+}
+
+function manhattand(x, y, goalX, goalY){ //manhattan distance heuristic
+  var h = Math.abs(x-goalX) + Math.abs(y-goalY);
+  return h;
+}
+
+function euclideand(x, y, goalX, goalY){ //euclidean distance heuristic
+  var dx = Math.abs(x - goalX);
+  var dy = Math.abs(y - goalY);
+  var h = Math.sqrt(Math.pow(dx,2)+ Math.pow(dy,2));
+  return h;
 }
 
 function Node(j, jj, exiti, exitii, endi, endii, parent, direction, goali, goalii, profilei, profileii) {
@@ -269,9 +330,17 @@ function Node(j, jj, exiti, exitii, endi, endii, parent, direction, goali, goali
     }
 
     // this ensures that two nodes can be compared using < operator.
-    Node.prototype.valueOf = function() {
+    Node.prototype.valueOf = function() { //flexibility for changing heuristic and evaluating using different heuristics
         // f = g + h
-        var h = diagonal(this.i, this.ii, this.goali, this.goalii);
+        if (manhattan){
+          var h = manhattand(this.i, this.ii, this.goali, this.goalii);
+        }
+        else if (euclidean){
+          var h = euclideand(this.i, this.ii, this.goali, this.goalii);
+        }
+        else {
+          var h = diagonald(this.i, this.ii, this.goali, this.goalii);
+        }
         return this.g + h;
     }
 }
