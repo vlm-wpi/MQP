@@ -49,6 +49,13 @@ var avg_bike_collisions = 0;
 var total_collisions = 0;
 var avg_collisions_total = 0;
 
+var sum_of_exit_times = 0;
+var sum_child_exit_times = 0;
+var sum_adult_exit_times = 0;
+var sum_backpack_exit_times = 0;
+var sum_bike_exit_times = 0;
+
+
 var current_population = 0;
 
 // HOOK UP GUI ELEMENTS: BEGIN
@@ -470,28 +477,55 @@ function State() {
         for (var p = this.population.length - 1; p >= 0; p--) {
             var thing = this.population[p][0];
             var object_type = this.population[p][1];
+            thing.exittime++; //always add one to exit time
             if (this.move_thing(thing)) {
                 this.population.splice(p, 1); // remove
                 // console.log("population: " + this.population)
                 var current_population = this.population.length;
                 document.getElementById("current_total").innerHTML = current_population;
                 total_population_over_time.push(current_population);
-                if (current_population > 0) {
+              //  if (current_population > 0) {
                     // console.log(object_type)
                     if (object_type == 'Child') {
                         current_num_children = current_num_children - 1;
                         document.getElementById("current_children").innerHTML = current_num_children;
+                        //add to sum of everyones exit times
+                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
+                        sum_child_exit_times = sum_child_exit_times + thing.exittime;
+                        //check if last child
+                        if(current_num_children==0){
+                          var total_child_exit_time = thing.exittime / 4;
+                          document.getElementById("total_child_exit").innerHTML = total_child_exit_time;
+                        }
                     } else if (object_type == 'Adult') {
                         current_num_adult = current_num_adult - 1;
                         document.getElementById("current_adult").innerHTML = current_num_adult;
+                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
+                        sum_adult_exit_times = sum_adult_exit_times + thing.exittime;
+                        if(current_num_adult==0){
+                          var total_adult_exit_time = thing.exittime / 4;
+                          document.getElementById("total_adult_exit").innerHTML = total_adult_exit_time;
+                        }
                     } else if (object_type == 'AdultBackpack') {
                         current_num_backpack = current_num_backpack - 1;
                         document.getElementById("current_backpack").innerHTML = current_num_backpack;
+                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
+                        sum_backpack_exit_times = sum_backpack_exit_times + thing.exittime;
+                        if(current_num_backpack==0){
+                          var total_backpack_exit_time = thing.exittime / 4;
+                          document.getElementById("total_backpack_exit").innerHTML = total_backpack_exit_time;
+                        }
                     } else if (object_type == 'AdultBike') {
                         current_num_bike = current_num_bike - 1;
                         document.getElementById("current_bike").innerHTML = current_num_bike;
-                    }
-                } else if (current_population == 0) {
+                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
+                        sum_backpack_exit_times = sum_backpack_exit_times = thing.exittime;
+                        if(current_num_bike==0){
+                          var total_bike_exit_time = thing.exittime / 4;
+                          document.getElementById("total_bike_exit").innerHTML = total_bike_exit_time;
+                        }
+               //     }
+                }  if (current_population == 0) {
                     current_num_children = 0;
                     current_num_adult = 0;
                     current_num_backpack = 0;
@@ -511,8 +545,20 @@ function State() {
                     document.getElementById("total_backpack_collide").innerHTML = total_backpack_collisions;
                     document.getElementById("avg_backpack_collide").innerHTML = avg_backpack_collisions;
                     avg_bike_collisions = total_bike_collisions/max_bike_on_grid;
-                    document.getElementById("total_bike_coollide").innerHTML = total_bike_collisions;
+                    document.getElementById("total_bike_collide").innerHTML = total_bike_collisions;
                     document.getElementById("avg_bike_collide").innerHTML = avg_bike_collisions;
+                    var total_exit_time = thing.exittime / 4;
+                    document.getElementById("total_exit_time").innerHTML = total_exit_time;
+                    var avg_exit_time = (sum_of_exit_times / 4) / total_peds_at_start;
+                    document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
+                    var avg_exit_time_child = (sum_child_exit_times / 4) / max_children_on_grid;
+                    var avg_exit_time_adult = (sum_adult_exit_times / 4) / max_adult_on_grid;
+                    var avg_exit_time_backpack = (sum_backpack_exit_times / 4) / max_backpack_on_grid;
+                    var avg_exit_time_bike = (sum_bike_exit_times / 4) / max_bike_on_grid;
+                    document.getElementById("avg_exit_child").innerHTML = avg_exit_time_child;
+                    document.getElementById("avg_exit_adult").innerHTML = avg_exit_time_adult;
+                    document.getElementById("avg_exit_backpack").innerHTML = avg_exit_time_backpack;
+                    document.getElementById("avg_exit_bike").innerHTML = avg_exit_time_bike;
                     // console.log("total collisions: " + total_collisions)
                     // console.log("total peds at start: " + total_peds_at_start)
                     // console.log("average collisions total: " + avg_collisions_total)                    
@@ -1450,7 +1496,7 @@ function State() {
         }
     }
 
-    this.move_thing = function(thing) {
+    this.move_thing = function(thing) { //returns true if person is at exxit, false otherwise
         var node = this.AStar(thing, 0); //using AStar algorithm to get the best move
         if (node == null) {
             node = this.AStar(thing, 1); // try to avoid others and break out of deadlock
@@ -1782,6 +1828,7 @@ function Child(j, jj) {
     this.wait = 0;
     this.stuck = 0;
     this.type = 'Child';
+    this.exittime = 0;
 
 
     this.color = function() {
@@ -1816,6 +1863,7 @@ function Adult(j, jj) {
     this.profile_i = [1, 0]
     this.profile_ii = [0, 0]
     this.type = 'Adult';
+    this.exittime = 0;
 
 
     this.stuck = 0;
@@ -1865,6 +1913,7 @@ function AdultBackpack(j, jj) {
     this.profile_i = [0, 0, 1, 1];
     this.profile_ii = [0, 1, 0, 1];
     this.type = 'AdultBackpack';
+    this.exittime = 0;
 
 
     this.color = function() {
@@ -1904,6 +1953,7 @@ function AdultBike(j, jj) {
     this.endi = 0; //initially
     this.endii = 0;
     this.wait = 0;
+    this.exittime = 0;
 
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
