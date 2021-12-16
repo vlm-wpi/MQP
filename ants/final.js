@@ -421,6 +421,12 @@ function minHeap() {
 function State() {
     var total_peds_at_start = parseInt(max_children_on_grid) + parseInt(max_adult_on_grid) + parseInt(max_backpack_on_grid) + parseInt(max_bike_on_grid);
     document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
+    var num_children_initial = parseInt(max_children_on_grid);
+    document.getElementById("num_children_initial").innerHTML = num_children_initial;
+    document.getElementById("num_adult_initial").innerHTML = max_adult_on_grid;
+    document.getElementById("num_backpack_initial").innerHTML = max_backpack_on_grid;
+    document.getElementById("num_bike_initial").innerHTML = max_bike_on_grid;
+    document.getElementById("num_obstacle_initial").innerHTML = max_obstacles_on_grid;
     this.grid = [];
     this.temp_grid = [];
     this.population = [];
@@ -468,17 +474,22 @@ function State() {
                 this.population.splice(p, 1); // remove
                 // console.log("population: " + this.population)
                 var current_population = this.population.length;
+                document.getElementById("current_total").innerHTML = current_population;
                 total_population_over_time.push(current_population);
                 if (current_population > 0) {
                     // console.log(object_type)
                     if (object_type == 'Child') {
                         current_num_children = current_num_children - 1;
+                        document.getElementById("current_children").innerHTML = current_num_children;
                     } else if (object_type == 'Adult') {
                         current_num_adult = current_num_adult - 1;
+                        document.getElementById("current_adult").innerHTML = current_num_adult;
                     } else if (object_type == 'AdultBackpack') {
                         current_num_backpack = current_num_backpack - 1;
+                        document.getElementById("current_backpack").innerHTML = current_num_backpack;
                     } else if (object_type == 'AdultBike') {
                         current_num_bike = current_num_bike - 1;
+                        document.getElementById("current_bike").innerHTML = current_num_bike;
                     }
                 } else if (current_population == 0) {
                     current_num_children = 0;
@@ -488,10 +499,20 @@ function State() {
                     end_simulation()
                     // console.log('I ended')
                     avg_collisions_total = total_collisions/total_peds_at_start;
+                    document.getElementById("avg_collision").innerHTML = avg_collisions_total;
+                    document.getElementById("collision").innerHTML = total_collisions;
                     avg_child_collisions = total_child_collisions/max_children_on_grid;
+                    document.getElementById("total_child_collide").innerHTML = total_child_collisions;
+                    document.getElementById("avg_child_collide").innerHTML = avg_child_collisions;
                     avg_adult_collisions = total_adult_collisions/max_adult_on_grid;
+                    document.getElementById("total_adult_collide").innerHTML = total_adult_collisions;
+                    document.getElementById("agv_adult_collide").innerHTML = avg_adult_collisions;
                     avg_backpack_collisions = total_backpack_collisions/max_backpack_on_grid;
+                    document.getElementById("total_backpack_collide").innerHTML = total_backpack_collisions;
+                    document.getElementById("avg_backpack_collide").innerHTML = avg_backpack_collisions;
                     avg_bike_collisions = total_bike_collisions/max_bike_on_grid;
+                    document.getElementById("total_bike_coollide").innerHTML = total_bike_collisions;
+                    document.getElementById("avg_bike_collide").innerHTML = avg_bike_collisions;
                     // console.log("total collisions: " + total_collisions)
                     // console.log("total peds at start: " + total_peds_at_start)
                     // console.log("average collisions total: " + avg_collisions_total)                    
