@@ -1,79 +1,90 @@
 // GUI state from prior update
 var _data;
-
+//orientations for the directions a person can move (in degrees)
 var UP = 180;
 var DOWN = 90;
 var LEFT = 270;
 var RIGHT = 0;
-
 var diagDownRight = 45;
 var diagUpRight = 135;
 var diagDownLeft = 225;
 var diagUpLeft = 315;
-
+//list of these orientations
 var orientations = [315, 270, 225, 180, 90, 135, 0, 45];
-var width_i = 150;
-var width_ii = 150;
-var max_children_on_grid = 25;
-var current_num_children = max_children_on_grid;
-var max_adult_on_grid = 25;
-var current_num_adult = max_adult_on_grid;
-var max_backpack_on_grid = 25;
-var current_num_backpack = max_backpack_on_grid;
-var max_bike_on_grid = 25;
-var current_num_bike = max_bike_on_grid;
-var total_peds_at_start = 0;
-var max_obstacles_on_grid = 150;
-var max_large_X_obstacles_on_grid = 0;
-var max_exits_on_grid = 4;
-var ms_between_updates = 1;
-var wait_before_random_move = 5;
-var take_snapshot = false;
-var hall_layout = false;
-var fuller_lower = false;
-var classroom = false;
-var num_checked = 0;
-var num_checked_h = 0; //this is weird
+
+//initial board confiigurations
+var width_i = 150; //width of the board, unless changed by input
+var width_ii = 150; //height of the booard, unless changed by input
+var max_children_on_grid = 25; //number of children initially on board, can be changed by user input
+var current_num_children = max_children_on_grid; //counter for the number of children on the board, updates when a child reaches an exit
+var max_adult_on_grid = 25; //number of adults initially on board, can be changed by user input
+var current_num_adult = max_adult_on_grid; //counter for the number of adults on the board, updates when an adult reaches an exit
+var max_backpack_on_grid = 25; //number of adults with a backpack initially on board, can be changed by user input
+var current_num_backpack = max_backpack_on_grid; //counter for the number of adults w/ backpack on the board, updates when an adult w/ backpack reaches an exit
+var max_bike_on_grid = 25; //number of adults with a bike initially on board, can be changed by user input
+var current_num_bike = max_bike_on_grid; //counter for the number of adults w/ bike on the board, updates when an adult w/ bike reaches an exit
+
+var total_peds_at_start = 0; //variable for the total number of people on the grid, updates when it reads the value from html
+var max_obstacles_on_grid = 150; //number of oobstacles to place on the board, can be changed by user input
+var max_large_X_obstacles_on_grid = 0; //number of large X oobstacles on grid, can be changed by user input
+var max_exits_on_grid = 4; // number of exits on grid, can be changed by user input
+var ms_between_updates = 1; // number of milliseconds between a board update
+var wait_before_random_move = 5; //number of board updates a person is stuck before it tries to find another move
+var take_snapshot = false; //boolean used to tell if snapshots of the board are taken after every move, can be changed by user input
+
+//Initial board options
+var hall_layout = false; //boolean to check if the hall layout board is used, can be changed by user input
+var fuller_lower = false; //boolean used to check if the fuller lower board is used, can be changed by user input
+var classroom = false; //boolean used to check if the classroom board is used, can be changed by user input
+
+//counters for warnings
+var num_checked = 0; //used to check if multiple board configurationos are checked at once
+var num_checked_h = 0; //used to check if multiple heuristics are checked at once
+
+//heuristic options
 var diagonal = true; //initialize heuristoc using diagonal distance
-var manhattan = false;
-var euclidean = false;
+var manhattan = false; //boolean to use manhattan distance in heuristic, user can change this
+var euclidean = false; //boolean to use euclidean distance in heuristic, user can change this
 
-var total_child_collisions = 0;
-var avg_child_collisions = 0;
-var total_adult_collisions = 0;
-var avg_adult_collisions = 0;
-var total_backpack_collisions = 0;
-var avg_backpack_collisions = 0;
-var total_bike_collisions = 0;
-var avg_bike_collisions = 0;
-var total_collisions = 0;
-var avg_collisions_total = 0;
+//Collision counters
+var total_child_collisions = 0; //counter for the number of collisions for children, in total
+var avg_child_collisions = 0; //counter for the number of collisions for children, as an average
+var total_adult_collisions = 0; //counter for the number of collisions for adults, in total
+var avg_adult_collisions = 0; //counter for the number of collisions for adults, as an average
+var total_backpack_collisions = 0; //counter for the number of collisions for adults with a backpacj, in total
+var avg_backpack_collisions = 0; //counter for the number of collisions for with a backpack, as an average
+var total_bike_collisions = 0; //counter for the number of collisions for adults with a bike, in total
+var avg_bike_collisions = 0; //counter for the number of collisions for adults with a bike, as an average
+var total_collisions = 0; //counter for the number of collisions for people, in total
+var avg_collisions_total = 0; //counter for the number of collisions for people, as an average
 
-var sum_of_exit_times = 0;
-var sum_child_exit_times = 0;
-var sum_adult_exit_times = 0;
-var sum_backpack_exit_times = 0;
-var sum_bike_exit_times = 0;
+//Exit time counters (in units of board updates)
+var sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
+var sum_child_exit_times = 0; //counter for the child exit times, added together
+var sum_adult_exit_times = 0; //counter for the adult exit times, added together
+var sum_backpack_exit_times = 0; //counter for the adult with backpack exit times, added together
+var sum_bike_exit_times = 0; //counter for the adult with a bike exit times, added together
 
-var sum_wait_steps = 0;
-var sum_child_wait_steps = 0;
-var sum_adult_wait_steps = 0;
-var sum_backpack_wait_steps = 0;
-var sum_bike_wait_steps = 0;
+//Wait time counters
+var sum_wait_steps = 0; //number of times everyone has waited, all added together
+var sum_child_wait_steps = 0; //number of times each child has waited, all added together
+var sum_adult_wait_steps = 0; //number of times each adult has waited, all added together
+var sum_backpack_wait_steps = 0; //number of times each adult w a backpack has waited, added together
+var sum_bike_wait_steps = 0; //number of times each adult w a bike has waited, added together
 
-
+//counter for the number of children currently on the board
 var current_population = 0;
 
 // HOOK UP GUI ELEMENTS: BEGIN
 // -----------------------------------------------------
-var numChildren = document.getElementById("numChildren");
-numChildren.value = max_children_on_grid;
+var numChildren = document.getElementById("numChildren"); //getting the number of children to put on the board, from user input
+numChildren.value = max_children_on_grid; 
 numChildren.oninput = function() {
     if(this.value>(width_i*width_ii)){//right now just have if it greater than the area
-      window.alert("Cannot fit this many objects on the grid, please choose another number.");
+      window.alert("Cannot fit this many objects on the grid, please choose another number."); //windoow poopup if too many children
   }
-  max_children_on_grid = this.value;
-  current_num_children = max_children_on_grid;
+  max_children_on_grid = this.value; //updating the initial number of children on the grid
+  current_num_children = max_children_on_grid; //updating the current number of children on the grid
 }
 
 var numAdults = document.getElementById("numAdults");
@@ -262,12 +273,11 @@ euclideanCheckbox.oninput = function() {
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
 
-//creating a priority queue, not totally sure where to put the functions
 const leftChild = (index) => index * 2 + 1;
 const rightChild = (index) => index * 2 + 2;
 const parent = (index) => Math.floor((index - 1) / 2);
-var D = 1;
-var D2 = Math.sqrt(2);
+var D = 1; //distance of one edge of the square
+var D2 = Math.sqrt(2); //distance from one corner of a square to the other
 
 
 function diagonald(x, y, goalX, goalY) { //diagonal distance heuristic
@@ -358,6 +368,7 @@ function Node(j, jj, exiti, exitii, endi, endii, parent, direction, goali, goali
     }
 }
 
+//priority queue
 function minHeap() {
     this.heap = [];
 
