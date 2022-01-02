@@ -79,191 +79,210 @@ var current_population = 0;
 // -----------------------------------------------------
 var numChildren = document.getElementById("numChildren"); //getting the number of children to put on the board, from user input
 numChildren.value = max_children_on_grid; 
-numChildren.oninput = function() {
-    if(this.value>(width_i*width_ii)){//right now just have if it greater than the area
-      window.alert("Cannot fit this many objects on the grid, please choose another number."); //windoow poopup if too many children
+//function that evaluates the user input for number of children
+numChildren.oninput = function() { 
+    if(this.value>(width_i*width_ii)){//if the user input is greater than the area of the board
+      window.alert("Cannot fit this many objects on the grid, please choose another number."); //windoow poopup, too many children selected
   }
   max_children_on_grid = this.value; //updating the initial number of children on the grid
-  current_num_children = max_children_on_grid; //updating the current number of children on the grid
+  current_num_children = max_children_on_grid; //updating the current number of children on the grid, should we update this somewhere else?
 }
 
-var numAdults = document.getElementById("numAdults");
+var numAdults = document.getElementById("numAdults"); //getting the number of adults to put on thee board from user input
 numAdults.value = max_adult_on_grid;
+//function that evaluates the user input for number of adults to place oon the board
 numAdults.oninput = function() {
-    if(this.value>(width_i*width_ii)/2){//right now just have if it greater than the area
-        window.alert("Cannot fit this many objects on the grid, please choose another number.");
+  //if the user input for the number of adults is greater than the area of the board
+    if(this.value>(width_i*width_ii)/2){//divide by 2 because an adult takes up 2 spaces
+        window.alert("Cannot fit this many objects on the grid, please choose another number."); //window poopup, too many adults selected
     }
-    max_adult_on_grid = this.value;
-    current_num_adult = max_adult_on_grid;
+    max_adult_on_grid = this.value; //uodating the initial number of adults on the board
+    current_num_adult = max_adult_on_grid; //updating the current numbeer of adults on the board, should this be updated  somewhere else?
 }
 
-var numBackPacks = document.getElementById("numBackPacks");
+var numBackPacks = document.getElementById("numBackPacks"); //getting the number of adults with backpacks to put on the board, from user input
 numBackPacks.value = max_backpack_on_grid;
+//function that evaluates the user input for the number of adults with backpacks
 numBackPacks.oninput = function() {
-    if(this.value>(width_i*width_ii)/4){//right now just have if it greater than the area
-        window.alert("Cannot fit this many adults with backpacks on the grid, please choose another number");
+  //if the user input for the number of adults with a backpack is greater than the area of the board
+    if(this.value>(width_i*width_ii)/4){//divide by 4 because an adult takes up 4 places no the board
+        window.alert("Cannot fit this many adults with backpacks on the grid, please choose another number"); //popup window, too many adults with backpack selected
     }
-    max_backpack_on_grid = this.value;
-    current_num_backpack = max_backpack_on_grid;
+    max_backpack_on_grid = this.value; //updating the initial number of adults with a backpack on the grid
+    current_num_backpack = max_backpack_on_grid; //updating the current number of adults with a backpack on the board, should this be updated somewhere else?
 }
 
-var numBikes = document.getElementById("numBikes");
+var numBikes = document.getElementById("numBikes"); //getting the number of adults with bikes to put on the board, from user input
 numBikes.value = max_bike_on_grid;
+//function that evaluates the user input for the number of adults with bikes
 numBikes.oninput = function() {
-    if(this.value>(width_i*width_ii)/14){//right now just have if it greater than the area
+  //if the user input for the number of adults with a bike is greater than the area of the board
+    if(this.value>(width_i*width_ii)/14){//dividing by 14 because and adult with a bike takes up 14 spaces
     //make it floor?
-    window.alert("Cannot fit this many objects on the grid, please choose another number.");
+    window.alert("Cannot fit this many objects on the grid, please choose another number."); //popup window, too many adults with a bike selected
 }
-max_bike_on_grid = this.value;
-current_num_bike = max_bike_on_grid;
+max_bike_on_grid = this.value; //updating the initial number with adults with a bike on the grid
+current_num_bike = max_bike_on_grid; //updating the current number of adults with a bike on the board, should this be updated somewhere else?
 }
 
-var ms_speed_slider = document.getElementById("ms_speed");
-ms_speed_slider.value = ms_between_updates;
+var ms_speed_slider = document.getElementById("ms_speed"); //getting the update time from user input
+ms_speed_slider.value = ms_between_updates; 
+//function that sets the update time
 ms_speed_slider.oninput = function() {
-  ms_between_updates = this.value;
+  ms_between_updates = this.value; //set the user input of the update time to the number of milliseconds between a board update
 }
 
-var wait_speed_slider = document.getElementById("wait_speed");
+var wait_speed_slider = document.getElementById("wait_speed"); //getting the wait time from user input
 wait_speed_slider.value = wait_before_random_move;
+//function that sets the wait time
 wait_speed_slider.oninput = function() {
-  wait_before_random_move = this.value;
+  wait_before_random_move = this.value; //updating the number of board updates a person is stuck before it tries to find another move from the user input
 }
 
-var gridWidthi = document.getElementById("gridWidthi");
+var gridWidthi = document.getElementById("gridWidthi"); //getting the grid width from user input
 gridWidthi.value = width_i;
+//function the set the grid width
 gridWidthi.oninput = function() {
-    width_i = this.value;
+    width_i = this.value; //updating the board width from the user input
 }
 
-var gridWidthii = document.getElementById("gridWidthii");
+var gridWidthii = document.getElementById("gridWidthii"); //getting the height of the board from user input
 gridWidthii.value = width_ii;
+//function to set the grid height
 gridWidthii.oninput = function() {
-    width_ii = this.value;
+    width_ii = this.value; //updating th board height from the uder input
 }
 
-var numExits = document.getElementById("numExits");
+var numExits = document.getElementById("numExits"); //getting the number of exits from user input
 numExits.value = max_exits_on_grid;
+//function that checks if the number of exits selected is valid
 numExits.oninput = function() {
-    if(this.value>((2*width_i)+(2*width_ii))) {//right now just have if it greater than the area
+  //if the number of exits is greater than the perimeter of the board
+    if(this.value>((2*width_i)+(2*width_ii))) {//divide by 4? since the number of exits takes up 4 spaces
     //make it floor?
-    window.alert("Cannot fit this many exits on the grid, please choose another number.");
-}
-max_exits_on_grid = this.value;
+    window.alert("Cannot fit this many exits on the grid, please choose another number."); //popup window, too many exits selected
+  }
+max_exits_on_grid = this.value; //updating the number of exits on the grid
 }
 
-var numObstacles = document.getElementById("numObstacles");
-numObstacles.value = max_obstacles_on_grid;
+var numObstacles = document.getElementById("numObstacles"); //getting the number of obstacles frooom user input
+numObstacles.value = max_obstacles_on_grid; 
+//function that checks of the number of obstacles is valid
 numObstacles.oninput = function() {
-    if(this.value>(width_i*width_ii)){//right now just have if it greater than the area
+  //if the number of obstacles is greater than the the area of the board
+    if(this.value>(width_i*width_ii)){
     //make it floor?
-    window.alert("Cannot fit this many objects on the grid, please choose another number.");
+    window.alert("Cannot fit this many objects on the grid, please choose another number."); //popup windoow, too many obstacles selected
 }
-max_obstacles_on_grid = this.value;
+max_obstacles_on_grid = this.value; //updating the number of obstacles on the board
 }
 
-var numXObstacles = document.getElementById("numXObstacles");
+var numXObstacles = document.getElementById("numXObstacles"); //getting the number of large "X" like obstacles from uper input
 numXObstacles.value = max_large_X_obstacles_on_grid;
 numXObstacles.oninput = function() {
-    max_large_X_obstacles_on_grid = this.value;
+    max_large_X_obstacles_on_grid = this.value; //updating the number of X obstacles no the board
 }
 
-var takeSnapshotCheckbox = document.getElementById("takeSnapshot");
+var takeSnapshotCheckbox = document.getElementById("takeSnapshot"); //getting from user input if snapshots of the board will be taken
 if (take_snapshot) {
     takeSnapshotCheckbox.checked = true;
 }
 takeSnapshotCheckbox.oninput = function() {
-    take_snapshot = takeSnapshotCheckbox.checked;
+    take_snapshot = takeSnapshotCheckbox.checked; //update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
 }
 
-var hallLayoutCheckbox = document.getElementById("hallLayout");
+var hallLayoutCheckbox = document.getElementById("hallLayout"); //getting from user input if the hall layput will be used
 if (hall_layout) {
     hallLayoutCheckbox.checked = true;
 }
+//function that updates the layout and makes sure it is the only one checked
 hallLayoutCheckbox.oninput = function() {
-    hall_layout = hallLayoutCheckbox.checked;
-    if (hall_layout ==  true) {
-        num_checked = num_checked + 1;
+    hall_layout = hallLayoutCheckbox.checked; //update the boolean value of the hall layout, used to determine if this layout will be used
+    if (hall_layout ==  true) { //if the hall loyout is checked
+        num_checked = num_checked + 1; //add one to the number of layouts checked
         console.log("lecture hall " + num_checked)
-        if(num_checked > 1) {
-            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
+        if(num_checked > 1) { //if there is more than one layout checked
+            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again."); //popup window, too many layouts selected
         }
     }
 }
 
-
-var fullerLowerCheckbox = document.getElementById("fullerLower");
+var fullerLowerCheckbox = document.getElementById("fullerLower"); //getting from user input if the fuller lower layout will be used
 if (fuller_lower) {
     fullerLowerCheckbox.checked = true;
 }
+//function that updates the layout and makes sure it is the only one checked
 fullerLowerCheckbox.oninput = function() {
-    fuller_lower = fullerLowerCheckbox.checked;
-    if (fuller_lower ==  true) {
-        num_checked = num_checked + 1;
+    fuller_lower = fullerLowerCheckbox.checked; //update the boolean value of the Fuller Lower layout, used to determine if this layout will be used
+    if (fuller_lower ==  true) { //if the Fuller Lower loyout is checked
+        num_checked = num_checked + 1; //add one to the number of layouts checked
         console.log("fuller lower " + num_checked)
-        if(num_checked > 1) {
-            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
+        if(num_checked > 1) { //if there is more than one layout checked
+            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again."); //popup window, too many layouts selected
         }
     }
-    
 }
 
-var classroomCheckbox = document.getElementById("classroom");
+var classroomCheckbox = document.getElementById("classroom"); //getting from user input if the classroom layout will be used
 if (classroom) {
     classroomCheckbox.checked = true;
 }
+//function that updates the layout and makes sure it is the only one checked
 classroomCheckbox.oninput = function() {
-    classroom = classroomCheckbox.checked;
-    if (classroom ==  true) {
-        num_checked = num_checked + 1;
+    classroom = classroomCheckbox.checked; //update the boolean value of the classroom layout, used to determine if this layout will be used
+    if (classroom ==  true) { //if the classroom loyout is checked
+        num_checked = num_checked + 1; //add one to the number of layouts checked
         console.log("classroom " + num_checked)
-        if(num_checked > 1) {
-            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.")
+        if(num_checked > 1) { //if there is more than one layout checked
+            window.alert("Cannot have more than one layout selected.  Please choose one or less and try again."); //popup window, too many layouts selected
         }
     }   
 }
 
-var diagonalCheckbox = document.getElementById("diagonal");
+var diagonalCheckbox = document.getElementById("diagonal"); //getting from user input if the diagonal distance will be used on the heuristic
 if (diagonal) {
     diagonalCheckbox.checked = true;
 }
+//function that updates the diagonal heuristic value and makes sure only one heuristic is checked
 diagonalCheckbox.oninput = function() {
-    diagonal = diagonalCheckbox.checked;
-    if (diagonal ==  true) {
-        num_checked_h = num_checked_h + 1;
+    diagonal = diagonalCheckbox.checked; //update the boolean value of the diagonal, used to determine if the diagonal distance will be used
+    if (diagonal ==  true) { //if the diagonal dostance is checked
+        num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
         console.log("diagonal" + num_checked_h)
-        if(num_checked_h > 1) {
-            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again.")
+        if(num_checked_h > 1) { //if the number of heuristics checked is more than one, someway to change to make more accurate???
+            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again."); //popup window, too many heuristics checked
         }
     }   
 }
 
-var manhattanCheckbox = document.getElementById("manhattan");
+var manhattanCheckbox = document.getElementById("manhattan"); //getting from user input if the manhattan distance will be used as the heuristic
 if (manhattan) {
     manhattanCheckbox.checked = true;
 }
+//function that updates the manhattan heuristic value and makes sure only one heuristic is checked
 manhattanCheckbox.oninput = function() {
-    manhattan = manhattanCheckbox.checked;
-    if (manhattan ==  true) {
-        num_checked_h = num_checked_h + 1;
+    manhattan = manhattanCheckbox.checked; //update the boolean value of manhattan, used to determine if the manhattan distance will be used 
+    if (manhattan ==  true) { //if the manhattan dostance is checked
+        num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
         console.log("manhattan" + num_checked_h)
-        if(num_checked_h > 1) {
-            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again.")
+        if(num_checked_h > 1) { //if the number of heuristics checked is more than one, someway to change to make more accurate???
+            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again."); //popup window, too many heuristics checked
         }
     }   
 }
 
-var euclideanCheckbox = document.getElementById("euclidean");
+var euclideanCheckbox = document.getElementById("euclidean"); //getting from user input if the euclidean distance will be used as the heuristic
 if (euclidean) {
     euclideanCheckbox.checked = true;
 }
-euclideanCheckbox.oninput = function() {
-    euclidean = euclideanCheckbox.checked;
-    if (euclidean ==  true) {
-        num_checked_h = num_checked_h + 1;
+//function that updates the euclidean heuristic value and makes sure only one heuristic is checked
+euclideanCheckbox.oninput = function() { 
+    euclidean = euclideanCheckbox.checked; //update the boolean value of euclidean, used to determine if the euclidean distance will be used 
+    if (euclidean ==  true) { //if the euclidean dostance is checked
+        num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
         console.log("euclidean" + num_checked_h)
-        if(num_checked_h > 1) {
-            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again.")
+        if(num_checked_h > 1) { //if the number of heuristics checked is more than one, someway to change to make more accurate???
+            window.alert("Cannot have more than one heuristic selected.  Please choose one and try again."); //popup window, too many heuristics checked
         }
     }   
 }
@@ -273,116 +292,128 @@ euclideanCheckbox.oninput = function() {
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
 
+//variables used in the priority queue
 const leftChild = (index) => index * 2 + 1;
 const rightChild = (index) => index * 2 + 2;
 const parent = (index) => Math.floor((index - 1) / 2);
+//global variables for the diaginal distance
 var D = 1; //distance of one edge of the square
 var D2 = Math.sqrt(2); //distance from one corner of a square to the other
 
-
+//function that returns the diagonal distance between a current (x,y) position to a goal (x,y) position
 function diagonald(x, y, goalX, goalY) { //diagonal distance heuristic
-    var dx = Math.abs(x - goalX);
-    var dy = Math.abs(y - goalY);
-
-    var h = D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy);
-    return h;
+    var dx = Math.abs(x - goalX); //the absolute value of the difference between the current position x value and the goal x value
+    var dy = Math.abs(y - goalY); //the absolute value of the difference between the current position y value and the goal y value
+  //maybe try too explain better
+    var h = D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy); //dx and dy added together plus the minumum of dx and dy times the squareroot of 2 minus 2
+    return h; //the diagoonal distance is returned
 }
 
-function manhattand(x, y, goalX, goalY){ //manhattan distance heuristic
-  var h = Math.abs(x-goalX) + Math.abs(y-goalY);
-  return h;
+//function that returns the manhattan distance between a current (x,y) position to a goal (x,y) position
+function manhattand(x, y, goalX, goalY){ 
+  var h = Math.abs(x-goalX) + Math.abs(y-goalY); //the absolute values of the differences of the current x and goal x and current y and goal y values added together
+  return h; //return the distance
 }
 
-function euclideand(x, y, goalX, goalY){ //euclidean distance heuristic
-  var dx = Math.abs(x - goalX);
-  var dy = Math.abs(y - goalY);
-  var h = Math.sqrt(Math.pow(dx,2)+ Math.pow(dy,2));
-  return h;
+//function that returns the euclidean distance between a current (x,y) position to a goal (x,y) position
+function euclideand(x, y, goalX, goalY){ 
+  var dx = Math.abs(x - goalX); //the absolute value of the difference between the current position x value and the goal x value
+  var dy = Math.abs(y - goalY); //the absolute value of the difference between the current position y value and the goal y value
+  //distance formula
+  var h = Math.sqrt(Math.pow(dx,2)+ Math.pow(dy,2)); //squareroot of dx squared and dy squared added together
+  return h; //return the distance
 }
 
+//generic structure used in the AStar function and priority queue
 function Node(j, jj, exiti, exitii, endi, endii, parent, direction, goali, goalii, profilei, profileii) {
     this.i = j;
     this.ii = jj;
     this.direction = direction;
-
-    this.exiti = exiti;
-    this.exitii = exitii;
-    this.endi = endi;
-    this.endii = endii;
-    this.goali = goali;
-    this.goalii = goalii;
-    this.profile_i = profilei;
-    this.profile_ii = profileii;
+    this.exiti = exiti; //head of the exit x value
+    this.exitii = exitii; //head of the exit y value
+    this.endi = endi; //end of the exit x value
+    this.endii = endii; //end of the exit y value
+    this.goali = goali; //specific x value of the cell exit
+    this.goalii = goalii; //specific y value of the cell exit
+    this.profile_i = profilei; //all x values that the structure spans
+    this.profile_ii = profileii; //all y values that the structure spans
+    // how many steps fromo starting spot.
+    this.parent = parent; //previous step, structured as a node
+    this.g = 0; //number of steps to get to current position, used in heuristic
+    if (typeof parent === 'undefined') { //if the nide has no parent
+        this.g = 0; //this is the starting point, hence no number of steps too get to the current position
+    }
+    else { //if not the starting position
+        this.g = parent.g + 1; //add one to the previous g to get the number of steps to get here
+    }
 
     // starting from the last node (which is the exit) go backwards until you
     // get to a node whose parent is the original, then return its location [i ,ii]
     this.initial_step = function() {
-        var n = this;
-        if (this.parent === null) {
-            return [];
+        var n = this; //n is the current node in use
+        if (this.parent === null) { //if the node does not have a parent
+            return []; //return empty array
         } // sanity check
 
-        // find node whose parent has no parent, sincee that node is the origin and then
+        // find node whose parent has no parent, since that node is the origin and then
         // n is the first step in the direction of the final path.
         while (typeof n.parent.parent !== 'undefined') {
-            n = n.parent;
+            n = n.parent; //update n
         }
-        return [n.i, n.ii, n.direction, n.profile_i, n.profile_ii];
+        return [n.i, n.ii, n.direction, n.profile_i, n.profile_ii]; //return the next step, anchors, profiles, and the direction of the person
     }
+    
+    //used to quickly get the anchor values, hashtable
+    //ask about this
     this.key = function() {
         return "" + this.i + "," + this.ii;
     }
 
-    //checking if any part of the person is touching an exit
+    //function to check if a person is at an exit and should be removed from the board
     this.done = function() {
-        for (index = 0; index < this.profile_i.length; index++) {
+        for (index = 0; index < this.profile_i.length; index++) { //go through all person's cells
             if ((this.profile_i[index] + this.i) >= this.exiti && (this.profile_i[index] + this.i) <= this.endi &&
-                (this.profile_ii[index] + this.ii) >= this.exitii && (this.profile_ii[index] + this.ii) <= this.endii) {
+                (this.profile_ii[index] + this.ii) >= this.exitii && (this.profile_ii[index] + this.ii) <= this.endii) { //if the cell is touching an exit
                 return true; // if any part of the person is in an exit
+                //checking if any part of the person is touching an exit
+            }
         }
     }
-}
-
-    // how many steps fromo starting spot.
-    this.parent = parent;
-    this.g = 0;
-    if (typeof parent === 'undefined') {
-        this.g = 0;
-    } else {
-        this.g = parent.g + 1;
-    }
-
-    // this ensures that two nodes can be compared using < operator.
-    Node.prototype.valueOf = function() { //flexibility for changing heuristic and evaluating using different heuristics
+    
+    //Function to ensure that two nodes can be compared using < operator
+    //here is where the distance heuristic function is used
+    Node.prototype.valueOf = function() { 
         // f = g + h
-        if (manhattan){
-          var h = manhattand(this.i, this.ii, this.goali, this.goalii);
+        if (manhattan){ //if using the manhattan distancee
+          var h = manhattand(this.i, this.ii, this.goali, this.goalii); //call the manhatan function, set this distance to h
         }
-        else if (euclidean){
-          var h = euclideand(this.i, this.ii, this.goali, this.goalii);
+        else if (euclidean){ //if using the euclidean distance
+          var h = euclideand(this.i, this.ii, this.goali, this.goalii); //call the euclidean function, set this distance to h
         }
-        else {
-          var h = diagonald(this.i, this.ii, this.goali, this.goalii);
+        else { //else the diagoonal distance is used
+          var h = diagonald(this.i, this.ii, this.goali, this.goalii); //call the diaginal function, set this distancee to h
         }
-        return this.g + h;
+        return this.g + h; //total heurisic value, f, is returned
     }
 }
 
-//priority queue
+//priority queue, used for AStar algorithm
 function minHeap() {
-    this.heap = [];
+    this.heap = []; //initially empty array
 
+    //function to swap two nodes
     this.swap = function(indexOne, indexTwo) {
-        const tmp = this.heap[indexOne];
-        this.heap[indexOne] = this.heap[indexTwo];
-        this.heap[indexTwo] = tmp;
+        const tmp = this.heap[indexOne]; //tmp is set to the node at the first index
+        this.heap[indexOne] = this.heap[indexTwo]; //the first index is set to the node at the second index
+        this.heap[indexTwo] = tmp; //the second index is set to the node from the first index
     };
 
+    //function to see the value at the front of the heap, oor the root which is always the lowest priority item
     this.peek = function() {
-        // the root is always the highest priority item, make sure actually lowest
-        return this.heap[0];
+        return this.heap[0]; //return the node at the front of the array
     };
 
+    //function to place a node into the correct place in the min heap
     this.insert = function(item) {
         // push element to the end of the heap
         this.heap.push(item);
@@ -390,14 +421,16 @@ function minHeap() {
         // the index of the element we have just pushed
         let index = this.heap.length - 1;
 
-        // if the element is greater than its parent:
+        // if the element is less than its parent:
         // swap element with its parent
         while (index !== 0 && this.heap[index] < this.heap[parent(index)]) {
             this.swap(index, parent(index));
-            index = parent(index);
+            index = parent(index); //set the index to half of the current index
+            //do not fully understand
         }
     };
 
+    //function to take the minimum value out of the heap, and reorders the heap
     this.extractMin = function() {
         // remove the first element from the heap
         var root = this.heap.shift();
@@ -411,34 +444,36 @@ function minHeap() {
         // correctly re-position heap
         this.heapify(0);
 
-        return root;
+        return root; //return the min value
     };
 
-    this.heapify = function(index) { //used maxheap so confused on what to change
+    //function to make the array into a min heap
+    this.heapify = function(index) {
         let left = leftChild(index);
         let right = rightChild(index);
         let smallest = index;
 
-        // if the left child is bigger than the node we are looking at
+        // if the left index is less than the length of the heap and the left child is smaller than the node we are looking at
         if (left < this.heap.length && this.heap[smallest] > this.heap[left]) {
-            smallest = left; //i think this is wrong
+            smallest = left; //change the smallest value to the left value
         }
 
-        // if the right child is bigger than the node we are looking at
+        // if the right index is less than the length of the heap and the right child is smaller than the node we are looking at
         if (right < this.heap.length && this.heap[smallest] > this.heap[right]) {
-            smallest = right;
+            smallest = right; //change smallest to right
         }
 
-        // if the value of largest has changed, then some swapping needs to be done
+        // if the value of smallest has changed, then some swapping needs to be done
         // and this method needs to be called again with the swapped element
         if (smallest != index) {
-            this.swap(smallest, index);
-            this.heapify(smallest);
+            this.swap(smallest, index); //swap smallest and index
+            this.heapify(smallest); //recall heapify
         }
     };
 
+    //function to get the "size" of the heap, or the number of nodes in it
     this.size = function() { //gets the length of the heap
-        return this.length;
+        return this.length; //returns the length
     }
 }
 
