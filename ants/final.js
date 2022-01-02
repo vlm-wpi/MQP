@@ -28,6 +28,7 @@ var total_peds_at_start = 0; //variable for the total number of people on the gr
 var max_obstacles_on_grid = 150; //number of oobstacles to place on the board, can be changed by user input
 var max_large_X_obstacles_on_grid = 0; //number of large X oobstacles on grid, can be changed by user input
 var max_exits_on_grid = 4; // number of exits on grid, can be changed by user input
+var exit_locations = []; //might need to be global variable
 var ms_between_updates = 1; // number of milliseconds between a board update
 var wait_before_random_move = 5; //number of board updates a person is stuck before it tries to find another move
 var take_snapshot = false; //boolean used to tell if snapshots of the board are taken after every move, can be changed by user input
@@ -833,7 +834,7 @@ function State() {
 
     this.place_things = function(random) {
         //added this in as part of exit distances
-        var exit_locations = []; //might need to be global variable
+        
         //here will initialize a lecture hall
         // 30 rows, after 15th 2 row spaces for ppl
         //20 columns, 3 column spaces for ppl after 10
@@ -1209,7 +1210,7 @@ function State() {
                 exit_distances.push(list)
             }
             // console.log(exit_distances)
-            var min_exit_distance = exit_distances[0][0]; //this needs to be a var
+            var min_exit_distance = exit_distances[0][0]; 
             var min_exiti = exit_distances[0][1];
             var min_exitii = exit_distances[0][2];
             var min_endi = exit_distances[0][3];
@@ -1680,8 +1681,26 @@ function State() {
                       //add one to its still
                       thing.wait++;
                       thing.waitsteps++;
+                      console.log(thing.wait);
+                      //find another exit to go to, have it if it is double the time you waited to make a random move
+                      if(thing.wait>wait_before_random_move*2){
+                        var ran_exit_index = Math.floor(Math.random() * max_exits_on_grid);
+                        var new_exit = exit_locations[ran_exit_index];
+                        thing.min_exiti = new_exit.anchor_i;
+                        thing.min_exitii = new_exit.anchor_ii;
+                        thing.endi = new_exit.profile_i[3] + new_exit.anchor_i;
+                        thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii;
+                        var ranx = get_random_int(0,3);
+                        var rany = get_random_int(0,3);
+                        thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i;
+                        thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii;
+                        //change the exit and recurrsively call the function
+                        thing.wait = 0;
+                        this.move_thing(thing);
+                        
+                      }
                           //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
-                          if(thing.wait>wait_before_random_move){ //can play around with this number, could maybe have show up on board
+                          else if(thing.wait>wait_before_random_move){ //can play around with this number, could maybe have show up on board
                             //get random orientation and try to move there
                             var orientation = random_orientation();
                             var can_move = true;
