@@ -478,6 +478,7 @@ function minHeap() {
     }
 }
 
+//function that takes care of initializing the grid, placing items, and updating the board
 function State() {
     var total_peds_at_start = parseInt(max_children_on_grid) + parseInt(max_adult_on_grid) + parseInt(max_backpack_on_grid) + parseInt(max_bike_on_grid);
     document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
@@ -487,121 +488,124 @@ function State() {
     document.getElementById("num_backpack_initial").innerHTML = max_backpack_on_grid;
     document.getElementById("num_bike_initial").innerHTML = max_bike_on_grid;
     document.getElementById("num_obstacle_initial").innerHTML = max_obstacles_on_grid;
-    this.grid = [];
-    this.temp_grid = [];
-    this.population = [];
+    this.grid = []; //data structure for grid, initially empty
+    this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
+    this.population = []; //population of people on the grid, initially empty
+    total_population_over_time = [total_peds_at_start]; //make the total population over time start with everyone on the board
 
+    // function that makes sure the given x coordinate is on the board, used for rounding boundary cases
+    //takes in a x coordinate
     this.get_bounded_index_i = function(index) {
-        var bounded_index_i = index;
-        if (index < 0) {
-            bounded_index_i = 0;
+        var bounded_index_i = index; //initially set the bounded index to the given x coordinate
+        if (index < 0) { //if the x coordinate is less than zero, it is off the board
+            bounded_index_i = 0; //change the x value to zero so it is ono the board
         }
-        if (index >= width_i) {
-            bounded_index_i = width_i - 1;
+        if (index >= width_i) { //if the x coordinate is greater than or equal to the width of the board, it is off the board
+            bounded_index_i = width_i - 1; //change the x coordinate to one less than the width so it is on the board
         }
-        return bounded_index_i;
+        return bounded_index_i; //return the x coordinate, guarenteed to be on the board
     }
+    
+    //function that makes sure the given y coordinate is on the board, used for rounding boundary cases
+    //takes in a y coordinate
     this.get_bounded_index_ii = function(index) {
-        var bounded_index_ii = index;
-        if (index < 0) {
-            bounded_index_ii = 0;
+        var bounded_index_ii = index; //initially set the bounded inidex to the given y coordinate
+        if (index < 0) { //if the y coordinate is less than zero, it is off the board
+            bounded_index_ii = 0; //change the y value to zero so it is ono the board
         }
-        if (index >= width_ii) {
-            bounded_index_ii = width_ii - 1;
+        if (index >= width_ii) { //if the y coordinate is greater than or equal to the height of the board, it is off the board
+            bounded_index_ii = width_ii - 1; //change the y coordinate to one less than the height so it is on the board
         }
-        return bounded_index_ii;
+        return bounded_index_ii; //return the y coordinate, guarenteed to be on the board
     }
 
+    //function thatt initializes the grid, does not need any input
     this.init_grids = function() {
-        for (var i = 0; i < width_i; i = i + 1) {
-            this.grid[i] = [];
-            this.temp_grid[i] = [];
-            for (var ii = 0; ii < width_ii; ii = ii + 1) {
-                this.grid[i][ii] = new Cell(i, ii);
-                this.temp_grid[i][ii] = new Cell(i, ii);
+        for (var i = 0; i < width_i; i = i + 1) { //go through each index until you get to the width og the board
+            this.grid[i] = []; //initialize the grid at that width index to be empty
+            this.temp_grid[i] = []; //initialize the temp grid at that width index to be empty
+            for (var ii = 0; ii < width_ii; ii = ii + 1) { //go through every index until you get to the height of the board
+                this.grid[i][ii] = new Cell(i, ii); //at each index of the actual board, initialize an empty cell
+                this.temp_grid[i][ii] = new Cell(i, ii); //at each index of the temp board, initialize an empty cell
             }
         }
     }
-    total_population_over_time = [total_peds_at_start];
-
+    
+    //function to move people on the board, does not require any input
     this.move_things = function() {
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
-        for (var p = this.population.length - 1; p >= 0; p--) {
-            var thing = this.population[p][0];
-            var object_type = this.population[p][1];
+        for (var p = this.population.length - 1; p >= 0; p--) { //go through everyone in the population
+            var thing = this.population[p][0]; //set thing to the person
+            var object_type = this.population[p][1]; //get what type of person (child, adult...)
             thing.exittime++; //always add one to exit time
-            if (this.move_thing(thing)) {
-                this.population.splice(p, 1); // remove
-                // console.log("population: " + this.population)
-                var current_population = this.population.length;
+            //call move thing function, moves things on the temp grid
+            if (this.move_thing(thing)) { //returns true if at an exit, false if not, temp grid is updated
+                this.population.splice(p, 1);
+                var current_population = this.population.length; //number of people in the grid
                 document.getElementById("current_total").innerHTML = current_population;
-                total_population_over_time.push(current_population);
-              //  if (current_population > 0) {
-                    // console.log(object_type)
-                    if (object_type == 'Child') {
-                        current_num_children = current_num_children - 1;
+                total_population_over_time.push(current_population); //add the current population to the list of all previous populations (each update)
+                sum_of_exit_times = sum_of_exit_times + thing.exittime; //add its exit time to the total exit times
+                sum_wait_steps = sum_wait_steps + thing.waitsteps; //add its total waittime to the total waitime
+                    //if a child
+                    if (object_type == 'Child') { 
+                        current_num_children = current_num_children - 1; //subtract one from the child population
                         document.getElementById("current_children").innerHTML = current_num_children;
                         //add to sum of everyones exit times
-                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
-                        sum_child_exit_times = sum_child_exit_times + thing.exittime;
-                        sum_wait_steps = sum_wait_steps + thing.waitsteps;
-                        sum_child_wait_steps = sum_child_wait_steps + thing.waitsteps;
+                        sum_child_exit_times = sum_child_exit_times + thing.exittime; //add its exit time to the total children exit times
+                        sum_child_wait_steps = sum_child_wait_steps + thing.waitsteps; //add its wait time to the total children wait times
                         //check if last child
                         if(current_num_children==0){
-                          var total_child_exit_time = thing.exittime / 4;
+                          var total_child_exit_time = thing.exittime; //in board update units
                           document.getElementById("total_child_exit").innerHTML = total_child_exit_time;
-                          var total_child_wait_steps = thing.waitsteps;
+                          var total_child_wait_steps = thing.waitsteps; //set the total amount of wait steps for children
                           document.getElementById("total_child_wait").innerHTML = total_child_wait_steps;
                         }
+                        //if an adult
                     } else if (object_type == 'Adult') {
-                        current_num_adult = current_num_adult - 1;
+                        current_num_adult = current_num_adult - 1; //subtract one from the adult population
                         document.getElementById("current_adult").innerHTML = current_num_adult;
-                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
-                        sum_adult_exit_times = sum_adult_exit_times + thing.exittime;
-                        sum_wait_steps = sum_wait_steps + thing.waitsteps;
-                        sum_adult_wait_steps = sum_adult_wait_steps + thing.waitsteps;
+                        sum_adult_exit_times = sum_adult_exit_times + thing.exittime; //add its exit time to the total adult exit times
+                        sum_adult_wait_steps = sum_adult_wait_steps + thing.waitsteps; //add its wait time to the total adult wait times
+                        //check if last adult
                         if(current_num_adult==0){
-                          var total_adult_exit_time = thing.exittime / 4;
+                          var total_adult_exit_time = thing.exittime; //in board update units
                           document.getElementById("total_adult_exit").innerHTML = total_adult_exit_time;
-                          var total_adult_wait_steps = thing.waitsteps;
+                          var total_adult_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults
                           document.getElementById("total_adult_wait").innerHTML = total_adult_wait_steps;
                         }
+                        //check if adult with backpack
                     } else if (object_type == 'AdultBackpack') {
-                        current_num_backpack = current_num_backpack - 1;
+                        current_num_backpack = current_num_backpack - 1; //subtract one from the adult with backpack population
                         document.getElementById("current_backpack").innerHTML = current_num_backpack;
-                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
-                        sum_backpack_exit_times = sum_backpack_exit_times + thing.exittime;
-                        sum_wait_steps = sum_wait_steps + thing.waitsteps;
-                        sum_backpack_wait_steps = sum_backpack_wait_steps + thing.waitsteps;
+                        sum_backpack_exit_times = sum_backpack_exit_times + thing.exittime; //add its exit time to the total adult with backpack exit times
+                        sum_backpack_wait_steps = sum_backpack_wait_steps + thing.waitsteps; //add its wait time to the total adult with backpack wait times
                         if(current_num_backpack==0){
-                          var total_backpack_exit_time = thing.exittime / 4;
+                          var total_backpack_exit_time = thing.exittime; //in board update units
                           document.getElementById("total_backpack_exit").innerHTML = total_backpack_exit_time;
-                          var total_backpack_wait_steps = thing.waitsteps;
+                          var total_backpack_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults with backpack
                           document.getElementById("total_backpack_wait").innerHTML = total_backpack_wait_steps;
                         }
+                        //check if adult with bike
                     } else if (object_type == 'AdultBike') {
-                        current_num_bike = current_num_bike - 1;
+                        current_num_bike = current_num_bike - 1; //subtract one from the adult with bike population
                         document.getElementById("current_bike").innerHTML = current_num_bike;
-                        sum_of_exit_times = sum_of_exit_times + thing.exittime;
-                        sum_bike_exit_times = sum_bike_exit_times + thing.exittime;
-                        sum_wait_steps = sum_wait_steps + thing.waitsteps;
-                        sum_bike_wait_steps = sum_bike_wait_steps + thing.waitsteps;
+                        sum_bike_exit_times = sum_bike_exit_times + thing.exittime; //add its exit time to the total adult with bike exit times
+                        sum_bike_wait_steps = sum_bike_wait_steps + thing.waitsteps; //add its wait time to the total adult with bike wait times
                         if(current_num_bike == 0){
-                          var total_bike_exit_time = thing.exittime / 4;
+                          var total_bike_exit_time = thing.exittime; //in board update units
                           document.getElementById("total_bike_exit").innerHTML = total_bike_exit_time;
-                          var total_bike_wait_steps = thing.waitsteps;
+                          var total_bike_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults with bike
                           document.getElementById("total_bike_wait").innerHTML = total_bike_wait_steps;
                         }
-               //     }
                 }
-                if (current_population == 0) {
-                    current_num_children = 0;
-                    current_num_adult = 0;
-                    current_num_backpack = 0;
-                    current_num_bike = 0;
-                    end_simulation()
-                    // console.log('I ended')
+                if (current_population == 0) { //if no people left on the grid
+                //not sure if we need to set these to zero, should all be zero???
+                    current_num_children = 0; //set number of children equal to zero
+                    current_num_adult = 0; //set number of adults equal to zero
+                    current_num_backpack = 0; //set number of adults with a backpack to zero
+                    current_num_bike = 0; //set number of adults with a bike to zero
+                    end_simulation() //end the simulation
                     avg_collisions_total = total_collisions/total_peds_at_start;
                     document.getElementById("avg_collision").innerHTML = avg_collisions_total;
                     document.getElementById("collision").innerHTML = total_collisions;
@@ -617,27 +621,27 @@ function State() {
                     avg_bike_collisions = total_bike_collisions/max_bike_on_grid;
                     document.getElementById("total_bike_collide").innerHTML = total_bike_collisions;
                     document.getElementById("avg_bike_collide").innerHTML = avg_bike_collisions;
-                    var total_exit_time = thing.exittime / 4;
+                    var total_exit_time = thing.exittime; //total exit time in board updates
                     document.getElementById("total_exit_time").innerHTML = total_exit_time;
-                    var avg_exit_time = (sum_of_exit_times / 4) / total_peds_at_start;
+                    var avg_exit_time = (sum_of_exit_times) / total_peds_at_start; //in board update units
                     document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
-                    var avg_exit_time_child = (sum_child_exit_times / 4) / max_children_on_grid;
-                    var avg_exit_time_adult = (sum_adult_exit_times / 4) / max_adult_on_grid;
-                    var avg_exit_time_backpack = (sum_backpack_exit_times / 4) / max_backpack_on_grid;
-                    var avg_exit_time_bike = (sum_bike_exit_times / 4) / max_bike_on_grid;
+                    var avg_exit_time_child = (sum_child_exit_times) / max_children_on_grid; //in board update units
+                    var avg_exit_time_adult = (sum_adult_exit_times) / max_adult_on_grid; //in board update units
+                    var avg_exit_time_backpack = (sum_backpack_exit_times) / max_backpack_on_grid; //in board update units
+                    var avg_exit_time_bike = (sum_bike_exit_times) / max_bike_on_grid; //in board update units
                     document.getElementById("avg_exit_child").innerHTML = avg_exit_time_child;
                     document.getElementById("avg_exit_adult").innerHTML = avg_exit_time_adult;
                     document.getElementById("avg_exit_backpack").innerHTML = avg_exit_time_backpack;
                     document.getElementById("avg_exit_bike").innerHTML = avg_exit_time_bike;
 
-                    var total_wait_steps = thing.waitsteps;
+                    var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
                     document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
-                    var avg_wait_steps = sum_wait_steps/total_peds_at_start;
+                    var avg_wait_steps = sum_wait_steps/total_peds_at_start; //average amount of waitsteps per person
                     document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
-                    var avg_wait_steps_child = sum_child_wait_steps/max_children_on_grid;
-                    var avg_wait_steps_adult = sum_adult_wait_steps/max_adult_on_grid;
-                    var avg_wait_steps_backpack = sum_backpack_wait_steps/max_backpack_on_grid;
-                    var avg_wait_steps_bike = sum_bike_wait_steps/max_bike_on_grid;
+                    var avg_wait_steps_child = sum_child_wait_steps/max_children_on_grid; //average wait time for children
+                    var avg_wait_steps_adult = sum_adult_wait_steps/max_adult_on_grid; //average wait time for adults
+                    var avg_wait_steps_backpack = sum_backpack_wait_steps/max_backpack_on_grid; //average wait time for adults with a backpack
+                    var avg_wait_steps_bike = sum_bike_wait_steps/max_bike_on_grid; //average wait time for adults with a bike
                     document.getElementById("avg_wait_steps_child").innerHTML = avg_wait_steps_child;
                     document.getElementById("avg_wait_steps_adult").innerHTML = avg_wait_steps_adult;
                     document.getElementById("avg_wait_steps_backpack").innerHTML = avg_wait_steps_backpack;
@@ -674,10 +678,11 @@ function State() {
         }
 
         // NEED THIS. This copies the footprint for drawing
-        for (var i = 0; i < width_i; i = i + 1) {
+        //got through every cell on the grid
+        for (var i = 0; i < width_i; i = i + 1) { 
             for (var ii = 0; ii < width_ii; ii = ii + 1) {
                 // adjust reference
-                this.grid[i][ii].thing = this.temp_grid[i][ii].thing;
+                this.grid[i][ii].thing = this.temp_grid[i][ii].thing; //copy over the temp grid the the grid
             }
         }
     }
@@ -1556,184 +1561,178 @@ function State() {
 }
 
     //need this to because we have to use profile and not anchor
+    //function that takes in a person, index, and orientation that the person is directed
+    //returns new coordinates accordinating to the given orientation
     this.get_coords_from_orientation_neighbors = function(thing, index, orient) {
-        var i = thing.profile_i[index];
-        var ii = thing.profile_ii[index];
-
-        if (orient == UP) {
-            return [i, ii - 1];
+        var i = thing.profile_i[index]; //x value of the current position
+        var ii = thing.profile_ii[index]; //y value of the current position
+        //8 diifferent orientations
+        //Board y value decreases as going up. (0,0) is at the top left of the board
+        if (orient == UP) { 
+            return [i, ii - 1]; //if the orientation is up, subtract one from the y value
         } else if (orient == DOWN) {
-            return [i, ii + 1];
+            return [i, ii + 1]; //if orientation is down, add one to the y value
         } else if (orient == LEFT) {
-            return [i - 1, ii];
+            return [i - 1, ii]; //if orientation is left, subtract one from the x value
         } else if (orient == RIGHT) {
-            return [i + 1, ii];
+            return [i + 1, ii]; //if orientation is right, add one to x value
         } else if (orient == diagDownRight) {
-            return [i + 1, ii + 1];
+            return [i + 1, ii + 1]; //if moving diagianally down to the right, add oone to both x and y value
         } else if (orient == diagUpRight) {
-            return [i + 1, ii - 1];
+            return [i + 1, ii - 1]; //if moving diagonally up to the right, add one to x, subtract one to y
         } else if (orient == diagDownLeft) {
-            return [i - 1, ii + 1];
+            return [i - 1, ii + 1]; //if moving diagonally down to the left, subtract one from x, add one to y
         } else {
-            return [i - 1, ii - 1];
+            return [i - 1, ii - 1]; //else, moving diagonally up to the left, subtract one from x and y
         }
     }
 
-    this.move_thing = function(thing) { //returns true if person is at exxit, false otherwise
+    //function takes in a person, updates the temp grid
+    this.move_thing = function(thing) { //returns true if person is at exit, false otherwise
         var node = this.AStar(thing, 0); //using AStar algorithm to get the best move
-        if (node == null) {
+        if (node == null) { //if no move found from initial AStar call
             node = this.AStar(thing, 1); // try to avoid others and break out of deadlock
-            if (node == null) {
-                thing.stuck = 1;
-                return false;
+            if (node == null) { //if a person still cannot move
+                thing.stuck = 1; //add one to its stuck value
+                return false; //return false, not at an exit
             }
         }
-
-        var new_coords = node.initial_step();
-        var exiti = thing.min_exiti;
-        var exitii = thing.min_exitii;
+        var new_coords = node.initial_step(); //get the next move from the minheap
+        var exiti = thing.min_exiti; //get the first x value of the exit cell
+        var exitii = thing.min_exitii; //get the first y value of the exit cell
 
         // hack to fix
-        var count = 0;
-        for (index = 0; index < node.profile_i.length; index++) {
+        var count = 0; //counter used to check if at an exit
+        for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
             //check if at exit
+            //checking by making sure the next move is between or touching the exit
             if ((new_coords[0] + node.profile_i[index]) >= node.exiti && (new_coords[0] + node.profile_i[index]) <= node.endi &&
                 (new_coords[1] + node.profile_ii[index]) >= node.exitii && (new_coords[1] + node.profile_ii[index]) <= node.endii) {
-                count++;
+                count++; //if at exit, add one to the count
+                }
         }
-    }
-    if (count > 0) {
+        if (count > 0) { //if thee count is greateer that zeero, some part is touching the exit
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
-            return true; // remove
+            return true; // remove, return true
         }
         //now make sure that you can move to the place you want to
         else {
-            var j = new_coords[0];
-            var jj = new_coords[1];
+            var j = new_coords[0]; //x value of the move you want to make
+            var jj = new_coords[1]; //y value of the move you want to make
             var orientation = new_coords[2]; // direction to aim
+            
+            //collision handling
             // handles collisions by doing NOTHING. If spot that you are
             // trying to move to DOESN'T HAVE a thing then you are free to
-            // move, but you have to check profile.
-
-            try {
-                var next = this.temp_grid[j][jj];
-                if (typeof next === 'undefined') {} else {
-                    if (!next.has_other_thing(thing)) {
-
+            // move, but you have to check profile. -- i think we changed this
+            try { //I do not know what a try is -- ASK
+                var next = this.temp_grid[j][jj]; //get what is in the spot of the cell trying to move to
+                if (typeof next === 'undefined') {} //is this a sanity check?
+                else {
+                    if (!next.has_other_thing(thing)) { //if there is nothing in thee cell trying to move to
                         // maybe could have break if collides so doesn't
                         // have to keep going through loop. need to check
                         // all of the cells of the thing
-                        var collision = 0;
-                        for (var x = 0; x < thing.profile_i.length; x++) {
-                            var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
-                            var r = new_deltas[0];
-                            var c = new_deltas[1];
-                            var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
-                            var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
-                            if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something in the cell
-                                collision = collision + 1; //add one to collision
-                                // console.log(collision)
-                                // console.log(thing.type)
-                                if (thing.type == 'Child') {
-                                    total_child_collisions = total_child_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    // console.log("num collisions: " + total_collisions)
-                                    // console.log("total_child_collisions: " + total_child_collisions)
+                        var collision = 0; //counter for the number of collisions, a person trying to access a spot that anoother one is in
+                        for (var x = 0; x < thing.profile_i.length; x++) { //go through all cells of the person
+                            //getting the new cell location according to orientation
+                            var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation); 
+                            var r = new_deltas[0]; //x value of the new move
+                            var c = new_deltas[1]; //y value of the new move
+                            var safe_r = this.get_bounded_index_i(r + thing.anchor_i); //bound the x value, making sure on the board
+                            var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii); //bound the y value, making sure on the board
+                            if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something already in the cell
+                                collision = collision + 1; //add one to collision counter
+                                total_collisions = total_collisions + 1; //add one to the global collision counter
+                                //adding collision counter to specific person types
+                                if (thing.type == 'Child') { //if a child
+                                    total_child_collisions = total_child_collisions + 1; //add one to the children collisions
                                 }
-                                if (thing.type == 'Adult') {
-                                    total_adult_collisions = total_adult_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    // console.log("num collisions: " + total_collisions)
-                                    // console.log("total_adult_collisions: " + total_adult_collisions)
+                                else if (thing.type == 'Adult') { //if an adult
+                                    total_adult_collisions = total_adult_collisions + 1; //add one to the number of adult collisions
                                 }
-                                if (thing.type == 'AdultBackpack') {
-                                    total_backpack_collisions = total_backpack_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    // console.log("num collisions: " + total_collisions)
-                                    // console.log("total_backpack_collisions: " + total_backpack_collisions)
+                                else if (thing.type == 'AdultBackpack') { //if adult with backpack
+                                    total_backpack_collisions = total_backpack_collisions + 1; //add one to the number of adult with backpack collisions
                                 }
-                                if (thing.type == 'AdultBike') {
-                                    total_bike_collisions = total_bike_collisions + 1;
-                                    total_collisions = total_collisions + 1;
-                                    // console.log("num collisions: " + total_collisions)
-                                    // console.log("total_bike_collisions: " + total_bike_collisions)
+                                else if (thing.type == 'AdultBike') { //if adult with bike
+                                    total_bike_collisions = total_bike_collisions + 1; //add one to the total number of adult with bike collisions
                                 }
+                                break; //since we found a collision on part of the person, break for loop
                             }
                         }
                     }
-
+                    //now check if you can actually move the person
                     if (collision == 0) { //if no collision for any cells then can move whole piece
                         // where thing is RIGHT NOW
-                        var i = thing.anchor_i;
-                        var ii = thing.anchor_ii;
-
+                        var i = thing.anchor_i; //x coordinate of the person
+                        var ii = thing.anchor_ii; //y coordinate of the person
                         // clear old one
-                        thing.remove_footprint(this);
-
-                        thing.anchor_i = j;
-                        thing.anchor_ii = jj;
-
-                        // move into new one
-                        thing.wait = 0;
-                        thing.place_footprint(this);
-                    }
-                    else {
-                      //add one to its still
-                      thing.wait++;
-                      thing.waitsteps++;
-                      console.log(thing.wait);
-                      //find another exit to go to, have it if it is double the time you waited to make a random move
-                      if(thing.wait>wait_before_random_move*2){
-                        var ran_exit_index = Math.floor(Math.random() * max_exits_on_grid);
-                        var new_exit = exit_locations[ran_exit_index];
-                        thing.min_exiti = new_exit.anchor_i;
-                        thing.min_exitii = new_exit.anchor_ii;
-                        thing.endi = new_exit.profile_i[3] + new_exit.anchor_i;
-                        thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii;
-                        var ranx = get_random_int(0,3);
-                        var rany = get_random_int(0,3);
-                        thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i;
-                        thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii;
-                        //change the exit and recurrsively call the function
-                        thing.wait = 0;
-                        this.move_thing(thing);
+                        thing.remove_footprint(this); //remove the person from its current position
+                        thing.anchor_i = j; //update the anchor x coordinate for the move to make
+                        thing.anchor_ii = jj; //update the anchor y coordinate for the move to make
                         
+                        // move into new one
+                        thing.wait = 0; //reset its wait since making a move
+                        thing.place_footprint(this); //update the person's position on the temp grid
+                    }
+                    else { //if there is a collision
+                      
+                      thing.wait++; //add one to its wait
+                      thing.waitsteps++; //add one to its total waits
+                      //find another exit to go to
+                      //if the time waiting is greater than wait time but less than that double the wait time
+                      //try to move randomly and then find a path
+                      //if the time waiting is more than double the wait time, find another exit
+                      if(thing.wait>wait_before_random_move*2){
+                        var ran_exit_index = Math.floor(Math.random() * max_exits_on_grid); //get a random index to choose the exit
+                        var new_exit = exit_locations[ran_exit_index]; //get the exit from the list of exits
+                        thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
+                        thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
+                        thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
+                        thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii; //update the person's last exit y cell
+                        var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
+                        var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
+                        thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i; //update the new goal exit x coordinate
+                        thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii; //update the new goal exit y coordinatee
+                        //change the exit and recurrsively call the function
+                        thing.wait = 0; //reset the wait time, not totally convinced that this should be here
+                        this.move_thing(thing); //try to move the person now with the updated exit
                       }
-                          //if it's still is greater than 5, try to move in any other direction other than the one you are trying to go to
-                          else if(thing.wait>wait_before_random_move){ //can play around with this number, could maybe have show up on board
+                          //if the numnber of times waited is greater than the time to wait before making a randome move
+                          //try to move in any other direction other than the one you are trying to go to
+                          //wait_before_random_move can be changed by user input
+                          else if(thing.wait>wait_before_random_move){ 
                             //get random orientation and try to move there
-                            var orientation = random_orientation();
-                            var can_move = true;
-                            for (var x = 0; x < thing.profile_i.length; x++) { 
+                            var orientation = random_orientation(); //random orientation
+                            var can_move = true; //initially assume you can move
+                            for (var x = 0; x < thing.profile_i.length; x++) { //go through every cell the person is occupying
+                            //get next potential coordinates based off of the orientation
                                 var new_deltas = this.get_coords_from_orientation_neighbors(thing, x, orientation);
-                                var r = new_deltas[0];
-                                var c = new_deltas[1];
-                                var safe_r = this.get_bounded_index_i(r + thing.anchor_i);
-                                var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii);
-                                //i think need to also check if off grid
-                                if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell
-                                  can_move = false;
+                                var r = new_deltas[0]; //x value of new potential coordinate
+                                var c = new_deltas[1]; //y value of new potential coordinate
+                                var safe_r = this.get_bounded_index_i(r + thing.anchor_i); //bound the x coordiinate to make not out of bounds
+                                var safe_c = this.get_bounded_index_ii(c + thing.anchor_ii); //bound the y coordinate to make not out of bounds
+                                if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell trying ti move into
+                                  can_move = false; //cannot move here
                               }
                               //if move puts you off the grid you cannot move in this orientation
                               // can't move off the board
+                              //do we even need safe_r???
                               else if (safe_r != thing.anchor_i + r) {
-                                  can_move = false;
+                                  can_move = false; //cannot move off grid
                               }
                               else if (safe_c != thing.anchor_ii + c) {
-                                  can_move = false;
+                                  can_move = false; //cannot move off grid
                               }
                           }
-                          if (can_move){
+                          if (can_move){ //if the person can move
                               //change anchor and call place footprint
-                              // clear old one
-                              thing.remove_footprint(this);
-                              //var place_holder = thing.orientation
-                              thing.orientation = orientation;
-                              next_coords = this.get_coords_from_orientation(thing); 
-                              //thing.orientation = place_holder;
-                              thing.anchor_i = next_coords[0];
-                              thing.anchor_ii = next_coords[1];
-                              thing.place_footprint(this);
+                              thing.remove_footprint(this); // remove the person from its current position on grid
+                              thing.orientation = orientation; //update the person's orientation
+                              next_coords = this.get_coords_from_orientation(thing); //get these new coordinates to move to
+                              thing.anchor_i = next_coords[0]; //update the anchor x coordinate to its new position
+                              thing.anchor_ii = next_coords[1]; //update the anchor y coordinate to its new position
+                              thing.place_footprint(this); //place the person in the temp grid in its new position
                           }
                       }
                   }
@@ -1741,10 +1740,9 @@ function State() {
           } catch (error) {
             console.error(error);
         }
-        
     }
         return false; // do not remove
-    }
+   }
 }
 
 var state = new State();
