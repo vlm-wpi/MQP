@@ -687,6 +687,7 @@ function State() {
         }
     }
 
+    //Currently not used !!
     function removeItemOnce(arr, value) {
         var index = arr.indexOf(value);
         if (index > -1) {
@@ -694,19 +695,21 @@ function State() {
         }
     }
 
+    //not comopletely commented yet
     // only if do not contain an obstacle. Must check entire profile
     // if 'others' than check to avoid other shapes as well
     this.get_neighbors = function(x, y, thing, state, others) { //gets the eight neighbors as a possible move
-        var parents = [];
-        var oix = -1;
+        var parents = []; //initialize array 
+        var oix = -1; //initialize counter for tthe index of its orientation
+        //I do not understand this part
         for (var di = -1; di <= 1; di++) {
             for (var dii = -1; dii <= 1; dii++) {
                 if (di == 0 && dii == 0) {
-                    continue;
+                    continue; //not 100% sure on the continue statement
                 }
                 oix++;
 
-                var safe_r = this.get_bounded_index_i(x + di);
+                var safe_r = this.get_bounded_index_i(x + di); 
                 var safe_c = this.get_bounded_index_ii(y + dii);
                 if (safe_r != x + di) {
                     continue;
@@ -716,8 +719,8 @@ function State() {
                 }
 
                 // ok. Can move anchor. Are other spots available?
-                var safe = 1;
-                for (var p = 0; p < thing.profile_i.length; p++) {
+                var safe = 1; //counter to check if a whole person is okay to move to
+                for (var p = 0; p < thing.profile_i.length; p++) { //go through every cell of the person
                     var ss = this.get_coords_from_orientation_neighbors(thing, p, orientations[oix]);
                     var sr = this.get_bounded_index_i(x + ss[0]);
                     var sc = this.get_bounded_index_ii(y + ss[1]);
@@ -731,27 +734,29 @@ function State() {
                         safe = 0;
                         break;
                     }
-
+                    //check if there is an obstacle at the potential new coordinates
                     if (state.temp_grid[sr][sc].has_obstacle()) {
-                        safe = 0;
-                        break;
-                    } else if (others) {
-                        if (state.temp_grid[sr][sc].has_other_thing(thing)) {
-                            safe = 0;
-                            break;
+                        safe = 0; //update safe, it is now not safe to move
+                        break; //end the loop, we know the person cannot move
+                    } 
+                    else if (others) { //If we are taking others into account
+                        if (state.temp_grid[sr][sc].has_other_thing(thing)) { //check if there is any other thing is the coordinates
+                            safe = 0; //update safe, it is now not safe to move
+                            break; //end the loop, we know the person cannot move
                         }
                     }
                 }
-                if (safe) {
-                    parents.push([safe_r, safe_c, orientations[oix]]);
+                if (safe) { //if safe equals one, person can move
+                    parents.push([safe_r, safe_c, orientations[oix]]); //add the coordinates and its orientattion 
                 }
             }
         }
 
-        return parents;
+        return parents; //return the list of possible coordinates with its orientation to move to
     }
 
 
+    //I think we now have this implemented
     // Currently only plans around obstacles, but this could lead to deadlock conditions.
     // IF SO, then it could re-run, with an effort to try to avoid existing shapes as well.
     //
@@ -764,34 +769,32 @@ function State() {
     //        yy
     //        yy
 
+    //function that takes in a person and a boolean
+    //returns the shortest path of moves from the starting position to end goal
     this.AStar = function(thing, others) {
-        //step 1
-        var open = new minHeap();
-        //step 2
-        var closed = {};
-        var open_hash = {};
-        var anchorX = thing.anchor_i;
-        var anchorY = thing.anchor_ii;
-        var exiti = thing.min_exiti;
-        var exitii = thing.min_exitii;
-        var endi = thing.endi;
-        var endii = thing.endii;
-        var goali = thing.goali;
-        var goalii = thing.goalii;
-        var profilei = thing.profile_i;
-        var profileii = thing.profile_ii
 
+        var open = new minHeap(); //initialize priority queue
+        var closed = {}; //initialize closed list, spots that have already been looked at
+        var open_hash = {}; //
+        var anchorX = thing.anchor_i; //x coordinate of the anchor of the person given
+        var anchorY = thing.anchor_ii; //y coordinate of tthe anchor of the person given
+        var exiti = thing.min_exiti; //x coordinate of the exit the person given is trying to reach
+        var exitii = thing.min_exitii; //y coordinate of the exit the person given is trying to reach
+        var endi = thing.endi; //x coordinate of the last cell of the exit 
+        var endii = thing.endii; //y coordinate of the last cell of the exit
+        var goali = thing.goali; //x coordinate of the specific exit cell the person is aiming for
+        var goalii = thing.goalii; //y coordinate of the specific exit cell tthe eprson is aimiing for
+        var profilei = thing.profile_i; //list of the other x coordiinates the person is covering
+        var profileii = thing.profile_ii; //list of other y coordinates the person is covering
+        //creating a new node using the information of the given person 
         var n = new Node(anchorX, anchorY, exiti, exitii, endi, endii, undefined, -1, goali, goalii, profilei, profileii);
-        open.insert(n);
-        open_hash[n.key()] = n;
-
-        //step 3
-        var heapLength = open.heap.length;
-
+        open.insert(n); //add the starting node to the queue
+        open_hash[n.key()] = n; 
+        var heapLength = open.heap.length; //get the length of the queue
+        //go through while the open list is not empty
         while (open.heap.length > 0) {
-            //do i need to call heapify function?
-            var q = open.extractMin(); //3a,b
-            var successors = this.get_neighbors(q.i, q.ii, thing, this, others); //3c, this function only returns coordinates
+            var q = open.extractMin(); //get the minimun path so far
+            var successors = this.get_neighbors(q.i, q.ii, thing, this, others); //this function only returns coordinates and orientation
             //shuffle array
             // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
             for (var i = successors.length - 1; i > 0; i--) {
@@ -800,8 +803,8 @@ function State() {
                 successors[i] = successors[j];
                 successors[j] = temp;
             } // does this do anything???
-            for (i = 0; i < successors.length; i++) {
-                var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii, q.profile_i, q.profile_ii);
+            for (i = 0; i < successors.length; i++) { //go through all the poossible next moves
+                var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii, q.profile_i, q.profile_ii); //create a node with the information from the successsor
 
                 if (succ.done()) { // matched the goal. reutrn this. last node
                     return succ;
