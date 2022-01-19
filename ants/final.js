@@ -2193,7 +2193,9 @@ function simulate_and_visualize() {
         encoder.start();
         encoder.addFrame(context)
         encoder.finish();
-        encoder.download("download.gif","image/gif");
+        encoder.download("gif_image"+take_snapshot_calls+".gif","image/gif");
+            // "download.gif","image/gif");
+        take_snapshot_calls = take_snapshot_calls+1;
 
         // if(take_snapshot_calls = 0) {
         //     encoder.start();
