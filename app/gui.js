@@ -1,7 +1,10 @@
 /**
  * GUI module.
+ *
+ * export gui.headless = False to state to others that code is run with GUI. To run 
+ *
+ * in headless mode, simply put "global.gui.headless = True;"
  */
-
 (function(exports) {
 
     /**
@@ -264,6 +267,7 @@
 
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
+    export.headless = False;
 
 })(typeof exports === 'undefined'?
             this['gui']={}: exports);
