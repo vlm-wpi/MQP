@@ -32,9 +32,10 @@
       width = 1000,
       height = 500;
       
+    //https://www.sitepoint.com/creating-simple-line-bar-charts-using-d3-js/#:~:text=We’ll%20be%20using%20d3.svg.line%20%28%29%20to%20draw%20our,is%20how%20we%20define%20the%20line%20generator%20function%3A
     //set the ranges
-    xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([0, 10000]),
-    yRange = d3.scale.linear().range([height - margin.top, margin.bottom]).domain([0,40]),
+      xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([0, 2000]),
+      yRange = d3.scale.linear().range([height - margin.top, margin.bottom]).domain([0,40]),
     //define the axes
     xAxis = d3.svg.axis()
       .scale(xRange)
@@ -174,7 +175,19 @@
     .attr('d', lineFunc(lineData))
   anotherUpdate2.transition()
     .attr('d', lineFunc(lineData2))
+  //changing the domain
+  xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([d3.min(lineData, function(d) {
+    return d.x;
+  }), d3.max(lineData, function(d) {
+    return d.x;
+  })])
+  //update the axis to show the change
+  xAxis = d3.svg.axis()
+      .scale(xRange)
+      .tickSize(5)
+      .tickSubdivide(true)
   }
+  
 
   function start_simulation() {
     interval_id = setInterval(simulate, ms_between_updates);
