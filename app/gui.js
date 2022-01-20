@@ -267,7 +267,7 @@
 
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
-    export.headless = False;
+    exports.headless = false;
 
 })(typeof exports === 'undefined'?
             this['gui']={}: exports);
