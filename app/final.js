@@ -43,6 +43,13 @@
     //counter for the number of children currently on the board
     var current_population = 0;
 
+    // number of generations, run up to max_generation
+    var number_generations = 0;
+    var max_generation = Number.MAX_SAFE_INTEGER;
+
+    // callback hook once done.
+    var callback_done = undefined;
+
 //global variables for the diaginal distance
 var D = 1; //distance of one edge of the square
 var D2 = Math.sqrt(2); //distance from one corner of a square to the other
@@ -75,13 +82,15 @@ function euclideand(x, y, goalX, goalY){
 //function that takes care of initializing the grid, placing items, and updating the board
 function State() {
     var total_peds_at_start = parseInt(data.max['Child']) + parseInt(data.max['Adult']) + parseInt(data.max['AdultBackpack']) + parseInt(data.max['AdultBike']);
-    document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
     var num_children_initial = parseInt(data.max['Child']);
-    document.getElementById("num_children_initial").innerHTML = num_children_initial;
-    document.getElementById("num_adult_initial").innerHTML = data.max['Adult'];
-    document.getElementById("num_backpack_initial").innerHTML = data.max['AdultBackpack'];
-    document.getElementById("num_bike_initial").innerHTML = data.max['AdultBike'];
-    document.getElementById("num_obstacle_initial").innerHTML = data.max['Obstacle'];
+    if (!gui.headless) {
+      document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
+      document.getElementById("num_children_initial").innerHTML = num_children_initial;
+      document.getElementById("num_adult_initial").innerHTML = data.max['Adult'];
+      document.getElementById("num_backpack_initial").innerHTML = data.max['AdultBackpack'];
+      document.getElementById("num_bike_initial").innerHTML = data.max['AdultBike'];
+      document.getElementById("num_obstacle_initial").innerHTML = data.max['Obstacle'];
+    }
     this.grid = []; //data structure for grid, initially empty
     this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
     this.population = []; //population of people on the grid, initially empty
@@ -111,7 +120,7 @@ function State() {
             if (this.move_thing(thing)) { //returns true if at an exit, false if not, temp grid is updated
                 this.population.splice(p, 1);
                 var current_population = this.population.length; //number of people in the grid
-                document.getElementById("current_total").innerHTML = current_population;
+                if (!gui.headless) { document.getElementById("current_total").innerHTML = current_population; }
                 total_population_over_time.push(current_population); //add the current population to the list of all previous populations (each update)
                 sum_of_exit_times = sum_of_exit_times + thing.exittime; //add its exit time to the total exit times
                 sum_wait_steps = sum_wait_steps + thing.waitsteps; //add its total waittime to the total waitime
@@ -119,53 +128,53 @@ function State() {
                     //if a child
                     if (object_type == 'Child') { 
                         data.current['Child'] = data.current['Child'] - 1; //subtract one from the child population
-                        document.getElementById("current_children").innerHTML = data.current['Child'];
+                        if (!gui.headless) { document.getElementById("current_children").innerHTML = data.current['Child']; }
                         //add to sum of everyones exit times
                         sum_child_exit_times = sum_child_exit_times + thing.exittime; //add its exit time to the total children exit times
                         sum_child_wait_steps = sum_child_wait_steps + thing.waitsteps; //add its wait time to the total children wait times
                         //check if last child
                         if(data.current['Child'] == 0) {
                           var total_child_exit_time = thing.exittime; //in board update units
-                          document.getElementById("total_child_exit").innerHTML = total_child_exit_time;
+                          if (!gui.headless) { document.getElementById("total_child_exit").innerHTML = total_child_exit_time; }
                           var total_child_wait_steps = thing.waitsteps; //set the total amount of wait steps for children
-                          document.getElementById("total_child_wait").innerHTML = total_child_wait_steps;
+                          if (!gui.headless) { document.getElementById("total_child_wait").innerHTML = total_child_wait_steps; }
                         }
                         //if an adult
                     } else if (object_type == 'Adult') {
                         data.current['Adult'] = data.current['Adult'] - 1; //subtract one from the adult population
-                        document.getElementById("current_adult").innerHTML = data.current['Adult'];
+                        if (!gui.headless) { document.getElementById("current_adult").innerHTML = data.current['Adult']; }
                         sum_adult_exit_times = sum_adult_exit_times + thing.exittime; //add its exit time to the total adult exit times
                         sum_adult_wait_steps = sum_adult_wait_steps + thing.waitsteps; //add its wait time to the total adult wait times
                         //check if last adult
                         if(data.current['Adult'] == 0){
                           var total_adult_exit_time = thing.exittime; //in board update units
-                          document.getElementById("total_adult_exit").innerHTML = total_adult_exit_time;
+                          if (!gui.headless) { document.getElementById("total_adult_exit").innerHTML = total_adult_exit_time; }
                           var total_adult_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults
-                          document.getElementById("total_adult_wait").innerHTML = total_adult_wait_steps;
+                          if (!gui.headless) { document.getElementById("total_adult_wait").innerHTML = total_adult_wait_steps; }
                         }
                         //check if adult with backpack
                     } else if (object_type == 'AdultBackpack') {
                         data.current['AdultBackpack'] = data.current['AdultBackpack'] - 1; //subtract one from the adult with backpack population
-                        document.getElementById("current_backpack").innerHTML = data.current['AdultBackpack'];
+                        if (!gui.headless) { document.getElementById("current_backpack").innerHTML = data.current['AdultBackpack']; }
                         sum_backpack_exit_times = sum_backpack_exit_times + thing.exittime; //add its exit time to the total adult with backpack exit times
                         sum_backpack_wait_steps = sum_backpack_wait_steps + thing.waitsteps; //add its wait time to the total adult with backpack wait times
                         if(data.current['AdultBackpack'] == 0){
                           var total_backpack_exit_time = thing.exittime; //in board update units
-                          document.getElementById("total_backpack_exit").innerHTML = total_backpack_exit_time;
+                          if (!gui.headless) { document.getElementById("total_backpack_exit").innerHTML = total_backpack_exit_time; }
                           var total_backpack_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults with backpack
-                          document.getElementById("total_backpack_wait").innerHTML = total_backpack_wait_steps;
+                          if (!gui.headless) { document.getElementById("total_backpack_wait").innerHTML = total_backpack_wait_steps; }
                         }
                         //check if adult with bike
                     } else if (object_type == 'AdultBike') {
                         data.current['AdultBike'] = data.current['AdultBike'] - 1; //subtract one from the adult with bike population
-                        document.getElementById("current_bike").innerHTML = data.current['AdultBike'];
+                        if (!gui.headless) { document.getElementById("current_bike").innerHTML = data.current['AdultBike']; }
                         sum_bike_exit_times = sum_bike_exit_times + thing.exittime; //add its exit time to the total adult with bike exit times
                         sum_bike_wait_steps = sum_bike_wait_steps + thing.waitsteps; //add its wait time to the total adult with bike wait times
                         if(data.current['AdultBike'] == 0){
                           var total_bike_exit_time = thing.exittime; //in board update units
-                          document.getElementById("total_bike_exit").innerHTML = total_bike_exit_time;
+                          if (!gui.headless) { document.getElementById("total_bike_exit").innerHTML = total_bike_exit_time; }
                           var total_bike_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults with bike
-                          document.getElementById("total_bike_wait").innerHTML = total_bike_wait_steps;
+                          if (!gui.headless) { document.getElementById("total_bike_wait").innerHTML = total_bike_wait_steps; }
                         }
                 }
                 if (current_population == 0) { //if no people left on the grid
@@ -176,45 +185,50 @@ function State() {
                     data.current['AdultBike'] = 0;
                     end_simulation() //end the simulation
                     avg_collisions_total = total_collisions/total_peds_at_start;
-                    document.getElementById("avg_collision").innerHTML = avg_collisions_total;
-                    document.getElementById("collision").innerHTML = total_collisions;
                     avg_child_collisions = total_child_collisions/data.max['Child'];
-                    document.getElementById("total_child_collide").innerHTML = total_child_collisions;
-                    document.getElementById("avg_child_collide").innerHTML = avg_child_collisions;
                     avg_adult_collisions = total_adult_collisions/data.max['Adult'];
-                    document.getElementById("total_adult_collide").innerHTML = total_adult_collisions;
-                    document.getElementById("agv_adult_collide").innerHTML = avg_adult_collisions;
                     avg_backpack_collisions = total_backpack_collisions/data.max['AdultBackpack'];
-                    document.getElementById("total_backpack_collide").innerHTML = total_backpack_collisions;
-                    document.getElementById("avg_backpack_collide").innerHTML = avg_backpack_collisions;
                     avg_bike_collisions = total_bike_collisions/ data.max['AdultBike'];
-                    document.getElementById("total_bike_collide").innerHTML = total_bike_collisions;
-                    document.getElementById("avg_bike_collide").innerHTML = avg_bike_collisions;
+                    if (!gui.headless) { 
+                      document.getElementById("avg_collision").innerHTML = avg_collisions_total;
+                      document.getElementById("collision").innerHTML = total_collisions;
+                      document.getElementById("total_child_collide").innerHTML = total_child_collisions;
+                      document.getElementById("avg_child_collide").innerHTML = avg_child_collisions;
+                      document.getElementById("total_adult_collide").innerHTML = total_adult_collisions;
+                      document.getElementById("agv_adult_collide").innerHTML = avg_adult_collisions;
+                      document.getElementById("total_backpack_collide").innerHTML = total_backpack_collisions;
+                      document.getElementById("avg_backpack_collide").innerHTML = avg_backpack_collisions;
+                      document.getElementById("total_bike_collide").innerHTML = total_bike_collisions;
+                      document.getElementById("avg_bike_collide").innerHTML = avg_bike_collisions;
+                    }
                     var total_exit_time = thing.exittime; //total exit time in board updates
-                    document.getElementById("total_exit_time").innerHTML = total_exit_time;
                     var avg_exit_time = (sum_of_exit_times) / total_peds_at_start; //in board update units
-                    document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
                     var avg_exit_time_child = (sum_child_exit_times) / data.max['Child']; //in board update units
                     var avg_exit_time_adult = (sum_adult_exit_times) / data.max['Adult']; //in board update units
                     var avg_exit_time_backpack = (sum_backpack_exit_times) / data.max['AdultBackpack']; //in board update units
                     var avg_exit_time_bike = (sum_bike_exit_times) / data.max['AdultBike']; //in board update units
-                    document.getElementById("avg_exit_child").innerHTML = avg_exit_time_child;
-                    document.getElementById("avg_exit_adult").innerHTML = avg_exit_time_adult;
-                    document.getElementById("avg_exit_backpack").innerHTML = avg_exit_time_backpack;
-                    document.getElementById("avg_exit_bike").innerHTML = avg_exit_time_bike;
-
+                    if (!gui.headless) { 
+                      document.getElementById("total_exit_time").innerHTML = total_exit_time;
+                      document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
+                      document.getElementById("avg_exit_child").innerHTML = avg_exit_time_child;
+                      document.getElementById("avg_exit_adult").innerHTML = avg_exit_time_adult;
+                      document.getElementById("avg_exit_backpack").innerHTML = avg_exit_time_backpack;
+                      document.getElementById("avg_exit_bike").innerHTML = avg_exit_time_bike;
+                    }
                     var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
-                    document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
                     var avg_wait_steps = sum_wait_steps/total_peds_at_start; //average amount of waitsteps per person
-                    document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
                     var avg_wait_steps_child = sum_child_wait_steps/data.max['Child']; //average wait time for children
                     var avg_wait_steps_adult = sum_adult_wait_steps/data.max['Adult']; //average wait time for adults
                     var avg_wait_steps_backpack = sum_backpack_wait_steps/data.max['AdultBackpack']; //average wait time for adults with a backpack
                     var avg_wait_steps_bike = sum_bike_wait_steps/data.max['AdultBike']; //average wait time for adults with a bike
-                    document.getElementById("avg_wait_steps_child").innerHTML = avg_wait_steps_child;
-                    document.getElementById("avg_wait_steps_adult").innerHTML = avg_wait_steps_adult;
-                    document.getElementById("avg_wait_steps_backpack").innerHTML = avg_wait_steps_backpack;
-                    document.getElementById("avg_wait_steps_bike").innerHTML = avg_wait_steps_bike;
+                    if (!gui.headless) {
+                      document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
+                      document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
+                      document.getElementById("avg_wait_steps_child").innerHTML = avg_wait_steps_child;
+                      document.getElementById("avg_wait_steps_adult").innerHTML = avg_wait_steps_adult;
+                      document.getElementById("avg_wait_steps_backpack").innerHTML = avg_wait_steps_backpack;
+                      document.getElementById("avg_wait_steps_bike").innerHTML = avg_wait_steps_bike;
+                    }
                     // console.log("total collisions: " + total_collisions)
                     // console.log("total peds at start: " + total_peds_at_start)
                     // console.log("average collisions total: " + avg_collisions_total)                    
@@ -605,6 +619,7 @@ function State() {
         }
         var num_children = 0;
         var times_not_placed = 0;
+       
         while (num_children < data.max['Child']) {
           if (times_not_placed>(data.width_i*data.width_ii)){ //not sure what is a good number, have it at 1000 right now, changed to area
             window.alert("Cannot place this many children on the grid, please reset and choose another number");
@@ -679,7 +694,6 @@ function State() {
                     this.temp_grid[safej][safejj].thing = objChild; 
                 }
                 this.population.push([objChild, 'Child']);
-                // console.log(this.population)
                 num_children++;
                 times_not_placed = 0;
             }
@@ -1140,6 +1154,9 @@ function State() {
 }
 
 var state = new State();
+function get_state() {
+  return state;
+}
 
 function draw_grid(input) {
     if (data.hall_layout == true) {
@@ -1536,23 +1553,38 @@ function initialize_simulation() {
         state.place_things(true);
     }
 
-    draw_grid(state.grid.map(function(row) {
+    if (!gui.headless) { 
+      draw_grid(state.grid.map(function(row) {
         return row.map(function(cell) {
             return cell;
         });
-    }));
+      }));
+    }
 }
 var end_sim_counter = 0;
 function end_simulation() {
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
+    if (typeof callback_done !== 'undefined') {
+       callback_done();
+    }
 }
 
 function clear_simulation() {
-    window.location.reload()
+    if (!gui.headless) { window.location.reload() }
 }
 
-function start_simulation() {
+function start_simulation(max_gen, callback) {
+    if (typeof max_gen === 'undefined') {
+      max_generation = Number.MAX_SAFE_INTEGER;
+    } else {
+      max_generation = max_gen;
+    }
+
+    if (typeof callback !== 'undefined') {
+      callback_done = callback;
+    }
+
     initialize_simulation();
     interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
 }
@@ -1567,12 +1599,20 @@ function start_simulation() {
 // var encoder = GIFEncoder();
 take_snapshot_calls = 0;
     function simulate_and_visualize() {
+      number_generations += 1;
+      console.log("gen:" + number_generations);
+      if (number_generations >= max_generation) {
+         end_simulation();
+         return;
+      }
+
     state.move_things();
-    draw_grid(state.grid.map(function(row) {
+    if (!gui.headless) { draw_grid(state.grid.map(function(row) {
         return row.map(function(cell) {
             return cell;
         });
     }));
+    }
 
     if (data.take_snapshot) {
         var canvas = document.getElementById('grid');
@@ -1616,6 +1656,9 @@ take_snapshot_calls = 0;
     exports.start_simulation = start_simulation;
     exports.end_simulation = end_simulation;
     exports.clear_simulation = clear_simulation;
+
+    // make sure we keep reference so it can be retrieved AFTER simulation is over.
+    exports.get_state = get_state;
 
 })(typeof exports === 'undefined'?
             this['final']={}: exports);
