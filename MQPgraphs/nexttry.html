@@ -2,14 +2,15 @@
   <head>
 	  <title>D3 : Random Number Generation - Line Chart</title>
 	  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+	  <script src = "https://d3js.org/d3-axis.v1.min.js"></script>
   </head>
   <body>
     <h1>Input</h1>
     <svg id="visualisation" width="500" height="500"></svg>
     <svg id="visualisation2" width="500" height="500"></svg>
     <h1>Stuff</h1>
-	 
-	  <script type="text/javascript">
+
+	   <script type="text/javascript">
 	  //command to run server: http-server
 	  //1. get example to run
 	  //2. be able to add to the data
@@ -92,7 +93,7 @@
      //   .tickSubdivide(true);
   
   //add x axis
-  vis.append('svg:g')
+  var x = vis.append('svg:g')
     .attr('class', 'x axis')
     .attr('transform', 'translate(0,' + (height - margin.bottom) + ')')
     .call(xAxis);
@@ -119,7 +120,7 @@
     
   //second graph
   var vis2 = d3.select('#visualisation2')
-    vis2.append('svg:g')
+    var x2 = vis2.append('svg:g')
       .attr('class', 'x axis')
       .attr('transform', 'translate(0,' + (height - margin.bottom) + ')')
       .call(xAxis);
@@ -176,9 +177,7 @@
   anotherUpdate2.transition()
     .attr('d', lineFunc(lineData2))
   //changing the domain
-  xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([d3.min(lineData, function(d) {
-    return d.x;
-  }), d3.max(lineData, function(d) {
+  xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([0, d3.max(lineData, function(d) {
     return d.x;
   })])
   //update the axis to show the change
@@ -186,6 +185,8 @@
       .scale(xRange)
       .tickSize(5)
       .tickSubdivide(true)
+  x.transition().call(xAxis)
+  x2.transition().call(xAxis)
   }
   
 
