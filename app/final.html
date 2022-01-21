@@ -29,11 +29,11 @@
   <body>
         <b>Values at initialization:</b><br>
           Total number of pedestrians on grid: <span id="total_peds_at_start"></span><br>
-          Children: <span id="num_children_initial"></span><br>
-          Adults: <span id="num_adult_initial"></span><br>
-          Adults with backpacks: <span id="num_backpack_initial"></span><br>
-          Adults with bikes: <span id="num_bike_initial"></span><br>
-          Obstacles: <span id="num_obstacle_initial"></span><br>
+          Children: <span id="num_Child_initial"></span><br>
+          Adults: <span id="num_Adult_initial"></span><br>
+          Adults with backpacks: <span id="num_AdultBackpack_initial"></span><br>
+          Adults with bikes: <span id="num_AdultBike_initial"></span><br>
+          Obstacles: <span id="num_Obstacle_initial"></span><br>
     <table>
       <tr valign=top>
         <td><canvas id="grid" width="600" height="600"></canvas></td>
@@ -42,48 +42,48 @@
           <h2>Statistics</h2>
           
           <b>Current number of pedestrians on grid:</b><br>
-          Children: <span id="current_children"></span><br>
-          Adults: <span id="current_adult"></span><br>
-          Adults with backpacks: <span id="current_backpack"></span><br>
-          Adults with bikes: <span id="current_bike"></span><br>
+          Children: <span id="current_Child"></span><br>
+          Adults: <span id="current_Adult"></span><br>
+          Adults with backpacks: <span id="current_AdultBackpack"></span><br>
+          Adults with bikes: <span id="current_AdultBike"></span><br>
           Total: <span id="current_total"></span><br>
 
 
           <b>Collision data:</b><br>
-          Average number of collisions: <span id="avg_collision"></span><br>
-          Total number of collisions: <span id="collision"></span><br>
-          Average number of collisions for children: <span id="avg_child_collide"></span><br>
-          Total number of collisions for children: <span id="total_child_collide"></span><br>
-          Average number of collisions for adults: <span id="agv_adult_collide"></span><br>
-          Total number of collisions for adults: <span id="total_adult_collide"></span><br>
-          Average number of collisions for adults with backpacks: <span id="avg_backpack_collide"></span><br>
-          Total number of collisions for adults with backpacks: <span id="total_backpack_collide"></span><br>
-          Average number of collisions for adults with bikes: <span id="avg_bike_collide"></span><br>
-          Total number of collisions for adults with bikes: <span id="total_bike_collide"></span><br>
+          Average number of collisions: <span id="avg_collide"></span><br>
+          Total number of collisions: <span id="collide"></span><br>
+          Average number of collisions for children: <span id="avg_Child_collide"></span><br>
+          Total number of collisions for children: <span id="total_Child_collide"></span><br>
+          Average number of collisions for adults: <span id="avg_Adult_collide"></span><br>
+          Total number of collisions for adults: <span id="total_Adult_collide"></span><br>
+          Average number of collisions for adults with backpacks: <span id="avg_AdultBackpack_collide"></span><br>
+          Total number of collisions for adults with backpacks: <span id="total_AdultBackpack_collide"></span><br>
+          Average number of collisions for adults with bikes: <span id="avg_AdultBike_collide"></span><br>
+          Total number of collisions for adults with bikes: <span id="total_AdultBike_collide"></span><br>
 
           <b>Exit time data (in seconds)</b><br>
           Average exit time: <span id="avg_exit_time"></span><br>
           Total exit time: <span id="total_exit_time"></span><br>
-          Average exit time for children: <span id="avg_exit_child"></span><br>
-          Total exit time for children: <span id="total_child_exit"></span><br>
-          Average exit time for adults: <span id="avg_exit_adult"></span><br>
-          Total exit time for adults: <span id="total_adult_exit"></span><br>
-          Average exit time for adults with backpacks: <span id="avg_exit_backpack"></span><br>
-          Total exit time for adults with backpacks: <span id="total_backpack_exit"></span><br>
-          Average exit time for adults with bikes: <span id="avg_exit_bike"></span><br>
-          Total exit time for adults with bikes: <span id="total_bike_exit"></span><br>
+          Average exit time for children: <span id="avg_exit_Child"></span><br>
+          Total exit time for children: <span id="total_Child_exit"></span><br>
+          Average exit time for adults: <span id="avg_exit_Adult"></span><br>
+          Total exit time for adults: <span id="total_Adult_exit"></span><br>
+          Average exit time for adults with backpacks: <span id="avg_exit_AdultBackpack"></span><br>
+          Total exit time for adults with backpacks: <span id="total_AdultBackpack_exit"></span><br>
+          Average exit time for adults with bikes: <span id="avg_exit_AdultBike"></span><br>
+          Total exit time for adults with bikes: <span id="total_AdultBike_exit"></span><br>
 
           <b>Waiting time data</b><br>
           Average waiting time: <span id="avg_wait_steps"></span><br>
           Total waiting time: <span id="total_wait_steps"></span><br>
-          Average waiting time for children: <span id="avg_wait_steps_child"></span><br>
-          Total waiting time for children: <span id="total_child_wait"></span><br>
-          Average waiting time for adults: <span id="avg_wait_steps_adult"></span><br>
-          Total waiting time for adults: <span id="total_adult_wait"></span><br>
-          Average waiting time for adults with backpacks: <span id="avg_wait_steps_backpack"></span><br>
-          Total waiting time for adults with backpacks: <span id="total_backpack_wait"></span><br>
-          Average waiting time for adults with bikes: <span id="avg_wait_steps_bike"></span><br>
-          Total waiting time for adults with bikes: <span id="total_bike_wait"></span><br>
+          Average waiting time for children: <span id="avg_wait_steps_Child"></span><br>
+          Total waiting time for children: <span id="total_Child_wait"></span><br>
+          Average waiting time for adults: <span id="avg_wait_steps_Adult"></span><br>
+          Total waiting time for adults: <span id="total_Adult_wait"></span><br>
+          Average waiting time for adults with backpacks: <span id="avg_wait_steps_AdultBackpack"></span><br>
+          Total waiting time for adults with backpacks: <span id="total_AdultBackpack_wait"></span><br>
+          Average waiting time for adults with bikes: <span id="avg_wait_steps_AdultBike"></span><br>
+          Total waiting time for adults with bikes: <span id="total_AdultBike_wait"></span><br>
 
           Minimum time possible with no obstacles: 
 
@@ -145,6 +145,7 @@
     <script type='text/javascript' src='gui.js'>    </script>
     <script type='text/javascript' src='heap.js'>    </script>
     <script type='text/javascript' src='astar.js'>    </script>
+    <script type='text/javascript' src='pop.js'>    </script>
     <script type='text/javascript' src='final.js'>    </script>
     <script type="text/javascript" src="LZWEncoder.js">    </script>
     <script type="text/javascript" src="NeuQuant.js">    </script>

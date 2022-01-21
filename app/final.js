@@ -4,7 +4,11 @@
  * Refactor out the alorithm used for each individual entity.
  */
 
-(function(exports) {
+(function(app) {
+
+function get_random_int(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
 
     //variable for the total number of people on the grid, updates when it reads the value from html
     var total_peds_at_start = 0; 
@@ -15,31 +19,44 @@
     var euclidean = false; // boolean to use euclidean distance in heuristic, user can change this
     
     //Collision counters
-    var total_child_collisions = 0; //counter for the number of collisions for children, in total
-    var avg_child_collisions = 0; //counter for the number of collisions for children, as an average
-    var total_adult_collisions = 0; //counter for the number of collisions for adults, in total
-    var avg_adult_collisions = 0; //counter for the number of collisions for adults, as an average
-    var total_backpack_collisions = 0; //counter for the number of collisions for adults with a backpacj, in total
-    var avg_backpack_collisions = 0; //counter for the number of collisions for with a backpack, as an average
-    var total_bike_collisions = 0; //counter for the number of collisions for adults with a bike, in total
-    var avg_bike_collisions = 0; //counter for the number of collisions for adults with a bike, as an average
-    var total_collisions = 0; //counter for the number of collisions for people, in total
-    var avg_collisions_total = 0; //counter for the number of collisions for people, as an average
+    app.collisions_total = {};
+    app.collisions_average = {};
+
+    //counter for the number of collisions for children, in total and average
+    app.collisions_total['Child'] = 0;
+    app.collisions_average['Child'] = 0;
+
+    app.collisions_total['Adult'] = 0;
+    app.collisions_average['Adult'] = 0;
+
+    app.collisions_total['AdultBike'] = 0;
+    app.collisions_average['AdultBike'] = 0;
+
+    app.collisions_total['AdultBackpack'] = 0;
+    app.collisions_average['AdultBackpack'] = 0;
+
+    app.total_collisions = 0; //counter for the number of collisions for people, in total
+    app.avg_collisions_total = 0; //counter for the number of collisions for people, as an average
 
     //Exit time counters (in units of board updates)
-    var sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
-    var sum_child_exit_times = 0; //counter for the child exit times, added together
-    var sum_adult_exit_times = 0; //counter for the adult exit times, added together
-    var sum_backpack_exit_times = 0; //counter for the adult with backpack exit times, added together
-    var sum_bike_exit_times = 0; //counter for the adult with a bike exit times, added together
-    
-    //Wait time counters
-    var sum_wait_steps = 0; //number of times everyone has waited, all added together
-    var sum_child_wait_steps = 0; //number of times each child has waited, all added together
-    var sum_adult_wait_steps = 0; //number of times each adult has waited, all added together
-    var sum_backpack_wait_steps = 0; //number of times each adult w a backpack has waited, added together
-    var sum_bike_wait_steps = 0; //number of times each adult w a bike has waited, added together
-    
+    app.sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
+    app.sum_wait_steps = 0; //number of times everyone has waited, all added together
+
+    app.exit_times = {};
+    app.wait_steps = {};
+
+    app.exit_times['Child'] = 0;
+    app.wait_steps['Child'] = 0;
+
+    app.exit_times['Adult'] = 0;
+    app.wait_steps['Adult'] = 0;
+
+    app.exit_times['AdultBike'] = 0;
+    app.wait_steps['AdultBike'] = 0;
+
+    app.exit_times['AdultBackpack'] = 0;
+    app.wait_steps['AdultBackpack'] = 0;
+   
     //counter for the number of children currently on the board
     var current_population = 0;
 
@@ -84,12 +101,13 @@ function State() {
     var total_peds_at_start = parseInt(data.max['Child']) + parseInt(data.max['Adult']) + parseInt(data.max['AdultBackpack']) + parseInt(data.max['AdultBike']);
     var num_children_initial = parseInt(data.max['Child']);
     if (!gui.headless) {
-      document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
-      document.getElementById("num_children_initial").innerHTML = num_children_initial;
-      document.getElementById("num_adult_initial").innerHTML = data.max['Adult'];
-      document.getElementById("num_backpack_initial").innerHTML = data.max['AdultBackpack'];
-      document.getElementById("num_bike_initial").innerHTML = data.max['AdultBike'];
-      document.getElementById("num_obstacle_initial").innerHTML = data.max['Obstacle'];
+	document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
+ 
+      	var things = pop.types();
+	for (i = 0; i < things.length; i++) {
+	    var tpe = things[i];
+	    document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
+	}
     }
     this.grid = []; //data structure for grid, initially empty
     this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
@@ -122,112 +140,74 @@ function State() {
                 var current_population = this.population.length; //number of people in the grid
                 if (!gui.headless) { document.getElementById("current_total").innerHTML = current_population; }
                 total_population_over_time.push(current_population); //add the current population to the list of all previous populations (each update)
-                sum_of_exit_times = sum_of_exit_times + thing.exittime; //add its exit time to the total exit times
-                sum_wait_steps = sum_wait_steps + thing.waitsteps; //add its total waittime to the total waitime
+                app.sum_of_exit_times += thing.exittime; //add its exit time to the total exit times
+                app.sum_wait_steps += thing.waitsteps; //add its total waittime to the total waitime
+
 		// TODO: THESE CAN BE GREATLY SIMPLIFIED...
-                    //if a child
-                    if (object_type == 'Child') { 
-                        data.current['Child'] = data.current['Child'] - 1; //subtract one from the child population
-                        if (!gui.headless) { document.getElementById("current_children").innerHTML = data.current['Child']; }
-                        //add to sum of everyones exit times
-                        sum_child_exit_times = sum_child_exit_times + thing.exittime; //add its exit time to the total children exit times
-                        sum_child_wait_steps = sum_child_wait_steps + thing.waitsteps; //add its wait time to the total children wait times
-                        //check if last child
-                        if(data.current['Child'] == 0) {
-                          var total_child_exit_time = thing.exittime; //in board update units
-                          if (!gui.headless) { document.getElementById("total_child_exit").innerHTML = total_child_exit_time; }
-                          var total_child_wait_steps = thing.waitsteps; //set the total amount of wait steps for children
-                          if (!gui.headless) { document.getElementById("total_child_wait").innerHTML = total_child_wait_steps; }
-                        }
-                        //if an adult
-                    } else if (object_type == 'Adult') {
-                        data.current['Adult'] = data.current['Adult'] - 1; //subtract one from the adult population
-                        if (!gui.headless) { document.getElementById("current_adult").innerHTML = data.current['Adult']; }
-                        sum_adult_exit_times = sum_adult_exit_times + thing.exittime; //add its exit time to the total adult exit times
-                        sum_adult_wait_steps = sum_adult_wait_steps + thing.waitsteps; //add its wait time to the total adult wait times
-                        //check if last adult
-                        if(data.current['Adult'] == 0){
-                          var total_adult_exit_time = thing.exittime; //in board update units
-                          if (!gui.headless) { document.getElementById("total_adult_exit").innerHTML = total_adult_exit_time; }
-                          var total_adult_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults
-                          if (!gui.headless) { document.getElementById("total_adult_wait").innerHTML = total_adult_wait_steps; }
-                        }
-                        //check if adult with backpack
-                    } else if (object_type == 'AdultBackpack') {
-                        data.current['AdultBackpack'] = data.current['AdultBackpack'] - 1; //subtract one from the adult with backpack population
-                        if (!gui.headless) { document.getElementById("current_backpack").innerHTML = data.current['AdultBackpack']; }
-                        sum_backpack_exit_times = sum_backpack_exit_times + thing.exittime; //add its exit time to the total adult with backpack exit times
-                        sum_backpack_wait_steps = sum_backpack_wait_steps + thing.waitsteps; //add its wait time to the total adult with backpack wait times
-                        if(data.current['AdultBackpack'] == 0){
-                          var total_backpack_exit_time = thing.exittime; //in board update units
-                          if (!gui.headless) { document.getElementById("total_backpack_exit").innerHTML = total_backpack_exit_time; }
-                          var total_backpack_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults with backpack
-                          if (!gui.headless) { document.getElementById("total_backpack_wait").innerHTML = total_backpack_wait_steps; }
-                        }
-                        //check if adult with bike
-                    } else if (object_type == 'AdultBike') {
-                        data.current['AdultBike'] = data.current['AdultBike'] - 1; //subtract one from the adult with bike population
-                        if (!gui.headless) { document.getElementById("current_bike").innerHTML = data.current['AdultBike']; }
-                        sum_bike_exit_times = sum_bike_exit_times + thing.exittime; //add its exit time to the total adult with bike exit times
-                        sum_bike_wait_steps = sum_bike_wait_steps + thing.waitsteps; //add its wait time to the total adult with bike wait times
-                        if(data.current['AdultBike'] == 0){
-                          var total_bike_exit_time = thing.exittime; //in board update units
-                          if (!gui.headless) { document.getElementById("total_bike_exit").innerHTML = total_bike_exit_time; }
-                          var total_bike_wait_steps = thing.waitsteps; //set the total amount of wait steps for adults with bike
-                          if (!gui.headless) { document.getElementById("total_bike_wait").innerHTML = total_bike_wait_steps; }
-                        }
+                data.current[object_type] -= 1; //subtract one from type's population
+                if (!gui.headless) { document.getElementById("current_" + object_type).innerHTML = data.current[object_type]; }
+
+                //add to sum of everyones exit times
+                app.exit_times[object_type] += thing.exittime; //add its exit time to the total children exit times
+                app.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total children wait times
+
+                //check if last child
+                if(data.current[object_type] == 0) {
+                    var total_time = thing.exittime; //in board update units
+                    if (!gui.headless) { document.getElementById("total_" + object_type + "_exit").innerHTML = total_time; }
+                    var total_wait_steps = thing.waitsteps; //set the total amount of wait steps for children
+                    if (!gui.headless) { document.getElementById("total_" + object_type + "_wait").innerHTML = total_wait_steps; }
                 }
+
                 if (current_population == 0) { //if no people left on the grid
                 //not sure if we need to set these to zero, should all be zero???
-                    data.current['Child'] = 0;
-                    data.current['Adult'] = 0;
-                    data.current['AdultBackpack'] = 0;
-                    data.current['AdultBike'] = 0;
-                    end_simulation() //end the simulation
-                    avg_collisions_total = total_collisions/total_peds_at_start;
-                    avg_child_collisions = total_child_collisions/data.max['Child'];
-                    avg_adult_collisions = total_adult_collisions/data.max['Adult'];
-                    avg_backpack_collisions = total_backpack_collisions/data.max['AdultBackpack'];
-                    avg_bike_collisions = total_bike_collisions/ data.max['AdultBike'];
+      		    var things = pop.types();
+
+		    end_simulation(); 
+
+		    for (i = 0; i < things.length; i++) {
+			var tpe = things[i];
+			data.current[tpe] = 0;
+			app.collisions_average[tpe] = app.collisions_total[tpe]/data.max[tpe];
+			if (!gui.headless) { 
+			    document.getElementById("total_" + tpe + "_collide").innerHTML = app.collisions_total[tpe];
+			    document.getElementById("avg_" + tpe + "_collide").innerHTML = app.collisions_average[tpe];
+			}
+
+			var avg_exit = app.exit_times[tpe] / data.max[tpe]; //in board update units
+			if (!gui.headless) {
+			    document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
+			}
+
+			var avg_wait_steps = app.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
+			if (!gui.headless) {
+			    document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
+			}
+		    }
+
+                    avg_collide_total = app.total_collisions/total_peds_at_start;
+
                     if (!gui.headless) { 
-                      document.getElementById("avg_collision").innerHTML = avg_collisions_total;
-                      document.getElementById("collision").innerHTML = total_collisions;
-                      document.getElementById("total_child_collide").innerHTML = total_child_collisions;
-                      document.getElementById("avg_child_collide").innerHTML = avg_child_collisions;
-                      document.getElementById("total_adult_collide").innerHTML = total_adult_collisions;
-                      document.getElementById("agv_adult_collide").innerHTML = avg_adult_collisions;
-                      document.getElementById("total_backpack_collide").innerHTML = total_backpack_collisions;
-                      document.getElementById("avg_backpack_collide").innerHTML = avg_backpack_collisions;
-                      document.getElementById("total_bike_collide").innerHTML = total_bike_collisions;
-                      document.getElementById("avg_bike_collide").innerHTML = avg_bike_collisions;
-                    }
-                    var total_exit_time = thing.exittime; //total exit time in board updates
-                    var avg_exit_time = (sum_of_exit_times) / total_peds_at_start; //in board update units
-                    var avg_exit_time_child = (sum_child_exit_times) / data.max['Child']; //in board update units
-                    var avg_exit_time_adult = (sum_adult_exit_times) / data.max['Adult']; //in board update units
-                    var avg_exit_time_backpack = (sum_backpack_exit_times) / data.max['AdultBackpack']; //in board update units
-                    var avg_exit_time_bike = (sum_bike_exit_times) / data.max['AdultBike']; //in board update units
+                      document.getElementById("avg_collide").innerHTML = app.avg_collisions_total;  // TODO: doesn't change ever?
+                      document.getElementById("collide").innerHTML = app.total_collisions;
+		    }
+
+                    var total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG]
+
+                    var avg_exit_time = (app.sum_of_exit_times) / total_peds_at_start; //in board update units
+
+
                     if (!gui.headless) { 
                       document.getElementById("total_exit_time").innerHTML = total_exit_time;
                       document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
-                      document.getElementById("avg_exit_child").innerHTML = avg_exit_time_child;
-                      document.getElementById("avg_exit_adult").innerHTML = avg_exit_time_adult;
-                      document.getElementById("avg_exit_backpack").innerHTML = avg_exit_time_backpack;
-                      document.getElementById("avg_exit_bike").innerHTML = avg_exit_time_bike;
                     }
+
                     var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
-                    var avg_wait_steps = sum_wait_steps/total_peds_at_start; //average amount of waitsteps per person
-                    var avg_wait_steps_child = sum_child_wait_steps/data.max['Child']; //average wait time for children
-                    var avg_wait_steps_adult = sum_adult_wait_steps/data.max['Adult']; //average wait time for adults
-                    var avg_wait_steps_backpack = sum_backpack_wait_steps/data.max['AdultBackpack']; //average wait time for adults with a backpack
-                    var avg_wait_steps_bike = sum_bike_wait_steps/data.max['AdultBike']; //average wait time for adults with a bike
+                    var avg_wait_steps = app.sum_wait_steps/total_peds_at_start; //average amount of waitsteps per person
+
                     if (!gui.headless) {
                       document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
                       document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
-                      document.getElementById("avg_wait_steps_child").innerHTML = avg_wait_steps_child;
-                      document.getElementById("avg_wait_steps_adult").innerHTML = avg_wait_steps_adult;
-                      document.getElementById("avg_wait_steps_backpack").innerHTML = avg_wait_steps_backpack;
-                      document.getElementById("avg_wait_steps_bike").innerHTML = avg_wait_steps_bike;
                     }
                     // console.log("total collisions: " + total_collisions)
                     // console.log("total peds at start: " + total_peds_at_start)
@@ -278,6 +258,7 @@ function State() {
         }
     }
 
+    /** If return false then failed in some way. Otherwise return true. */
     this.place_things = function(random) {
         //added this in as part of exit distances
         
@@ -581,6 +562,7 @@ function State() {
                 var obj = new Obstacle(j, jj);
                 this.temp_grid[j][jj].thing = obj;
             }
+
             for (var n = 0; n < data.max['Exit']; n++) {
                 var j = get_random_int(0, data.width_i - 3);
                 var jj = get_random_int(0, data.width_ii - 3);
@@ -617,352 +599,74 @@ function State() {
             //            }
 
         }
+	
+
+	// all exits have been generated
         var num_children = 0;
-        var times_not_placed = 0;
-       
-        while (num_children < data.max['Child']) {
-          if (times_not_placed>(data.width_i*data.width_ii)){ //not sure what is a good number, have it at 1000 right now, changed to area
-            window.alert("Cannot place this many children on the grid, please reset and choose another number");
-            break;
-        }
-        var j = get_random_int(0, data.width_i);
-        var jj = get_random_int(0, data.width_ii);
-            //added this in as part of exit distances
-            exit_distances = [];
-            //randomly getting a specific exit cell goal
-            var rand_x = get_random_int(0, 3);
-            var rand_y = get_random_int(0, 3);
-            for (var exit = 0; exit < data.exit_locations.length; exit++) {
-                var exiti = data.exit_locations[exit].anchor_i;
-                var exitii = data.exit_locations[exit].anchor_ii;
-                var local_endi = data.exit_locations[exit].profile_i[3] + data.exit_locations[exit].anchor_i;
-                var local_endii = data.exit_locations[exit].profile_ii[3] + data.exit_locations[exit].anchor_ii;
-                var current_distance = calc_distance(j, jj, exiti, exitii) //should calculate to goal?
-                var local_goali = data.exit_locations[exit].profile_i[rand_x] + data.exit_locations[exit].anchor_i;
-                var local_goalii = data.exit_locations[exit].profile_ii[rand_y] + data.exit_locations[exit].anchor_ii;
-                var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii] //keeping track of the beginning and end of exit
-                exit_distances.push(list)
-            }
-            // console.log(exit_distances)
-            var min_exit_distance = exit_distances[0][0]; 
-            var min_exiti = exit_distances[0][1];
-            var min_exitii = exit_distances[0][2];
-            var min_endi = exit_distances[0][3];
-            var min_endii = exit_distances[0][4];
-            var goali = exit_distances[0][5];
-            var goalii = exit_distances[0][6];
 
-            for (var exit = 0; exit < exit_distances.length; exit++) {
-                if (exit_distances[exit][0] < min_exit_distance) {
-                    //change if needed
-                    min_exit_distance = exit_distances[exit][0];
-                    min_exiti = exit_distances[exit][1];
-                    min_exitii = exit_distances[exit][2];
-                    min_endi = exit_distances[exit][3];
-                    min_endii = exit_distances[exit][4];
-                    goali = exit_distances[exit][5];
-                    goalii = exit_distances[exit][6];
-                }
-            }
 
-            var objChild = new Child(j, jj);
-            // console.log(objChild)
-            objChild.min_exiti = min_exiti;
-            objChild.min_exitii = min_exitii;
-            objChild.endi = min_endi;
-            objChild.endii = min_endii;
-            objChild.goali = goali;
-            objChild.goalii = goalii;
+	// iterate over ALL types and see how many are needed of each type
+	var things = pop.types();
+	for (i = 0; i < things.length; i++) {
+	    var tpe = things[i];
 
-            var obstacle = 0;
-            for (var p = 0; p < objChild.profile_i.length; p++) { //
-                var dj = objChild.profile_i[p];
-                var djj = objChild.profile_ii[p];
-                var safej = data.get_bounded_index_i(j + dj);
-                var safejj = data.get_bounded_index_ii(jj + djj);
-                if (this.temp_grid[safej][safejj].has_other_thing(objChild)) { //should be somewhere
-                    obstacle++;
-                    //do not place
-                }
-            }
-            if (obstacle == 0) {//if can place
-                for (var p = 0; p < objChild.profile_i.length; p++) { //
-                    var dj = objChild.profile_i[p];
-                    var djj = objChild.profile_ii[p];
-                    var safej = data.get_bounded_index_i(j + dj);
-                    var safejj = data.get_bounded_index_ii(jj + djj);
-                    this.temp_grid[safej][safejj].thing = objChild; 
-                }
-                this.population.push([objChild, 'Child']);
-                num_children++;
-                times_not_placed = 0;
-            }
-            else{
-              times_not_placed++;
-          }
-      }
-        // console.log(min_exit_distance)
-        // console.log(min_exiti)
-        // console.log(min_exitii)
-        var num_adultbackpack = 0;
-        var times_not_placed_backpack = 0;
-        while (num_adultbackpack < data.max['AdultBackpack']) {
-          if (times_not_placed_backpack>1000){ //not sure what is a good number, have it at 1000 right now
-            window.alert("Cannot place this many adults with a backpack on the grid, please reset and choose another number");
-            break;
-        }
-        var j = get_random_int(0, data.width_i)
-        var jj = get_random_int(0, data.width_ii)
-            //added this in as part of exit distances
-            exit_distances = [];
-            //randomly getting a specific exit cell goal
-            var rand_x = get_random_int(0, 3);
-            var rand_y = get_random_int(0, 3);
-            for (var exit = 0; exit < data.exit_locations.length; exit++) {
-                var exiti = data.exit_locations[exit].anchor_i;
-                var exitii = data.exit_locations[exit].anchor_ii;
-                var local_endi = data.exit_locations[exit].profile_i[3] + data.exit_locations[exit].anchor_i;
-                var local_endii = data.exit_locations[exit].profile_ii[3] + data.exit_locations[exit].anchor_ii;
-                var local_goali = data.exit_locations[exit].profile_i[rand_x] + data.exit_locations[exit].anchor_i;
-                var local_goalii = data.exit_locations[exit].profile_ii[rand_y] + data.exit_locations[exit].anchor_ii;
-                var current_distance = calc_distance(j, jj, exiti, exitii)
-                var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii]; //keeping track of the beginning and end of exit
-                exit_distances.push(list)
-            }
-            // console.log(exit_distances)
-            var min_exit_distance = exit_distances[0][0]; //this needs to be a var
-            var min_exiti = exit_distances[0][1];
-            var min_exitii = exit_distances[0][2];
-            var min_endi = exit_distances[0][3];
-            var min_endii = exit_distances[0][4];
-            var goali = exit_distances[0][5];
-            var goalii = exit_distances[0][6];
-            // console.log(min_exit_distance)
-            // console.log(min_exiti)
-            // console.log(min_exitii)
-            for (var exit = 0; exit < exit_distances.length; exit++) {
-                if (exit_distances[exit][0] < min_exit_distance) {
-                    //change if needed
-                    min_exit_distance = exit_distances[exit][0];
-                    min_exiti = exit_distances[exit][1];
-                    min_exitii = exit_distances[exit][2];
-                    min_endi = exit_distances[exit][3];
-                    min_endii = exit_distances[exit][4];
-                    goali = exit_distances[exit][5];
-                    goalii = exit_distances[exit][6];
-                    // console.log(min_exit_distance)
-                    // console.log(min_exiti)
-                    // console.log(min_exitii)
-                }
-            }
-            var obj = new AdultBackpack(j, jj);
-            obj.min_exiti = min_exiti;
-            obj.min_exitii = min_exitii;
-            obj.endi = min_endi;
-            obj.endii = min_endii;
-            obj.goali = goali;
-            obj.goalii = goalii;
+	    var num_thing = 0;
+            var times_not_placed = 0;
+            while (num_thing < data.max[tpe]) {
+		// not sure what is a good number, have it at 1000 right now, changed to area
+		if (times_not_placed > (data.width_i*data.width_ii)) { 
+		    console.log("Cannot place this many " + tpe + " on the grid, please reset and choose another number");
+		    return false;
+		}
 
-            var obstacle = 0;
-            for (var p = 0; p < obj.profile_i.length; p++) { //
-                var dj = obj.profile_i[p];
-                var djj = obj.profile_ii[p];
-                var safej = data.get_bounded_index_i(j + dj);
-                var safejj = data.get_bounded_index_ii(jj + djj);
-                if (this.temp_grid[safej][safejj].has_other_thing(obj)) { //should be somewhere
-                    obstacle++;
-                    //do not place
-                }
-            }
-            if (obstacle == 0) {
-                for (var p = 0; p < obj.profile_i.length; p++) { //
+		// ensure stays fully on the board.
+		var dd = pop.dimension(tpe);
+		var j = get_random_int(dd[0], data.width_i - dd[0]);
+		var jj = get_random_int(dd[1], data.width_ii - dd[1]);
+		
+		var exit_information = data.get_exit_information(j, jj);
+		
+		// construct the actual thing using the factory in pop
+		var obj = pop.factory(tpe, j, jj);
+		
+		obj.min_exiti  = exit_information[0];
+		obj.min_exitii = exit_information[1];
+		obj.endi       = exit_information[2];
+		obj.endii      = exit_information[3];
+		obj.goali      = exit_information[4];
+		obj.goalii     = exit_information[5];
+		
+		var obstacle = 0;
+		for (var p = 0; p < obj.profile_i.length; p++) { //
                     var dj = obj.profile_i[p];
                     var djj = obj.profile_ii[p];
                     var safej = data.get_bounded_index_i(j + dj);
                     var safejj = data.get_bounded_index_ii(jj + djj);
-                    this.temp_grid[safej][safejj].thing = obj; //need to fix to always have correct number on floor
-                }
-                this.population.push([obj, 'AdultBackpack']);
-                // console.log(this.population)
-                num_adultbackpack++;
-                times_not_placed_backpack = 0;
-            }
-            else{
-              times_not_placed_backpack++;
-          }
-      }
-      var num_adult = 0;
-      times_not_placed_adult = 0;
-      while (num_adult < data.max['Adult']) {
-          if (times_not_placed_adult>1000){ //not sure what is a good number, have it at 1000 right now
-            window.alert("Cannot place this many adults with a backpack on the grid, please reset and choose another number");
-            break;
-        }
-        var j = get_random_int(0, data.width_i - 1)
-        var jj = get_random_int(0, data.width_ii - 1)
-            //added this in as part of exit distances
-            exit_distances = [];
-            //randomly getting a specific exit cell goal
-            var rand_x = get_random_int(0, 3);
-            var rand_y = get_random_int(0, 3);
-            for (var exit = 0; exit < data.exit_locations.length; exit++) {
-                var exiti = data.exit_locations[exit].anchor_i;
-                var exitii = data.exit_locations[exit].anchor_ii;
-                var local_endi = data.exit_locations[exit].profile_i[3] + data.exit_locations[exit].anchor_i;
-                var local_endii = data.exit_locations[exit].profile_ii[3] + data.exit_locations[exit].anchor_ii;
-                var current_distance = calc_distance(j, jj, exiti, exitii)
-                var local_goali = data.exit_locations[exit].profile_i[rand_x] + data.exit_locations[exit].anchor_i;
-                var local_goalii = data.exit_locations[exit].profile_ii[rand_y] + data.exit_locations[exit].anchor_ii;
-                var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii]; //keeping track of the beginning and end of exit
-                exit_distances.push(list)
-            }
-            // console.log(exit_distances)
-            var min_exit_distance = exit_distances[0][0];
-            var min_exiti = exit_distances[0][1];
-            var min_exitii = exit_distances[0][2];
-            var min_endi = exit_distances[0][3];
-            var min_endii = exit_distances[0][4];
-            var goali = exit_distances[0][5];
-            var goalii = exit_distances[0][6];
+                    if (this.temp_grid[safej][safejj].has_other_thing(obj)) { //should be somewhere
+			obstacle++;                       //do not place
+                    }
+		}
+		if (obstacle == 0) {//if can place
+                    for (var p = 0; p < obj.profile_i.length; p++) { //
+			var dj = obj.profile_i[p];
+			var djj = obj.profile_ii[p];
+			var safej = data.get_bounded_index_i(j + dj);
+			var safejj = data.get_bounded_index_ii(jj + djj);
+			this.temp_grid[safej][safejj].thing = obj;
+                    }
+		    
+                    this.population.push([obj, tpe]);
+                    num_thing++;
+                    times_not_placed = 0;
+		}
+		else{
+		    times_not_placed++;
+		}
+	    }
+	}
 
-            for (var exit = 0; exit < exit_distances.length; exit++) {
-                if (exit_distances[exit][0] < min_exit_distance) {
-                    //change if needed
-                    min_exit_distance = exit_distances[exit][0];
-                    min_exiti = exit_distances[exit][1];
-                    min_exitii = exit_distances[exit][2];
-                    min_endi = exit_distances[exit][3];
-                    min_endii = exit_distances[exit][4];
-                    goali = exit_distances[exit][5];
-                    goalii = exit_distances[exit][6];
-                }
-            }
-
-            var objAdult = new Adult(j, jj);
-            objAdult.min_exiti = min_exiti;
-            objAdult.min_exitii = min_exitii;
-            objAdult.endi = min_endi;
-            objAdult.endii = min_endii;
-            objAdult.goali = goali;
-            objAdult.goalii = goalii;
-
-            //check if valid place to put adult
-            var obstacle = 0;
-            for (var p = 0; p < objAdult.profile_i.length; p++) { //
-                var dj = objAdult.profile_i[p];
-                var djj = objAdult.profile_ii[p];
-                var safej = data.get_bounded_index_i(j + dj);
-                var safejj = data.get_bounded_index_ii(jj + djj);
-                if (this.temp_grid[safej][safejj].has_other_thing(objAdult)) { //should be somewhere
-                    obstacle++;
-                    //do not place
-                }
-            }
-            if (obstacle == 0) {
-                for (var p = 0; p < objAdult.profile_i.length; p++) { //
-                    var dj = objAdult.profile_i[p];
-                    var djj = objAdult.profile_ii[p];
-                    var safej = data.get_bounded_index_i(j + dj);
-                    var safejj = data.get_bounded_index_ii(jj + djj);
-                    this.temp_grid[safej][safejj].thing = objAdult;
-                }
-                this.population.push([objAdult, "Adult"]);
-                num_adult++;
-                times_not_placed_adult = 0;
-            }
-            else{
-              times_not_placed_adult++;
-          }
-      }
-
-      var num_bike = 0;
-      times_not_placed_bike = 0;
-      while (num_bike < data.max['AdultBike']) {
-          if (times_not_placed_bike>1000){ //not sure what is a good number, have it at 1000 right now
-            window.alert("Cannot place this many children on the grid, please reset and choose another number");
-            break;
-        }
-        var j = get_random_int(0, data.width_i-3);
-        var jj = get_random_int(3, data.width_ii-2);
-            //added this in as part of exit distances
-            exit_distances = [];
-            //randomly getting a specific exit cell goal
-            var rand_x = get_random_int(0, 3);
-            var rand_y = get_random_int(0, 3);
-            for (var exit = 0; exit < data.exit_locations.length; exit++) {
-                var exiti = data.exit_locations[exit].anchor_i;
-                var exitii = data.exit_locations[exit].anchor_ii;
-                var local_endi = data.exit_locations[exit].profile_i[3] + data.exit_locations[exit].anchor_i;
-                var local_endii = data.exit_locations[exit].profile_ii[3] + data.exit_locations[exit].anchor_ii;
-                var local_goali = data.exit_locations[exit].profile_i[rand_x] + data.exit_locations[exit].anchor_i;
-                var local_goalii = data.exit_locations[exit].profile_ii[rand_y] + data.exit_locations[exit].anchor_ii;
-                var current_distance = calc_distance(j, jj, exiti, exitii) //change?
-                var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii]; //keeping track of the beginning and end of exit
-                exit_distances.push(list)
-            }
-            // console.log(exit_distances)
-            var min_exit_distance = exit_distances[0][0]; //this needs to be a var
-            var min_exiti = exit_distances[0][1];
-            var min_exitii = exit_distances[0][2];
-            var min_endi = exit_distances[0][3];
-            var min_endii = exit_distances[0][4];
-            var goali = exit_distances[0][5];
-            var goalii = exit_distances[0][6];
-            // console.log(min_exit_distance)
-            // console.log(min_exiti)
-            // console.log(min_exitii)
-            for (var exit = 0; exit < exit_distances.length; exit++) {
-                if (exit_distances[exit][0] < min_exit_distance) {
-                    //change if needed
-                    min_exit_distance = exit_distances[exit][0];
-                    min_exiti = exit_distances[exit][1];
-                    min_exitii = exit_distances[exit][2];
-                    min_endi = exit_distances[exit][3];
-                    min_endii = exit_distances[exit][4];
-                    goali = exit_distances[exit][5];
-                    goalii = exit_distances[exit][6];
-                    // console.log(min_exit_distance)
-                    // console.log(min_exiti)
-                    // console.log(min_exitii)
-                }
-            }
-            var obj = new AdultBike(j, jj);
-            obj.min_exiti = min_exiti;
-            obj.min_exitii = min_exitii;
-            obj.endi = min_endi;
-            obj.endii = min_endii;
-            obj.goali = goali;
-            obj.goalii = goalii;
-
-            var obstacle = 0;
-            for (var p = 0; p < obj.profile_i.length; p++) { //
-                var dj = obj.profile_i[p];
-                var djj = obj.profile_ii[p];
-                var safej = data.get_bounded_index_i(j + dj);
-                var safejj = data.get_bounded_index_ii(jj + djj);
-                if (this.temp_grid[safej][safejj].has_other_thing(obj)) { //should be somewhere
-                    obstacle++;
-                    //do not place
-                }
-            }
-            if (obstacle == 0) {
-                for (var p = 0; p < obj.profile_i.length; p++) { //
-                    var dj = obj.profile_i[p];
-                    var djj = obj.profile_ii[p];
-                    var safej = data.get_bounded_index_i(j + dj);
-                    var safejj = data.get_bounded_index_ii(jj + djj);
-                    this.temp_grid[safej][safejj].thing = obj; //need to fix to always have correct number on floor
-                }
-                this.population.push([obj, 'AdultBike']);
-                // console.log(this.population)
-                num_bike++;
-                times_not_placed_bike = 0; //reeset because moving onto another person
-            }
-            else{
-              times_not_placed_bike++;
-          }
-      }
-  }
+	return true;
+    }
 
   this.get_coords_from_orientation = function(thing) {
     var i = thing.anchor_i;
@@ -1051,20 +755,11 @@ function State() {
                             var safe_c = data.get_bounded_index_ii(c + thing.anchor_ii); //bound the y value, making sure on the board
                             if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something already in the cell
                                 collision = collision + 1; //add one to collision counter
-                                total_collisions = total_collisions + 1; //add one to the global collision counter
+                                app.total_collisions = app.total_collisions + 1; //add one to the global collision counter
+
                                 //adding collision counter to specific person types
-                                if (thing.type == 'Child') { //if a child
-                                    total_child_collisions = total_child_collisions + 1; //add one to the children collisions
-                                }
-                                else if (thing.type == 'Adult') { //if an adult
-                                    total_adult_collisions = total_adult_collisions + 1; //add one to the number of adult collisions
-                                }
-                                else if (thing.type == 'AdultBackpack') { //if adult with backpack
-                                    total_backpack_collisions = total_backpack_collisions + 1; //add one to the number of adult with backpack collisions
-                                }
-                                else if (thing.type == 'AdultBike') { //if adult with bike
-                                    total_bike_collisions = total_bike_collisions + 1; //add one to the total number of adult with bike collisions
-                                }
+				app.collisions_total[thing.type] += 1;
+
                                 break; //since we found a collision on part of the person, break for loop
                             }
                         }
@@ -1111,7 +806,7 @@ function State() {
                           //wait_before_random_move can be changed by user input
                           else if(thing.wait>data.wait_before_random_move){ 
                             //get random orientation and try to move there
-                            var orientation = random_orientation(); //random orientation
+                            var orientation = data.random_orientation(); //random orientation
                             var can_move = true; //initially assume you can move
                             for (var x = 0; x < thing.profile_i.length; x++) { //go through every cell the person is occupying
                             //get next potential coordinates based off of the orientation
@@ -1275,7 +970,7 @@ function Cell(i, ii) {
 
 function Exit(j, jj) {
 
-    this.orientation = random_orientation();
+    this.orientation = data.random_orientation();
     this.anchor_i = j;
     this.anchor_ii = jj;
 
@@ -1304,7 +999,7 @@ function Exit(j, jj) {
 }
 
 function Obstacle(j, jj) {
-    this.orientation = random_orientation();
+    this.orientation = data.random_orientation();
     this.anchor_i = j
     this.anchor_ii = jj
 
@@ -1324,212 +1019,7 @@ function Obstacle(j, jj) {
     }
 }
 
-function Child(j, jj) {
-    this.orientation = random_orientation();
-    this.anchor_i = j
-    this.anchor_ii = jj
-    this.min_exiti = 0;
-    this.min_exitii = 0;
-    this.goali = 0; //initially
-    this.goalii = 0; //initially
-    this.endi = 0; //initially
-    this.endii = 0; // initially
-    this.profile_i = [0];
-    this.profile_ii = [0];
-    this.wait = 0;
-    this.stuck = 0;
-    this.type = 'Child';
-    this.exittime = 0;
-    this.waitsteps = 0;
 
-
-    this.color = function() {
-        if (this.stuck == 0) {
-            return "rgb(255,165,0)";
-        } else {
-            return "rgb(255,0,0)";
-        }
-    }
-
-    this.place_footprint = function(state) {
-        state.temp_grid[this.anchor_i][this.anchor_ii].thing = this;
-    }
-
-    this.remove_footprint = function(state) {
-        state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
-    }
-}
-
-function Adult(j, jj) {
-    this.orientation = random_orientation();
-    this.anchor_i = j
-    this.anchor_ii = jj
-    this.min_exiti = 0;
-    this.min_exitii = 0;
-    this.goali = 0; //initially
-    this.goalii = 0; //initially
-    this.endi = 0; //initially
-    this.endii = 0; // initially
-    this.wait = 0;
-    // my projection
-    this.profile_i = [1, 0]
-    this.profile_ii = [0, 0]
-    this.type = 'Adult';
-    this.exittime = 0;
-    this.waitsteps = 0;
-
-
-    this.stuck = 0;
-
-    this.color = function() {
-        if (this.stuck == 0) {
-            //            return "rgb(255,165,0)";
-            return "rgb(0,0,255)";
-        } else {
-            return "rgb(255,0,0)";
-        }
-    }
-
-    this.place_footprint = function(state) {
-        for (var p = 0; p < this.profile_i.length; p++) { //
-            var dj = this.profile_i[p];
-            var djj = this.profile_ii[p];
-            var safej = data.get_bounded_index_i(this.anchor_i + dj);
-            var safejj = data.get_bounded_index_ii(this.anchor_ii + djj);
-            state.temp_grid[safej][safejj].thing = this;
-        }
-    }
-
-    this.remove_footprint = function(state) {
-        for (var p = 0; p < this.profile_i.length; p++) { //
-            var dj = this.profile_i[p];
-            var djj = this.profile_ii[p];
-            var safei = data.get_bounded_index_i(this.anchor_i + dj);
-            var safeii = data.get_bounded_index_ii(this.anchor_ii + djj);
-            state.temp_grid[safei][safeii].thing = null;
-        }
-    }
-}
-
-function AdultBackpack(j, jj) {
-    this.orientation = random_orientation();
-    this.anchor_i = j
-    this.anchor_ii = jj
-    this.min_exiti = 0;
-    this.min_exitii = 0;
-    this.goali = 0; //initially
-    this.goalii = 0; //initially
-    this.endi = 0; //initially
-    this.endii = 0;
-    this.wait = 0;
-    // my projection
-    this.profile_i = [0, 0, 1, 1];
-    this.profile_ii = [0, 1, 0, 1];
-    this.type = 'AdultBackpack';
-    this.exittime = 0;
-    this.waitsteps = 0;
-
-
-    this.color = function() {
-        return "rgb(0,128,0)";
-    }
-
-    this.place_footprint = function(state) {
-        for (var p = 0; p < this.profile_i.length; p++) { //
-            var dj = this.profile_i[p];
-            var djj = this.profile_ii[p];
-            var safej = data.get_bounded_index_i(this.anchor_i + dj);
-            var safejj = data.get_bounded_index_ii(this.anchor_ii + djj);
-            state.temp_grid[safej][safejj].thing = this;
-        }
-    }
-
-    this.remove_footprint = function(state) {
-        for (var p = 0; p < this.profile_i.length; p++) { //
-            var dj = this.profile_i[p];
-            var djj = this.profile_ii[p];
-            var safei = data.get_bounded_index_i(this.anchor_i + dj);
-            var safeii = data.get_bounded_index_ii(this.anchor_ii + djj);
-            state.temp_grid[safei][safeii].thing = null;
-        }
-    }
-
-}
-
-function AdultBike(j, jj) {
-    this.orientation = random_orientation();
-    this.anchor_i = j
-    this.anchor_ii = jj
-    this.min_exiti = 0;
-    this.min_exitii = 0;
-    this.goali = 0; //initially
-    this.goalii = 0; //initially
-    this.endi = 0; //initially
-    this.endii = 0;
-    this.wait = 0;
-    this.exittime = 0;
-    this.waitsteps = 0;
-
-    // my projection
-    this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
-    this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
-    this.type = 'AdultBike';
-
-
-    this.color = function() {
-        return "rgb(220,20,60)";
-    }
-
-    this.place_footprint = function(state) {
-        for (var p = 0; p < this.profile_i.length; p++) { //
-            var dj = this.profile_i[p];
-            var djj = this.profile_ii[p];
-            var safej = data.get_bounded_index_i(this.anchor_i + dj);
-            var safejj = data.get_bounded_index_ii(this.anchor_ii + djj);
-            state.temp_grid[safej][safejj].thing = this;
-        }
-    }
-
-    this.remove_footprint = function(state) {
-        for (var p = 0; p < this.profile_i.length; p++) { //
-            var dj = this.profile_i[p];
-            var djj = this.profile_ii[p];
-            var safei = data.get_bounded_index_i(this.anchor_i + dj);
-            var safeii = data.get_bounded_index_ii(this.anchor_ii + djj);
-            state.temp_grid[safei][safeii].thing = null;
-        }
-    }
-}
-
-function random_orientation() {
-    var r = Math.random() * 8;
-
-    if (r < 1) {
-        return data.LEFT;
-    } else if (r < 2) {
-        return data.UP;
-    } else if (r < 3) {
-        return data.RIGHT;
-    } else if (r < 4) {
-        return data.DOWN
-    } else if (r < 5) {
-        return data.diagDownRight;
-    } else if (r < 6) {
-        return data.diagUpRight;
-    } else if (r < 7) {
-        return data.diagDownLeft;
-    } else {
-        return data.diagUpLeft;
-    }
-}
-
-function calc_distance(i, ii, j, jj) {
-    return Math.pow(Math.pow(Math.abs(i - j), 2) + Math.pow(Math.abs(ii - jj), 2), 0.5);
-}
-
-function get_random_int(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
 
 
 
@@ -1653,13 +1143,13 @@ take_snapshot_calls = 0;
     }
 
     // export JUST what we want to
-    exports.start_simulation = start_simulation;
-    exports.end_simulation = end_simulation;
-    exports.clear_simulation = clear_simulation;
+    app.start_simulation = start_simulation;
+    app.end_simulation = end_simulation;
+    app.clear_simulation = clear_simulation;
 
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
-    exports.get_state = get_state;
+    app.get_state = get_state;
 
-})(typeof exports === 'undefined'?
-            this['final']={}: exports);
+})(typeof app === 'undefined'?
+            this['final']={}: app);
 

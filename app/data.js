@@ -6,6 +6,36 @@
 
 (function(data) {
 
+    function random_orientation() {
+    var r = Math.random() * 8;
+
+    if (r < 1) {
+        return data.LEFT;
+    } else if (r < 2) {
+        return data.UP;
+    } else if (r < 3) {
+        return data.RIGHT;
+    } else if (r < 4) {
+        return data.DOWN
+    } else if (r < 5) {
+        return data.diagDownRight;
+    } else if (r < 6) {
+        return data.diagUpRight;
+    } else if (r < 7) {
+        return data.diagDownLeft;
+    } else {
+        return data.diagUpLeft;
+    }
+}
+
+function calc_distance(i, ii, j, jj) {
+    return Math.pow(Math.pow(Math.abs(i - j), 2) + Math.pow(Math.abs(ii - jj), 2), 0.5);
+}
+
+function get_random_int(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
     // GUI state from prior update
     data._data;
 
@@ -129,10 +159,59 @@
         }
     }
 
+    /** Assumes data.exit_locations is already set. */
+    function get_exit_information(j, jj) {
+        //added this in as part of exit distances
+        exit_distances = [];
+        //randomly getting a specific exit cell goal
+        var rand_x = get_random_int(0, 3);
+        var rand_y = get_random_int(0, 3);
+        for (var exit = 0; exit < data.exit_locations.length; exit++) {
+            var exiti = data.exit_locations[exit].anchor_i;
+            var exitii = data.exit_locations[exit].anchor_ii;
+            var local_endi = data.exit_locations[exit].profile_i[3] + data.exit_locations[exit].anchor_i;
+            var local_endii = data.exit_locations[exit].profile_ii[3] + data.exit_locations[exit].anchor_ii;
+            var current_distance = calc_distance(j, jj, exiti, exitii) //should calculate to goal?
+            var local_goali = data.exit_locations[exit].profile_i[rand_x] + data.exit_locations[exit].anchor_i;
+            var local_goalii = data.exit_locations[exit].profile_ii[rand_y] + data.exit_locations[exit].anchor_ii;
+            var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii] //keeping track of the beginning and end of exit
+            exit_distances.push(list)
+        }
+
+        // console.log(exit_distances)
+        var min_exit_distance = exit_distances[0][0]; 
+        var min_exiti = exit_distances[0][1];
+        var min_exitii = exit_distances[0][2];
+        var min_endi = exit_distances[0][3];
+        var min_endii = exit_distances[0][4];
+        var goali = exit_distances[0][5];
+        var goalii = exit_distances[0][6];
+	
+        for (var exit = 0; exit < exit_distances.length; exit++) {
+            if (exit_distances[exit][0] < min_exit_distance) {
+                //change if needed
+                min_exit_distance = exit_distances[exit][0];
+                min_exiti = exit_distances[exit][1];
+                min_exitii = exit_distances[exit][2];
+                min_endi = exit_distances[exit][3];
+                min_endii = exit_distances[exit][4];
+                goali = exit_distances[exit][5];
+                goalii = exit_distances[exit][6];
+            }
+        }
+
+	return [ min_exiti, min_exitii, min_endi, min_endii, goali, goalii];
+    }
+
+
     // exported API
     data.get_bounded_index_i = get_bounded_index_i;
     data.get_bounded_index_ii = get_bounded_index_ii;
     data.get_coords_from_orientation_neighbors = get_coords_from_orientation_neighbors;
+    data.get_exit_information = get_exit_information;
+
+    data.random_orientation = random_orientation;
+    data.calc_distance = calc_distance;
 
 })(typeof data === 'undefined'?
             this['data']={}: data);
