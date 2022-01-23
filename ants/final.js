@@ -665,6 +665,7 @@ function State() {
                 // console.log("current_num_adult: " + current_num_adult)
                 // console.log("current_num_backpack: " + current_num_backpack)
                 // console.log("current_num_bike: " + current_num_bike)
+                break; //at an exit no need to keep going through people
             }
             // else if (thing == Adult) {
             //            current_num_adult = current_num_adult-1;
