@@ -1032,6 +1032,7 @@ var interval_id = 0;
 function initialize_simulation() {
     if (interval_id) {
         clearInterval(interval_id);
+        clearInterval(interval_id2);
     }
     state = new State();
 
@@ -1055,6 +1056,7 @@ var end_sim_counter = 0;
 function end_simulation() {
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
+    clearInterval(interval_id2);
     if (typeof callback_done !== 'undefined') {
        callback_done();
     }
@@ -1077,6 +1079,7 @@ function start_simulation(max_gen, callback) {
 
     initialize_simulation();
     interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
+    interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
 }
 // var _indexCounter = 0;
 // var encoder = function() {return;};

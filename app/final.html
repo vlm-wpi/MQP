@@ -1,6 +1,7 @@
 <html>
 <head><title>Final progress</title>
   <link rel="stylesheet" href="final.css">
+  <script src="https://d3js.org/d3.v7.min.js" charset="utf-8"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
 	<script src = "https://d3js.org/d3-axis.v1.min.js"></script>
 </head>
@@ -9,10 +10,6 @@
   <svg id="visualisation2" width="500" height="500"></svg>
 
   <script type="text/javascript">
-  
-  function start_graph(){
-    this.graph.start_graph();
-  }
   
   function start_app() {
     this.final.start_simulation();
@@ -35,7 +32,7 @@
     <input type = "button" value="clear" onClick="JavaScript:clear_app()">
   </form>
 
-  <body>
+
         <b>Values at initialization:</b><br>
           Total number of pedestrians on grid: <span id="total_peds_at_start"></span><br>
           Children: <span id="num_Child_initial"></span><br>
