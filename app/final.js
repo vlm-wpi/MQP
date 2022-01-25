@@ -4,14 +4,14 @@
  * Refactor out the alorithm used for each individual entity.
  */
 
-(function(app) {
+(function(final) {
 
 function get_random_int(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
     //variable for the total number of people on the grid, updates when it reads the value from html
-    var total_peds_at_start = 0; 
+    final.total_peds_at_start = 0; 
 
     //heuristic options
     var diagonal = true;   // initialize heuristic using diagonal distance
@@ -19,46 +19,46 @@ function get_random_int(min, max) {
     var euclidean = false; // boolean to use euclidean distance in heuristic, user can change this
     
     //Collision counters
-    app.collisions_total = {};
-    app.collisions_average = {};
+    final.collisions_total = {};
+    final.collisions_average = {};
 
     //counter for the number of collisions for children, in total and average
-    app.collisions_total['Child'] = 0;
-    app.collisions_average['Child'] = 0;
+    final.collisions_total['Child'] = 0;
+    final.collisions_average['Child'] = 0;
 
-    app.collisions_total['Adult'] = 0;
-    app.collisions_average['Adult'] = 0;
+    final.collisions_total['Adult'] = 0;
+    final.collisions_average['Adult'] = 0;
 
-    app.collisions_total['AdultBike'] = 0;
-    app.collisions_average['AdultBike'] = 0;
+    final.collisions_total['AdultBike'] = 0;
+    final.collisions_average['AdultBike'] = 0;
 
-    app.collisions_total['AdultBackpack'] = 0;
-    app.collisions_average['AdultBackpack'] = 0;
+    final.collisions_total['AdultBackpack'] = 0;
+    final.collisions_average['AdultBackpack'] = 0;
 
-    app.total_collisions = 0; //counter for the number of collisions for people, in total
-    app.avg_collisions_total = 0; //counter for the number of collisions for people, as an average
+    final.total_collisions = 0; //counter for the number of collisions for people, in total
+    final.avg_collisions_total = 0; //counter for the number of collisions for people, as an average
 
     //Exit time counters (in units of board updates)
-    app.sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
-    app.sum_wait_steps = 0; //number of times everyone has waited, all added together
+    final.sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
+    final.sum_wait_steps = 0; //number of times everyone has waited, all added together
 
-    app.exit_times = {};
-    app.wait_steps = {};
+    final.exit_times = {};
+    final.wait_steps = {};
 
-    app.exit_times['Child'] = 0;
-    app.wait_steps['Child'] = 0;
+    final.exit_times['Child'] = 0;
+    final.wait_steps['Child'] = 0;
 
-    app.exit_times['Adult'] = 0;
-    app.wait_steps['Adult'] = 0;
+    final.exit_times['Adult'] = 0;
+    final.wait_steps['Adult'] = 0;
 
-    app.exit_times['AdultBike'] = 0;
-    app.wait_steps['AdultBike'] = 0;
+    final.exit_times['AdultBike'] = 0;
+    final.wait_steps['AdultBike'] = 0;
 
-    app.exit_times['AdultBackpack'] = 0;
-    app.wait_steps['AdultBackpack'] = 0;
+    final.exit_times['AdultBackpack'] = 0;
+    final.wait_steps['AdultBackpack'] = 0;
    
     //counter for the number of children currently on the board
-    var current_population = 0;
+    final.current_population = 0;
 
     // number of generations, run up to max_generation
     var number_generations = 0;
@@ -98,10 +98,10 @@ function euclideand(x, y, goalX, goalY){
 
 //function that takes care of initializing the grid, placing items, and updating the board
 function State() {
-    var total_peds_at_start = parseInt(data.max['Child']) + parseInt(data.max['Adult']) + parseInt(data.max['AdultBackpack']) + parseInt(data.max['AdultBike']);
+    final.total_peds_at_start = parseInt(data.max['Child']) + parseInt(data.max['Adult']) + parseInt(data.max['AdultBackpack']) + parseInt(data.max['AdultBike']);
     var num_children_initial = parseInt(data.max['Child']);
     if (!gui.headless) {
-	document.getElementById("total_peds_at_start").innerHTML = total_peds_at_start;
+	document.getElementById("total_peds_at_start").innerHTML = final.total_peds_at_start;
  
       	var things = pop.types();
 	for (i = 0; i < things.length; i++) {
@@ -112,7 +112,7 @@ function State() {
     this.grid = []; //data structure for grid, initially empty
     this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
     this.population = []; //population of people on the grid, initially empty
-    total_population_over_time = [total_peds_at_start]; //make the total population over time start with everyone on the board
+    total_population_over_time = [final.total_peds_at_start]; //make the total population over time start with everyone on the board
 
     //function thatt initializes the grid, does not need any input
     this.init_grids = function() {
@@ -137,19 +137,19 @@ function State() {
             //call move thing function, moves things on the temp grid
             if (this.move_thing(thing)) { //returns true if at an exit, false if not, temp grid is updated
                 this.population.splice(p, 1);
-                var current_population = this.population.length; //number of people in the grid
-                if (!gui.headless) { document.getElementById("current_total").innerHTML = current_population; }
-                total_population_over_time.push(current_population); //add the current population to the list of all previous populations (each update)
-                app.sum_of_exit_times += thing.exittime; //add its exit time to the total exit times
-                app.sum_wait_steps += thing.waitsteps; //add its total waittime to the total waitime
+                final.current_population = this.population.length; //number of people in the grid
+                if (!gui.headless) { document.getElementById("current_total").innerHTML = final.current_population; }
+                total_population_over_time.push(final.current_population); //add the current population to the list of all previous populations (each update)
+                final.sum_of_exit_times += thing.exittime; //add its exit time to the total exit times
+                final.sum_wait_steps += thing.waitsteps; //add its total waittime to the total waitime
 
 		// TODO: THESE CAN BE GREATLY SIMPLIFIED...
                 data.current[object_type] -= 1; //subtract one from type's population
                 if (!gui.headless) { document.getElementById("current_" + object_type).innerHTML = data.current[object_type]; }
 
                 //add to sum of everyones exit times
-                app.exit_times[object_type] += thing.exittime; //add its exit time to the total children exit times
-                app.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total children wait times
+                final.exit_times[object_type] += thing.exittime; //add its exit time to the total children exit times
+                final.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total children wait times
 
                 //check if last child
                 if(data.current[object_type] == 0) {
@@ -159,7 +159,7 @@ function State() {
                     if (!gui.headless) { document.getElementById("total_" + object_type + "_wait").innerHTML = total_wait_steps; }
                 }
 
-                if (current_population == 0) { //if no people left on the grid
+                if (final.current_population == 0) { //if no people left on the grid
                 //not sure if we need to set these to zero, should all be zero???
       		    var things = pop.types();
 
@@ -168,33 +168,33 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
 			var tpe = things[i];
 			data.current[tpe] = 0;
-			app.collisions_average[tpe] = app.collisions_total[tpe]/data.max[tpe];
+			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
-			    document.getElementById("total_" + tpe + "_collide").innerHTML = app.collisions_total[tpe];
-			    document.getElementById("avg_" + tpe + "_collide").innerHTML = app.collisions_average[tpe];
+			    document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
+			    document.getElementById("avg_" + tpe + "_collide").innerHTML = final.collisions_average[tpe];
 			}
 
-			var avg_exit = app.exit_times[tpe] / data.max[tpe]; //in board update units
+			var avg_exit = final.exit_times[tpe] / data.max[tpe]; //in board update units
 			if (!gui.headless) {
 			    document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
 			}
 
-			var avg_wait_steps = app.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
+			var avg_wait_steps = final.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
 			if (!gui.headless) {
 			    document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
 			}
 		    }
 
-                    avg_collide_total = app.total_collisions/total_peds_at_start;
+                    avg_collide_total = final.total_collisions/final.total_peds_at_start;
 
                     if (!gui.headless) { 
-                      document.getElementById("avg_collide").innerHTML = app.avg_collisions_total;  // TODO: doesn't change ever?
-                      document.getElementById("collide").innerHTML = app.total_collisions;
+                      document.getElementById("avg_collide").innerHTML = final.avg_collisions_total;  // TODO: doesn't change ever?
+                      document.getElementById("collide").innerHTML = final.total_collisions;
 		    }
 
                     var total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG]
 
-                    var avg_exit_time = (app.sum_of_exit_times) / total_peds_at_start; //in board update units
+                    var avg_exit_time = (final.sum_of_exit_times) / final.total_peds_at_start; //in board update units
 
 
                     if (!gui.headless) { 
@@ -203,7 +203,7 @@ function State() {
                     }
 
                     var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
-                    var avg_wait_steps = app.sum_wait_steps/total_peds_at_start; //average amount of waitsteps per person
+                    var avg_wait_steps = final.sum_wait_steps/final.total_peds_at_start; //average amount of waitsteps per person
 
                     if (!gui.headless) {
                       document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
@@ -755,10 +755,10 @@ function State() {
                             var safe_c = data.get_bounded_index_ii(c + thing.anchor_ii); //bound the y value, making sure on the board
                             if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something already in the cell
                                 collision = collision + 1; //add one to collision counter
-                                app.total_collisions = app.total_collisions + 1; //add one to the global collision counter
+                                final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
 
                                 //adding collision counter to specific person types
-				app.collisions_total[thing.type] += 1;
+				final.collisions_total[thing.type] += 1;
 
                                 break; //since we found a collision on part of the person, break for loop
                             }
@@ -1057,6 +1057,7 @@ function end_simulation() {
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
     clearInterval(interval_id2);
+    graph.createBarGraph();
     if (typeof callback_done !== 'undefined') {
        callback_done();
     }
@@ -1146,13 +1147,13 @@ take_snapshot_calls = 0;
     }
 
     // export JUST what we want to
-    app.start_simulation = start_simulation;
-    app.end_simulation = end_simulation;
-    app.clear_simulation = clear_simulation;
+    final.start_simulation = start_simulation;
+    final.end_simulation = end_simulation;
+    final.clear_simulation = clear_simulation;
 
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
-    app.get_state = get_state;
+    final.get_state = get_state;
 
-})(typeof app === 'undefined'?
-            this['final']={}: app);
+})(typeof final === 'undefined'?
+            this['final']={}: final);
 
