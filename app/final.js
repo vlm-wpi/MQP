@@ -128,6 +128,78 @@ function State() {
     
     //function to move people on the board, does not require any input
     this.move_things = function() {
+        //adding in calculation of local density
+        //loop through the population and get the coordinates of each pedestrian
+        for (var p = this.population.length - 1; p >= 0; p--) {
+            var thing = this.population[p][0]
+            var open_cells = 49;
+            var local_dens = 0;
+            var child = 0;
+            var adult = 0;
+            var backpack = 0;
+            var bike = 0;
+            var num_to_divide_by = 0;
+            var location = this.get_coords_from_orientation(thing);
+            //find out the orienation of each pedestrian and set their box based on that
+            var orientation = thing.orientation;
+            if (orientation == data.UP) {
+                box_profile_i = [-3,-2,-1,0,1,2,3];
+                box_profile_ii = [0,1,2,3,4,5,6];
+                for (var i = 0; i <= box_profile_i.length - 1; i++) {
+                    box_position_i = location[0] + box_profile_i[i];
+                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
+                        box_position_ii = location[1] + box_profile_ii[ii];
+                        var safei = data.get_bounded_index_i(box_position_i);
+                        var safeii = data.get_bounded_index_ii(box_position_ii);
+                        //count the number of open cells in their box
+                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                            // console.log(this.temp_grid[safei][safeii].thing);
+                            open_cells--;
+                            thing_type = this.temp_grid[safei][safeii].thing;
+                            //get a count for how many cells are taken up by peds of each type
+                            //not currently working the way i want - ask
+                            if(thing_type.type == 'Child') {
+                                    child++;
+                                    // console.log('child: ' + child)
+                                } else if (thing_type.type == 'Adult') {
+                                    adult++;
+                                    // console.log('adult: ' + adult)
+                                } else if (thing_type.type == 'AdultBackpack') {
+                                    backpack++;
+                                    // console.log('backpack: ' + backpack)
+                                } else if (thing_type.type == 'AdultBike') {
+                                    bike++;
+                                    // console.log('bike: ' + bike)
+                                }
+                            }
+                    }
+                }
+                //sets the number to divide by by adding on a 
+                //pedestrian for the pedestrian of interest
+                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
+                //calculate the local density by dividing the number 
+                //of open cells by the number of pedestrians
+                local_dens = (open_cells)/num_to_divide_by;
+                // console.log('open: ' + open_cells);
+                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
+                console.log('local_dens: ' + local_dens);
+            } else if (orientation == data.DOWN) {
+                // console.log('going down')
+            } else if (orientation == data.LEFT) {
+                // console.log('going left')
+            } else if (orientation == data.RIGHT) {
+                // console.log('going right')
+            } else if (orientation == data.diagDownRight) {
+                // console.log('going diagDownRight')
+            } else if (orientation == data.diagUpRight) {
+                // console.log('going diagUpRight')
+            } else if (orientation == data.diagDownLeft) {
+                // console.log('going diagDownLeft')
+            } else {
+                // console.log('going diagUpLeft')
+            }
+
+        }
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
         for (var p = this.population.length - 1; p >= 0; p--) { //go through everyone in the population
