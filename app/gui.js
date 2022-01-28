@@ -157,58 +157,13 @@
 	data.take_snapshot = takeSnapshotCheckbox.checked;
     }
 
-    //getting from user input if the hall layput will be used
-    var hallLayoutCheckbox = document.getElementById("hallLayout");
-    if (data.hall_layout) {
-	hallLayoutCheckbox.checked = true;
-    }
-    //function that updates the layout and makes sure it is the only one checked
-    hallLayoutCheckbox.oninput = function() {
-	//update the boolean value of the hall layout, used to determine if this layout will be used
-	data.hall_layout = hallLayoutCheckbox.checked;
-	if (data.hall_layout ==  true) { //if the hall loyout is checked
-            num_checked = num_checked + 1; //add one to the number of layouts checked
-            console.log("lecture hall " + num_checked)
-            if(num_checked > 1) { //if there is more than one layout checked
-		window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.");
-            }
-	}
-    }
+    // layouts
+    var layoutChoices = document.getElementById("LayoutSelect");
+    layoutChoices.oninput = function() {
 
-    //getting from user input if the fuller lower layout will be used
-    var fullerLowerCheckbox = document.getElementById("fullerLower");
-    if (data.fuller_lower) {
-	fullerLowerCheckbox.checked = true;
-    }
-    //function that updates the layout and makes sure it is the only one checked
-    fullerLowerCheckbox.oninput = function() {
-	//update the boolean value of the Fuller Lower layout, used to determine if this layout will be used
-	data.fuller_lower = fullerLowerCheckbox.checked;
-	if (data.fuller_lower ==  true) { //if the Fuller Lower loyout is checked
-            num_checked = num_checked + 1; //add one to the number of layouts checked
-            console.log("fuller lower " + num_checked)
-            if(num_checked > 1) { //if there is more than one layout checked
-		window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.");
-            }
-	}
-    }
-
-    //getting from user input if the classroom layout will be used
-    var classroomCheckbox = document.getElementById("classroom");
-    if (classroom) {
-	classroomCheckbox.checked = true;
-    }
-    //function that updates the layout and makes sure it is the only one checked
-    classroomCheckbox.oninput = function() {
-	//update the boolean value of the classroom layout, used to determine if this layout will be used
-	classroom = classroomCheckbox.checked;
-	if (classroom ==  true) { //if the classroom loyout is checked
-            num_checked = num_checked + 1; //add one to the number of layouts checked
-            console.log("classroom " + num_checked)
-            if(num_checked > 1) { //if there is more than one layout checked
-		window.alert("Cannot have more than one layout selected.  Please choose one or less and try again.");
-            }
-	}   
+	var layoutChoice = layoutChoices.options[layoutChoices.selectedIndex].value;
+	console.log(layoutChoice);
+	data.layout = layoutChoice;
     }
 
     //getting from user input if the diagonal distance will be used on the heuristic

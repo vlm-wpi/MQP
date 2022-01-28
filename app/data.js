@@ -51,8 +51,10 @@ function get_random_int(min, max) {
     //list of these orientations
     data.orientations = [315, 270, 225, 180, 90, 135, 0, 45];
     
-    //initial board confiigurations
-    // width,height of the board, unless changed by input
+    // These will change BASED ON the current layout. These are "copies" of the actual
+    // width,height of the board, unless changed by input. DURING ACTUAL SIMULATION RUN
+    // these MUST REFLECT the layout.
+    data.layout = 'Randomized';  // Make sure this matches SELECTED entry in final.html
     data.width_i = 150; 
     data.width_ii = 150;
 
@@ -99,11 +101,6 @@ function get_random_int(min, max) {
     //Initial board options: TODO: Better solution than bunch of booleans. Perhaps have
     // a specific new object for each one, and then have generic 'layout' to be set to that
     // or None if no layout...
-
-    //boolean to check if the hall layout board is used, can be changed by user input
-    data.hall_layout = false; 
-    data.fuller_lower = false; //boolean used to check if the fuller lower board is used, can be changed by user input
-    data.classroom = false; //boolean used to check if the classroom board is used, can be changed by user input
 
     //function that makes sure the given y coordinate is on the board, used for rounding boundary cases
     //takes in a y coordinate
@@ -159,56 +156,10 @@ function get_random_int(min, max) {
         }
     }
 
-    /** Assumes data.exit_locations is already set. */
-    function get_exit_information(j, jj) {
-        //added this in as part of exit distances
-        exit_distances = [];
-        //randomly getting a specific exit cell goal
-        var rand_x = get_random_int(0, 3);
-        var rand_y = get_random_int(0, 3);
-        for (var exit = 0; exit < data.exit_locations.length; exit++) {
-            var exiti = data.exit_locations[exit].anchor_i;
-            var exitii = data.exit_locations[exit].anchor_ii;
-            var local_endi = data.exit_locations[exit].profile_i[3] + data.exit_locations[exit].anchor_i;
-            var local_endii = data.exit_locations[exit].profile_ii[3] + data.exit_locations[exit].anchor_ii;
-            var current_distance = calc_distance(j, jj, exiti, exitii) //should calculate to goal?
-            var local_goali = data.exit_locations[exit].profile_i[rand_x] + data.exit_locations[exit].anchor_i;
-            var local_goalii = data.exit_locations[exit].profile_ii[rand_y] + data.exit_locations[exit].anchor_ii;
-            var list = [current_distance, exiti, exitii, local_endi, local_endii, local_goali, local_goalii] //keeping track of the beginning and end of exit
-            exit_distances.push(list)
-        }
-
-        // console.log(exit_distances)
-        var min_exit_distance = exit_distances[0][0]; 
-        var min_exiti = exit_distances[0][1];
-        var min_exitii = exit_distances[0][2];
-        var min_endi = exit_distances[0][3];
-        var min_endii = exit_distances[0][4];
-        var goali = exit_distances[0][5];
-        var goalii = exit_distances[0][6];
-	
-        for (var exit = 0; exit < exit_distances.length; exit++) {
-            if (exit_distances[exit][0] < min_exit_distance) {
-                //change if needed
-                min_exit_distance = exit_distances[exit][0];
-                min_exiti = exit_distances[exit][1];
-                min_exitii = exit_distances[exit][2];
-                min_endi = exit_distances[exit][3];
-                min_endii = exit_distances[exit][4];
-                goali = exit_distances[exit][5];
-                goalii = exit_distances[exit][6];
-            }
-        }
-
-	return [ min_exiti, min_exitii, min_endi, min_endii, goali, goalii];
-    }
-
-
     // exported API
     data.get_bounded_index_i = get_bounded_index_i;
     data.get_bounded_index_ii = get_bounded_index_ii;
     data.get_coords_from_orientation_neighbors = get_coords_from_orientation_neighbors;
-    data.get_exit_information = get_exit_information;
 
     data.random_orientation = random_orientation;
     data.calc_distance = calc_distance;

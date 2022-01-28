@@ -131,10 +131,15 @@
           <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
 
           <h2>Choose Initial Layout</h2>
-          <b>Lecture Hall:</b> <input type="checkbox" id="hallLayout"><br>
-          <b>Fuller Lower:</b> <input type="checkbox" id="fullerLower"><br>
-          <b>Classroom:</b> <input type="checkbox" id="classroom"><br>
-          
+
+	  <select name="layouts" id="LayoutSelect">
+
+	    <option value="Randomized" selected>Randomized</option>
+	    <option value="FullerLower"        >FullerLower</option>
+	    <option value="Classroom"          >Classroom</option>
+	    <option value="LectureHall"        >LectureHall</option>
+	  </select>
+
           <h2>Choose Heuristic Function</h2>
           <b>Diagonal Distance:</b> <input type="checkbox" id="diagonal"><br>
           <b>Manhattan Distance:</b> <input type="checkbox" id="manhattan"><br>
@@ -152,6 +157,7 @@
     <script type='text/javascript' src='heap.js'>    </script>
     <script type='text/javascript' src='astar.js'>    </script>
     <script type='text/javascript' src='pop.js'>    </script>
+    <script type='text/javascript' src='layout.js'>  </script>
     <script type='text/javascript' src='final.js'>    </script>
     <script type="text/javascript" src="LZWEncoder.js">    </script>
     <script type="text/javascript" src="NeuQuant.js">    </script>

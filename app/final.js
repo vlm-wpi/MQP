@@ -18,6 +18,10 @@ function get_random_int(min, max) {
     var manhattan = false; // boolean to use manhattan distance in heuristic, user can change this
     var euclidean = false; // boolean to use euclidean distance in heuristic, user can change this
     
+
+    // the selected board to use for layout
+    var board = undefined;
+
     //Collision counters
     final.collisions_total = {};
     final.collisions_average = {};
@@ -331,7 +335,7 @@ function State() {
     }
 
     /** If return false then failed in some way. Otherwise return true. */
-    this.place_things = function(random) {
+    this.place_things = function() {
         //added this in as part of exit distances
         
         //here will initialize a lecture hall
@@ -343,323 +347,17 @@ function State() {
         //y values are rows
 
         if (data.hall_layout == true) {
-            data.width_i = 50;
-            data.width_ii = 75;
-            //first quarter of the room
-            for (var col = 0; col < 10; col++) { //leaving row space for people
-                for (var row = 0; row < 30; row += 2) { //columns, next to each other
-                    var obj = new Obstacle(col + 10, row + 10); //offsetting by 2,3
-                    this.temp_grid[col + 10][row + 10].thing = obj;
-                }
-            }
-            //second quarter of the room, double row space after first quarter
-            for (var col = 0; col < 10; col++) { //leaving row space for people
-                for (var row = 0; row < 30; row += 2) { //columns, next to each other
-                    var obj = new Obstacle(col + 10, row + 42); //offsetting by 2,32
-                    this.temp_grid[col + 10][row + 42].thing = obj;
-                }
-            }
-            //third quarter of room
-            for (var col = 0; col < 10; col++) { //leaving row space for people
-                for (var row = 0; row < 30; row += 2) { //columns, next to each other
-                    var obj = new Obstacle(col + 27, row + 10); //offsetting by 14,3
-                    this.temp_grid[col + 27][row + 10].thing = obj;
-                }
-            }
-            //fourth quarter of the room
-            for (var col = 0; col < 10; col++) { //leaving row space for people
-                for (var row = 0; row < 30; row += 2) { //columns, next t0 each other
-                    var obj = new Obstacle(col + 27, row + 42); //offsetting by 14,32
-                    this.temp_grid[col + 27][row + 42].thing = obj;
-                }
-            }
-            var obj1 = new Exit(0, 0); //should probably make coordinates variables
-            data.exit_locations.push(obj1);
-            for (var p = 0; p < obj1.profile_i.length; p++) { //placing exits on the grid
-                var dj = obj1.profile_i[p];
-                var djj = obj1.profile_ii[p];
-                var safej = data.get_bounded_index_i(0 + dj);
-                var safejj = data.get_bounded_index_ii(0 + djj);
 
-                this.temp_grid[safej][safejj].thing = obj1;
-            }
-            var obj2 = new Exit(data.width_i - 4, 0);
-            // console.log(obj2)
-            data.exit_locations.push(obj2);
-            for (var p = 0; p < obj2.profile_i.length; p++) { //placing exits on the grid
-                var dj = obj2.profile_i[p];
-                var djj = obj2.profile_ii[p];
-                var safej = data.get_bounded_index_i(data.width_i - 4 + dj);
-                var safejj = data.get_bounded_index_ii(0 + djj);
 
-                this.temp_grid[safej][safejj].thing = obj2;
-            }
-            var obj3 = new Exit(1, data.width_ii - 1);
-            data.exit_locations.push(obj3);
-            for (var p = 0; p < obj3.profile_i.length; p++) { //placing exits on the grid
-                var dj = obj3.profile_i[p];
-                var djj = obj3.profile_ii[p];
-                var safej = data.get_bounded_index_i(1 + dj);
-                var safejj = data.get_bounded_index_ii(data.width_ii - 1 + djj);
-
-                this.temp_grid[safej][safejj].thing = obj3;
-            }
-            var obj4 = new Exit(data.width_i - 4, data.width_ii - 1);
-            data.exit_locations.push(obj4);
-            for (var p = 0; p < obj4.profile_i.length; p++) { //placing exits on the grid
-                var dj = obj4.profile_i[p];
-                var djj = obj4.profile_ii[p];
-                var safej = data.get_bounded_index_i(data.width_i - 4 + dj);
-                var safejj = data.get_bounded_index_ii(data.width_ii - 1 + djj);
-
-                this.temp_grid[safej][safejj].thing = obj4;
-            }
         }
 
         //setting up the default drawing for fuller lower lecture hall
         else if (data.fuller_lower == true) {
-            data.width_i = 56;
-            data.width_ii = 45;
-            //first set of seats at the back of the room (left)
-            for (var col = 6; col < 26; col++) {
-                for (var row = 0; row < 2; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //first set of seats at the back of the room (right)
-            for (var col = 29; col < 50; col++) {
-                for (var row = 0; row < 2; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //second row of seats from the back (left)
-            for (var col = 10; col < 22; col++) {
-                for (var row = 4; row < 6; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //second row of seats from the back (right)
-            for (var col = 33; col < 46; col++) {
-                for (var row = 4; row < 6; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //third row of seats from the back (left)
-            for (var col = 8; col < 24; col++) {
-                for (var row = 9; row < 11; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //third row of seats from the back (right)
-            for (var col = 31; col < 48; col++) {
-                for (var row = 9; row < 11; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //fourth row of seats from the back (left)
-            for (var col = 8; col < 24; col++) {
-                for (var row = 13; row < 15; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //fourth row of seats from the back (right)
-            for (var col = 31; col < 48; col++) {
-                for (var row = 13; row < 15; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //fifth row of seats from the back (left)
-            for (var col = 9; col < 23; col++) {
-                for (var row = 17; row < 19; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //fifth row of seats from the back (right)
-            for (var col = 32; col < 47; col++) {
-                for (var row = 17; row < 19; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //sixth row of seats from the back (left)
-            for (var col = 9; col < 23; col++) {
-                for (var row = 21; row < 23; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //sixth row of seats from the back (right)
-            for (var col = 32; col < 47; col++) {
-                for (var row = 21; row < 23; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //seventh row from back (railing at front - left)
-            for (var col = 9; col < 23; col++) {
-                for (var row = 25; row < 26; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //side railing front left
-            for (var col = 9; col < 10; col++) {
-                for (var row = 26; row < 28; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //seventh row from back (railing at front - right)
-            for (var col = 32; col < 47; col++) {
-                for (var row = 25; row < 26; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //side railing front right
-            for (var col = 46; col < 47; col++) {
-                for (var row = 26; row < 28; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //podium front right
-            for (var col = 38; col < 42; col++) {
-                for (var row = 35; row < 38; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //railing down the middle (top)
-            for (var col = 27; col < 28; col++) {
-                for (var row = 2; row < 7; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //railing down the middle (bottom)
-            for (var col = 27; col < 28; col++) {
-                for (var row = 10; row < 26; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //first exit in the top left
-            var obj01 = new Exit(1, 0)
-            data.exit_locations.push(obj01)
-            for (var p = 0; p < obj01.profile_i.length; p++) {
-                var dj = obj01.profile_i[p];
-                var djj = obj01.profile_ii[p];
-                var safej = data.get_bounded_index_i(1 + dj);
-                var safejj = data.get_bounded_index_ii(0 + djj);
-                this.temp_grid[safej][safejj].thing = obj01;
-            }
-            //second exit in the top right
-            var obj02 = new Exit(data.width_i - 4, 0)
-            data.exit_locations.push(obj02)
-            for (var p = 0; p < obj02.profile_i.length; p++) {
-                var dj = obj02.profile_i[p];
-                var djj = obj02.profile_ii[p];
-                var safej = data.get_bounded_index_i(data.width_i - 4 + dj);
-                var safejj = data.get_bounded_index_ii(0 + djj);
-                this.temp_grid[safej][safejj].thing = obj02;
-            }
-            //third exit bottom left
-            var obj03 = new Exit(0, data.width_ii - 9)
-            data.exit_locations.push(obj03)
-            for (var p = 0; p < obj03.profile_i.length; p++) {
-                var dj = obj03.profile_i[p];
-                var djj = obj03.profile_ii[p];
-                var safej = data.get_bounded_index_i(0 + dj);
-                var safejj = data.get_bounded_index_ii(data.width_ii - 9 + djj);
-                this.temp_grid[safej][safejj].thing = obj03;
-            }
-            //fourth exit bottom left
-            var obj04 = new Exit(0, data.width_ii - 5)
-            data.exit_locations.push(obj04)
-            for (var p = 0; p < obj04.profile_i.length; p++) {
-                var dj = obj04.profile_i[p];
-                var djj = obj04.profile_ii[p];
-                var safej = data.get_bounded_index_i(0 + dj);
-                var safejj = data.get_bounded_index_ii(data.width_ii - 5 + djj);
-                this.temp_grid[safej][safejj].thing = obj04;
-            }
             // console.log(data.exit_locations)
         } else if (data.classroom == true) {
-            data.width_i = 40;
-            data.width_ii = 35;
-            //podium at front of classroom
-            for (var col = 34; col < 38; col++) {
-                for (var row = 3; row < 6; row++) {
-                    var obj = new Obstacle(col, row);
-                    this.temp_grid[col][row].thing = obj;
-                }
-            }
-            //desks
-            for (var col0 = 0; col0 < data.width_i-1; col0+=5) {
-                for (var row0 = 8; row0 < data.width_ii-1; row0+=6) {
-                    for (var col = col0; col < col0+3; col++) {
-                        for (var row = row0; row < row0+3; row++) {
-                            var obj = new Obstacle(col, row);
-                            this.temp_grid[col][row].thing = obj;
-                        }
-                    }
-                }
-            }
-
-            var obj01 = new Exit(0, 0)
-            data.exit_locations.push(obj01)
-            for (var p = 0; p < obj01.profile_i.length; p++) {
-                var dj = obj01.profile_i[p];
-                var djj = obj01.profile_ii[p];
-                var safej = data.get_bounded_index_i(0 + dj);
-                var safejj = data.get_bounded_index_ii(0 + djj);
-                this.temp_grid[safej][safejj].thing = obj01;
-            }
-        }
+	    // classroom
+	}
         else {
-            for (var n = 0; n < data.max['Obstacle']; n++) {
-                var j = get_random_int(0, data.width_i)
-                var jj = get_random_int(0, data.width_ii)
-
-                var obj = new Obstacle(j, jj);
-                this.temp_grid[j][jj].thing = obj;
-            }
-
-            for (var n = 0; n < data.max['Exit']; n++) {
-                var j = get_random_int(0, data.width_i - 3);
-                var jj = get_random_int(0, data.width_ii - 3);
-                var choose = Math.round(Math.random());
-                if (choose == 0) {
-                    var j = j;
-                    var jj = ((data.width_ii - 1) * (Math.round(Math.random())));
-                }
-                else if (choose == 1) {
-                    var j = ((data.width_i - 1) * (Math.round(Math.random())));
-                    var jj = jj;
-                }
-                var obj = new Exit(j, jj);
-                //want to push whole object so that it keeps track of the end
-                data.exit_locations.push(obj);
-
-                for (var p = 0; p < obj.profile_i.length; p++) { //placing exits on the grid
-                    var dj = obj.profile_i[p];
-                    var djj = obj.profile_ii[p];
-                    var safej = data.get_bounded_index_i(j + dj);
-                    var safejj = data.get_bounded_index_ii(jj + djj);
-
-                    this.temp_grid[safej][safejj].thing = obj;
-                }
-            }
             // INSERT SQUARE
             // -------------
             //            for (var n = 10; n <= 50; n++) {
@@ -696,7 +394,7 @@ function State() {
 		var j = get_random_int(dd[0], data.width_i - dd[0]);
 		var jj = get_random_int(dd[1], data.width_ii - dd[1]);
 		
-		var exit_information = data.get_exit_information(j, jj);
+		var exit_information = layout.get_exit_information(board, j, jj);
 		
 		// construct the actual thing using the factory in pop
 		var obj = pop.factory(tpe, j, jj);
@@ -860,7 +558,7 @@ function State() {
                       //if the time waiting is more than double the wait time, find another exit
 			if(thing.wait>data.wait_before_random_move*2){
                         var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
-                        var new_exit = data.exit_locations[ran_exit_index]; //get the exit from the list of exits
+                        var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
                         thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
                         thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
                         thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
@@ -926,19 +624,6 @@ function get_state() {
 }
 
 function draw_grid(input) {
-    if (data.hall_layout == true) {
-        data.width_i = 50;
-        data.width_ii = 75;
-    }
-    if (data.fuller_lower == true) {
-        data.width_i = 56;
-        data.width_ii = 45;
-    }
-    if (data.classroom == true) {
-        data.width_i = 40;
-        data.width_ii = 35;
-    }
-
     if (parseInt(data.width_i) > parseInt(data.width_ii)) {
         var width = 600;
         var height = 600 * (data.width_ii / data.width_i);
@@ -1019,7 +704,9 @@ function Cell(i, ii) {
     };
 
     this.has_obstacle = function() {
-        if (this.thing instanceof Obstacle) {
+	if (this.thing == null) { return false; }
+
+        if (this.tpe == 'Obstacle') {
             return true;
         } else {
             return false;
@@ -1040,60 +727,6 @@ function Cell(i, ii) {
 
 }
 
-function Exit(j, jj) {
-
-    this.orientation = data.random_orientation();
-    this.anchor_i = j;
-    this.anchor_ii = jj;
-
-    //think we need to check anchor instead of orientation
-    //if anchor i is 0 or grid length -3 use 1st set of profiles (vertical exit)
-    //else use second set (makes them horizontal)
-    if ((this.anchor_i == 0) || (this.anchor_i == data.width_i - 1)) {
-        this.profile_i = [0, 0, 0, 0];
-        this.profile_ii = [0, 1, 2, 3];
-    } else {
-        this.profile_i = [0, 1, 2, 3];
-        this.profile_ii = [0, 0, 0, 0];
-    }
-
-    this.color = function() {
-        return "rgb(139,69,19)";
-    }
-
-    this.place_footprint = function(state) {
-        state.temp_grid[this.anchor_i][this.anchor_ii].thing = this;
-    }
-
-    this.remove_footprint = function(state) {
-        state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
-    }
-}
-
-function Obstacle(j, jj) {
-    this.orientation = data.random_orientation();
-    this.anchor_i = j
-    this.anchor_ii = jj
-
-    this.profile_i = [0];
-    this.profile_ii = [0];
-
-    this.color = function() {
-        return "rgb(0,0,0)";
-    }
-
-    this.place_footprint = function(state) {
-        state.temp_grid[this.anchor_i][this.anchor_ii].thing = this;
-    }
-
-    this.remove_footprint = function(state) {
-        state.temp_grid[this.anchor_i][this.anchor_ii].thing = null;
-    }
-}
-
-
-
-
 
 // ==============================================================================
 // MAIN to kick things off
@@ -1106,15 +739,24 @@ function initialize_simulation() {
         clearInterval(interval_id);
         clearInterval(interval_id2);
     }
+    
+    /**
+     * 1. Construct layout first to determine boundaries
+     * 2. Once boundaries are set, create state to use layout for all dimensions
+     * 3. Once state is constructed, then can initialize properly using temp_grid
+     */
+    board = layout.factory(data.layout, data.width_i, data.width_ii)
+    data.width_i = board.width_i;
+    data.width_ii = board.width_ii;
     state = new State();
-
     state.init_grids();
+
+    board.initialize(state.temp_grid);
+
+    // TODO: Messy when user selects width_i, width_ii but also selects a layout type
+
     // state.draw_border();
-    if ((data.hall_layout == true) || (data.fuller_lower == true) || (data.classroom == true)) {
-        state.place_things(false);
-    } else {
-        state.place_things(true);
-    }
+    state.place_things(false);  // drop arg eventually.
 
     if (!gui.headless) { 
       draw_grid(state.grid.map(function(row) {
@@ -1140,6 +782,8 @@ function clear_simulation() {
 }
 
 function start_simulation(max_gen, callback) {
+    data._data = undefined; // clear everything to clean up after 1st run
+
     if (typeof max_gen === 'undefined') {
       max_generation = Number.MAX_SAFE_INTEGER;
     } else {
