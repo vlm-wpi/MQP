@@ -12,6 +12,16 @@ function get_random_int(min, max) {
 
     //variable for the total number of people on the grid, updates when it reads the value from html
     final.total_peds_at_start = 0; 
+    
+    //initializations for average density lists
+    var avg_child_dens_list = [];
+    var avg_adult_dens_list = [];
+    var avg_backpack_dens_list = [];
+    var avg_bike_dens_list = [];
+    var avg_total_dens_list = [];
+    var total_avg_dens_all_time = 0;
+    var dens_sum = 0;
+
 
     //heuristic options
     var diagonal = true;   // initialize heuristic using diagonal distance
@@ -132,6 +142,16 @@ function State() {
     
     //function to move people on the board, does not require any input
     this.move_things = function() {
+    	//initializations for later
+    	var child_dens = 0;
+    	var avg_child_dens = 0;
+    	var adult_dens = 0;
+    	var avg_adult_dens = 0;
+    	var backpack_dens = 0;
+    	var avg_backpack_dens = 0;
+        var bike_dens = 0;
+    	var avg_bike_dens = 0;
+    	var avg_total_dens = 0;
         //adding in calculation of local density
         //loop through the population and get the coordinates of each pedestrian
         for (var p = this.population.length - 1; p >= 0; p--) {
@@ -157,7 +177,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -177,9 +196,7 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens up: ' + local_dens);
+                // console.log('local_dens up: ' + local_dens);
             } else if (orientation == data.DOWN) {
             	box_profile_i = [-3,-2,-1,0,1,2,3];
                 box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
@@ -191,7 +208,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -211,9 +227,7 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens down: ' + local_dens);
+            	// console.log('local_dens down: ' + local_dens);
             } else if (orientation == data.LEFT) {
             	box_profile_i = [0,-1,-2,-3,-4,-5,-6];
                 box_profile_ii = [-3,-2,-1,0,1,2,3];
@@ -225,7 +239,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -245,9 +258,7 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens left: ' + local_dens);
+                // console.log('local_dens left: ' + local_dens);
             } else if (orientation == data.RIGHT) {
             	box_profile_i = [0,1,2,3,4,5,6];
                 box_profile_ii = [-3,-2,-1,0,1,2,3];
@@ -259,7 +270,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -279,9 +289,7 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens right: ' + local_dens);
+                // console.log('local_dens right: ' + local_dens);
             } else if (orientation == data.diagDownRight) {
                 box_profile_i = [0,1,2,3,4,5,6];
                 box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
@@ -293,7 +301,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -313,9 +320,7 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens diagDownRight: ' + local_dens);
+                // console.log('local_dens diagDownRight: ' + local_dens);
             } else if (orientation == data.diagUpRight) {
                 box_profile_i = [0,1,2,3,4,5,6];
                 box_profile_ii = [0,1,2,3,4,5,6];
@@ -327,7 +332,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -347,9 +351,7 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens diagUpRight: ' + local_dens);
+                // console.log('local_dens diagUpRight: ' + local_dens);
             } else if (orientation == data.diagDownLeft) {
                 box_profile_i = [0,-1,-2,-3,-4,-5,-6];
                 box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
@@ -361,7 +363,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -381,9 +382,7 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens diagDownLeft: ' + local_dens);
+                // console.log('local_dens diagDownLeft: ' + local_dens);
             } else {
                 box_profile_i = [0,-1,-2,-3,-4,-5,-6];
                 box_profile_ii = [0,1,2,3,4,5,6];
@@ -395,7 +394,6 @@ function State() {
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
                         if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
-                            // console.log(this.temp_grid[safei][safeii].thing);
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -415,12 +413,43 @@ function State() {
                 var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
                 //calculate the local density by dividing the number of open cells by the number of pedestrians
                 local_dens = (open_cells)/num_to_divide_by;
-                // console.log('open: ' + open_cells);
-                // console.log('child+adult+backpack+bike: ' + num_to_divide_by);
-                console.log('local_dens diagUpLeft: ' + local_dens);
+                // console.log('local_dens diagUpLeft: ' + local_dens);
             }
-
+            //adds to the list of the individual's local density at each time step
+            thing.local_density.push(local_dens)
+            // console.log(thing.local_density);
+            //adds together the density of each ped type at a given time step
+            if(thing.type == 'Child') {
+            	child_dens = child_dens + local_dens;
+            	// console.log('child_dens: ' + child_dens)
+            } else if (thing.type == 'Adult') {
+            	adult_dens = adult_dens + local_dens;
+            	// console.log('adult_dens: ' + adult_dens)
+            } else if (thing.type == 'AdultBackpack') {
+            	backpack_dens = backpack_dens + local_dens;
+            	// console.log('backpack_dens: ' + backpack_dens)
+            } else if (thing.type == 'AdultBike') {
+            	bike_dens = bike_dens + local_dens;
+            	// console.log('bike_dens: ' + bike_dens)
+            }
         }
+        //calculates the average density across each ped type at a given time step
+        avg_child_dens = child_dens/data.current['Child'];
+        avg_child_dens_list.push(avg_child_dens);
+        // console.log('average child density list: ' + avg_child_dens_list);
+        avg_adult_dens = adult_dens/data.current['Adult'];
+        avg_adult_dens_list.push(avg_adult_dens);
+        // console.log('average adult density list: ' + avg_adult_dens_list);
+        avg_backpack_dens = backpack_dens/data.current['AdultBackpack'];
+        avg_backpack_dens_list.push(avg_backpack_dens);
+        // console.log('average backpack density list: ' + avg_backpack_dens_list);
+        avg_bike_dens = bike_dens/data.current['AdultBike'];
+        avg_bike_dens_list.push(avg_bike_dens);
+        // console.log('average bike density list: ' + avg_bike_dens_list);
+        avg_total_dens = (child_dens + adult_dens + backpack_dens + bike_dens)/(data.current['Child']+data.current['Adult']+data.current['AdultBackpack']+data.current['AdultBike']);
+        avg_total_dens_list.push(avg_total_dens);
+        // console.log(avg_total_dens_list);
+
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
         for (var p = this.population.length - 1; p >= 0; p--) { //go through everyone in the population
@@ -992,6 +1021,11 @@ function end_simulation() {
     if (typeof callback_done !== 'undefined') {
        callback_done();
     }
+    for (i = 0; i <= avg_total_dens_list.length - 1; i++) {
+    	dens_sum = dens_sum + avg_total_dens_list[i];
+    }
+    total_avg_dens_all_time = dens_sum/avg_total_dens_list.length;
+    console.log('total average density of all time: ' + total_avg_dens_all_time)
 }
 
 function clear_simulation() {

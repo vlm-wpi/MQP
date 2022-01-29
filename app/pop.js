@@ -25,7 +25,7 @@ function Child(j, jj) {
     this.type = 'Child';
     this.exittime = 0;
     this.waitsteps = 0;
-
+    this.local_density = [];
 
     this.color = function() {
         if (this.stuck == 0) {
@@ -63,6 +63,7 @@ function Adult(j, jj) {
     this.type = 'Adult';
     this.exittime = 0;
     this.waitsteps = 0;
+    this.local_density = [];
 
 
     this.stuck = 0;
@@ -116,6 +117,7 @@ function AdultBackpack(j, jj) {
     this.type = 'AdultBackpack';
     this.exittime = 0;
     this.waitsteps = 0;
+    this.local_density = [];
 
 
     this.color = function() {
@@ -157,6 +159,7 @@ function AdultBike(j, jj) {
     this.wait = 0;
     this.exittime = 0;
     this.waitsteps = 0;
+    this.local_density = [];
 
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];

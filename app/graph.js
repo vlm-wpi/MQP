@@ -134,7 +134,7 @@
     
     num_updates++;
     value2++; //add one board update
-    console.log("Number of updates:" + num_updates);
+    // console.log("Number of updates:" + num_updates);
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
       value = data.current[tpe];
