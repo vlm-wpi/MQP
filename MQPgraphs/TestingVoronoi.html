@@ -30,8 +30,8 @@ function pVoronoiD() {
   var ctx=cvs.getContext("2d");
   var w=cvs.width, h=cvs.height;
   var x=y=d=dm=j=0, w1=w-2, h1=h-2;
-  var n=document.getElementById("sites").value;
-  var mt=document.getElementById("mt").value;
+  var n=document.getElementById("sites").value; //would be num exits for us
+  var mt=document.getElementById("mt").value; //would be heuristic checkbox for us
   var X=new Array(n), Y=new Array(n), C=new Array(n);
   ctx.fillStyle="white"; ctx.fillRect(0,0,w,h);
   for(var i=0; i<n; i++) {
