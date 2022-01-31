@@ -490,6 +490,7 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
 			var tpe = things[i];
 			data.current[tpe] = 0;
+			console.log("collisions:" +final.collisions_average[tpe]);
 			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
 			    document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
@@ -542,6 +543,9 @@ function State() {
                     // console.log("average backpack: " + avg_backpack_collisions)
                     // console.log("total bike collisions: " + total_bike_collisions)
                     // console.log("average bike: " + avg_bike_collisions)
+                    
+                    //make the bar graphs here
+                    graph.createBarGraph();
 
                 }  
                 // console.log("current_population: " + current_population)
@@ -739,7 +743,7 @@ function State() {
                 count++; //if at exit, add one to the count
                 }
         }
-        if (count > 0) { //if thee count is greateer that zeero, some part is touching the exit
+        if (count > 0) { //if the count is greater that zeero, some part is touching the exit
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
         }
@@ -1017,7 +1021,6 @@ function end_simulation() {
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
     clearInterval(interval_id2);
-    graph.createBarGraph();
     if (typeof callback_done !== 'undefined') {
        callback_done();
     }
