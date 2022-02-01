@@ -19,17 +19,17 @@
               var dy = Math.abs(y);
               if(euclidean) {
                 heuristic = final.euclideand;
-                console.log('the heuristic is euclidean')
+               // console.log('the heuristic is euclidean')
                 return Math.sqrt(x * x + y * y)
 
               } else if (diagonal) {
                 heuristic = final.diagonald;
-                console.log('the heuristic is diagonal')
+               // console.log('the heuristic is diagonal')
                 return (D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy))
               
               } else if (manhattan) {
                 heuristic = final.manhattand;
-                console.log('the heuristic is manhattan')
+               // console.log('the heuristic is manhattan')
                 return Math.abs(x) + Math.abs(y)
               }
           }

@@ -31,6 +31,7 @@
 	
 	// starting from the last node (which is the exit) go backwards until you
 	// get to a node whose parent is the original, then return its location [i ,ii]
+	//I think this function returns the x and y coordinate that the anchor point wants to go
 	this.initial_step = function() {
             var n = this; //n is the current node in use
             if (this.parent === null) { //if the node does not have a parent
@@ -85,7 +86,7 @@
     // if 'others' than check to avoid other shapes as well
     function get_neighbors(x, y, thing, state, others) { //gets the eight neighbors as a possible move
         var parents = []; //initialize array 
-        var oix = -1; //initialize counter for tthe index of its orientation
+        var oix = -1; //initialize counter for the index of its orientation
         //I do not understand this part
         for (var di = -1; di <= 1; di++) {
             for (var dii = -1; dii <= 1; dii++) {
@@ -178,6 +179,7 @@
         //go through while the open list is not empty
         while (open.heap.length > 0) {
             var q = open.extractMin(); //get the minimun path so far
+            //Returns the neighbors that all of the pieces can move to
             var successors = get_neighbors(q.i, q.ii, thing, state, others); //this function only returns coordinates and orientation
             //shuffle array
             // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array

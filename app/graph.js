@@ -166,37 +166,41 @@
    // xScale = d3.scaleBand.range([0, width]),
    //     yScale = d3.scaleBand().range([height, 0]);
 
-    var g = svg.append("g")
-            .attr("transform", "translate(" + 100 + "," + 100 + ")");
-
     var collision_data = []
     //add spots to collision data
-    for (i = 0; i < things.length; i++) {
-	    var tpe = things[i];
-	    collision_data[i] = [];
-	}
+//    for (i = 0; i < things.length; i++) {
+//	    var tpe = things[i];
+//	    collision_data[i] = [];
+//	}
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
       value = final.collisions_total[tpe];
-      collision_data[i].push({x: tpe,y: value});
+      collision_data.push({Type: tpe,Collision: value});
       console.log(collision_data);
     }
+    
+    //array of keys
+    const types = collision_data.map(function(obj){
+      return obj.Type;
+    });
+    //array of values
+    var collisionNum = collision_data.map(function(obj){
+      return obj.Collision;
+    });
+    //max value
+    var maxCollision = d3.max(collisionNum);
    
    var xScale = d3.scaleBand()
     .range([0, width])
-    .padding(0.4)
-    .domain(collision_data.map(function(d) { return d.x; }));
+    .padding(0.05)
+    .domain(types)
+    
     var yScale = d3.scaleLinear()
-      .range([height, 0])
-      .domain([0, d3.max(collision_data, function(d) { return d.y; })]);
+      .range([0, height])
+      .domain([maxCollision, 0]); //try to change to data.max
       
-      var barFunc = d3.line()
-      .x(function(d) {
-        return xScale(d.x);
-      })
-      .y(function(d) {
-        return yScale(d.y);
-      });
+    var g = svg.append("g")
+            .attr("transform", "translate(" + 100 + "," + 100 + ")");
     
     //adding x axis
     g.append("g")
@@ -208,25 +212,28 @@
 
     //adding y axis
     g.append("g")
-     .append("text").attr("transform", "rotate(-90)")
-     .attr("y", 6).attr("dy", "-5.1em")
-     .attr("text-anchor", "end").attr("font-size", "18px")
-     .attr("stroke", "blue").text("Number of Collisions");
-     
-    //append group elements
-    g.append("g")
-     .attr("transform", "translate(0, 0)")
-     .call(d3.axisLeft(yScale))
+      .call(d3.axisLeft(yScale).tickFormat(function(d){
+             return d;
+         }).ticks(10))
+     .append("text")
+     .attr("y", 6)
+     .attr("dy", "0.71em")
+     .attr("text-anchor", "end")
+     .text("Number of Collisions");
 
     g.selectAll(".bar")
      .data(collision_data)
      .enter().append("rect")
      .attr("class", "bar")
-     .attr('d', barFunc(collision_data))
+     //.attr('d', barFunc(collision_data))
+     .attr("x", function(d) { return xScale(d.Type); })
+     .attr("y", function(d) { return yScale(d.Collision); })
+     .attr("width", xScale.bandwidth())
+     .attr("height", function(d) { return height - yScale(d.Collision); });
      //.attr("x", function(d) { return lineFunc(xScale(d.x)); })
      //.attr("y", function(d) { console.log(lineFunc(yScale(d.y))); return lineFunc(yScale(d.y)); })
-     .attr("width", xScale.bandwidth())
-     .attr("height", 300);
+    // .attr("width", xScale.bandwidth())
+   //  .attr("height", 300);
   }
   
   //use this to get the actual data
