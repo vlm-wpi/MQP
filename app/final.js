@@ -518,7 +518,7 @@ function State() {
                       document.getElementById("collide").innerHTML = final.total_collisions;
 		    }
 
-                    var total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG]
+                    total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG]
 
                     var avg_exit_time = (final.sum_of_exit_times) / final.total_peds_at_start; //in board update units
 

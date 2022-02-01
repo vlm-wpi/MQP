@@ -161,23 +161,13 @@
             width = svg.attr("width") - margin,
             height = svg.attr("height") - margin
 
-   // xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([0, 1]), //terms of board updates
-    //  yRange = d3.scale.linear().range([height - margin.top, margin.bottom]).domain([0,final.total_peds_at_start]),
-   // xScale = d3.scaleBand.range([0, width]),
-   //     yScale = d3.scaleBand().range([height, 0]);
-
     var collision_data = []
-    //add spots to collision data
-//    for (i = 0; i < things.length; i++) {
-//	    var tpe = things[i];
-//	    collision_data[i] = [];
-//	}
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
       value = final.collisions_total[tpe];
       collision_data.push({Type: tpe,Collision: value});
-      console.log(collision_data);
     }
+    collision_data.push({Type: "Total",Collision: final.total_collisions});
     
     //array of keys
     const types = collision_data.map(function(obj){
@@ -201,26 +191,25 @@
       
     var g = svg.append("g")
             .attr("transform", "translate(" + 100 + "," + 100 + ")");
-    
     //adding x axis
     g.append("g")
       .attr("transform", "translate(0," + height + ")")
      .call(d3.axisBottom(xScale)).append("text")
      .attr("y", height - 250).attr("x", width - 100)
-     .attr("text-anchor", "end").attr("font-size", "18px")
-     .attr("stroke", "blue").text("Type of Person");
-
+     .attr("text-anchor", "end").attr("font-size", "15px")
+     .text("Type of Person");
     //adding y axis
     g.append("g")
       .call(d3.axisLeft(yScale).tickFormat(function(d){
              return d;
          }).ticks(10))
      .append("text")
+     .attr("transform", "rotate(-90)")
      .attr("y", 6)
-     .attr("dy", "0.71em")
+     .attr("dy", "-5.1em")
      .attr("text-anchor", "end")
      .text("Number of Collisions");
-
+    //plotting
     g.selectAll(".bar")
      .data(collision_data)
      .enter().append("rect")
@@ -230,10 +219,71 @@
      .attr("y", function(d) { return yScale(d.Collision); })
      .attr("width", xScale.bandwidth())
      .attr("height", function(d) { return height - yScale(d.Collision); });
-     //.attr("x", function(d) { return lineFunc(xScale(d.x)); })
-     //.attr("y", function(d) { console.log(lineFunc(yScale(d.y))); return lineFunc(yScale(d.y)); })
-    // .attr("width", xScale.bandwidth())
-   //  .attr("height", 300);
+     
+     //graph for exit time
+     var svgE = d3.select('#visualisation3'),
+            marginE = 200,
+            widthE = svgE.attr("width") - marginE,
+            heightE = svgE.attr("height") - marginE
+
+    var exit_data = []
+    for (i = 0; i < things.length; i++) {
+      var tpe = things[i];
+      var valueE = final.exit_times[tpe];
+      exit_data.push({Type: tpe,Exit: valueE});
+    }
+    exit_data.push({Type: "Total",Exit: final.sum_of_exit_times});
+    
+    //array of keys
+    const typesE = exit_data.map(function(obj){
+      return obj.Type;
+    });
+    //array of values
+    var exitNum = exit_data.map(function(obj){
+      return obj.Exit;
+    });
+    //max value
+    var maxExit = d3.max(exitNum);
+   
+   var xScaleE = d3.scaleBand()
+    .range([0, widthE])
+    .padding(0.05)
+    .domain(typesE)
+    
+    var yScaleE = d3.scaleLinear()
+      .range([0, heightE])
+      .domain([maxExit, 0]); //try to change to data.max
+      
+    var gE = svgE.append("g")
+            .attr("transform", "translate(" + 100 + "," + 100 + ")");
+    //adding x axis
+    gE.append("g")
+      .attr("transform", "translate(0," + heightE + ")")
+     .call(d3.axisBottom(xScale)).append("text")
+     .attr("y", heightE - 250).attr("x", widthE - 100)
+     .attr("text-anchor", "end").attr("font-size", "15px")
+     .text("Type of Person");
+    //adding y axis
+    gE.append("g")
+      .call(d3.axisLeft(yScaleE).tickFormat(function(d){
+             return d;
+         }).ticks(10))
+     .append("text")
+     .attr("transform", "rotate(-90)")
+     .attr("y", 6)
+     .attr("dy", "-5.1em")
+     .attr("text-anchor", "end")
+     .text("Time taken to exit (in board updates)");
+    //plotting
+    gE.selectAll(".bar")
+     .data(exit_data)
+     .enter().append("rect")
+     .attr("class", "bar")
+     //.attr('d', barFunc(collision_data))
+     .attr("x", function(d) { return xScaleE(d.Type); })
+     .attr("y", function(d) { return yScaleE(d.Exit); })
+     .attr("width", xScale.bandwidth())
+     .attr("height", function(d) { return heightE - yScaleE(d.Exit); });
   }
   
   //use this to get the actual data
