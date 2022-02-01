@@ -180,6 +180,7 @@ function State() {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
+                            //Here we can condense
                             if(thing_type.type == 'Child') {
                                     child++;
                                 } else if (thing_type.type == 'Adult') {
@@ -489,7 +490,7 @@ function State() {
 
 		    for (i = 0; i < things.length; i++) {
 			var tpe = things[i];
-			data.current[tpe] = 0;
+			data.current[tpe] = 0; //set everyone's population to zero
 			console.log("collisions:" +final.collisions_average[tpe]);
 			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
@@ -641,8 +642,9 @@ function State() {
 
 		// ensure stays fully on the board.
 		var dd = pop.dimension(tpe);
-		var j = get_random_int(dd[0], data.width_i - dd[0]);
-		var jj = get_random_int(dd[1], data.width_ii - dd[1]);
+		//this was changed
+		var j = get_random_int(dd[0], data.width_i - dd[1]);
+		var jj = get_random_int(dd[2], data.width_ii - dd[3]);
 		
 		var exit_information = layout.get_exit_information(board, j, jj);
 		
@@ -760,7 +762,7 @@ function State() {
                 var next = this.temp_grid[j][jj]; //get what is in the spot of the cell trying to move to
                 if (typeof next === 'undefined') {} //is this a sanity check?
                 else {
-                    if (!next.has_other_thing(thing)) { //if there is nothing in thee cell trying to move to
+                    if (!next.has_other_thing(thing)) { //if there is nothing in the cell trying to move to
                         // maybe could have break if collides so doesn't
                         // have to keep going through loop. need to check
                         // all of the cells of the thing
