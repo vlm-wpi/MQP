@@ -18,7 +18,6 @@
 	}
 	  
 	  //set the dimensions
-
 	  var margin = {
         top: 20,
         right: 20,
@@ -30,7 +29,6 @@
       
     //https://www.sitepoint.com/creating-simple-line-bar-charts-using-d3-js/#:~:text=We’ll%20be%20using%20d3.svg.line%20%28%29%20to%20draw%20our,is%20how%20we%20define%20the%20line%20generator%20function%3A
     //set the ranges
-    
     var yMax = 0;
     //get the largest value out of all the types of people
     //I think we can just use the total population -- yes
@@ -41,29 +39,25 @@
 	 //     yMax = data.max[tpe];
 	//    }
 	//}
-      xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([0, 1]), //terms of board updates
-      yRange = d3.scale.linear().range([height - margin.top, margin.bottom]).domain([0,final.total_peds_at_start]),
+      xRange = d3.scaleLinear().range([margin.left, width - margin.right]).domain([0, 1]), //terms of board updates
+      yRange = d3.scaleLinear().range([height - margin.top, margin.bottom]).domain([0,final.total_peds_at_start]),
       
     //define the axes
-    xAxis = d3.svg.axis()
+    xAxis = d3.axisBottom()
       .scale(xRange)
-      .tickSize(5)
-      .tickSubdivide(true),
-    yAxis = d3.svg.axis()
+      .tickSize(5),
+    yAxis = d3.axisLeft()
       .scale(yRange)
-      .tickSize(5)
-      .orient('left')
-      .tickSubdivide(true);
+      .tickSize(5);
     
     //define the line
-    var lineFunc = d3.svg.line()
+    var lineFunc = d3.line()
       .x(function(d) {
         return xRange(d.x);
       })
       .y(function(d) {
         return yRange(d.y);
-      })
-      .interpolate('linear');
+      });
       
    //add svg canvas
     var vis = d3.select('#visualisation') 
@@ -144,53 +138,96 @@
     //update every line
     for (i = 0; i < updates.length; i++) {
       updates[i].transition()
-      .attr('d', lineFunc(lineData[i]))
+      .attr('d', lineFunc(lineData[i]));
     }
     total.transition()
-      .attr('d', lineFunc(totalPopData))
-
-  //lineData = lineData.slice(-20);
+      .attr('d', lineFunc(totalPopData));
+  //lineData = lineData.slice(-20); //only if want to split
  // lineData2 = lineData2.slice(-20);
-
   //can just do lineData[0] because all the same?
-  xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([0, d3.max(lineData[0], function(d) {
+  xRange = d3.scaleLinear().range([margin.left, width - margin.right]).domain([0, d3.max(lineData[0], function(d) {
     return d.x;
-  })])
+  })]);
   //update the axis to show the change
-  xAxis = d3.svg.axis()
+  xAxis = d3.axisBottom()
       .scale(xRange)
-      .tickSize(5)
-      .tickSubdivide(true)
-  x.transition().call(xAxis)
-  //x2.transition().call(xAxis)
+      .tickSize(5);
+  x.transition().call(xAxis);
   }
   //graphs at the end
   function createBarGraph(){
-    var vis2 = d3.select('#visualisation2')
-    var x2 = vis2.append('svg:g')
-      .attr('class', 'x axis')
-      .attr('transform', 'translate(0,' + (height - margin.bottom) + ')')
-      .call(xAxis);
+    var svg = d3.select('#visualisation2'),
+            margin = 200,
+            width = svg.attr("width") - margin,
+            height = svg.attr("height") - margin
+
+   // xRange = d3.scale.linear().range([margin.left, width - margin.right]).domain([0, 1]), //terms of board updates
+    //  yRange = d3.scale.linear().range([height - margin.top, margin.bottom]).domain([0,final.total_peds_at_start]),
+   // xScale = d3.scaleBand.range([0, width]),
+   //     yScale = d3.scaleBand().range([height, 0]);
+
+    var g = svg.append("g")
+            .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
+    var collision_data = []
+    //add spots to collision data
+    for (i = 0; i < things.length; i++) {
+	    var tpe = things[i];
+	    collision_data[i] = [];
+	}
+    for (i = 0; i < things.length; i++) {
+      var tpe = things[i];
+      value = final.collisions_total[tpe];
+      collision_data[i].push({x: tpe,y: value});
+      console.log(collision_data);
+    }
+   
+   var xScale = d3.scaleBand()
+    .range([0, width])
+    .padding(0.4)
+    .domain(collision_data.map(function(d) { return d.x; }));
+    var yScale = d3.scaleLinear()
+      .range([height, 0])
+      .domain([0, d3.max(collision_data, function(d) { return d.y; })]);
       
-    vis2.append('svg:g')
-      .attr('class', 'y axis')
-      .attr('transform', 'translate(' + (margin.left) + ',0)')
-      .call(yAxis);
-  }
-  /* 
-    //this is what needs to be transitioned each time when it updates
-    var toUpdate2 = vis2.append('svg:path')
-      .attr('d', lineFunc(lineData))
-      .attr('stroke', 'blue')
-      .attr('stroke-width', 2)
-      .attr('fill', 'none');
-      
-    var anotherUpdate2 = vis2.append('svg:path')
-      .attr('d', lineFunc(lineData2))
-      .attr('stroke', 'green')
-      .attr('stroke-width', 2)
-      .attr('fill', 'none');*/
+      var barFunc = d3.line()
+      .x(function(d) {
+        return xScale(d.x);
+      })
+      .y(function(d) {
+        return yScale(d.y);
+      });
     
+    //adding x axis
+    g.append("g")
+      .attr("transform", "translate(0," + height + ")")
+     .call(d3.axisBottom(xScale)).append("text")
+     .attr("y", height - 250).attr("x", width - 100)
+     .attr("text-anchor", "end").attr("font-size", "18px")
+     .attr("stroke", "blue").text("Type of Person");
+
+    //adding y axis
+    g.append("g")
+     .append("text").attr("transform", "rotate(-90)")
+     .attr("y", 6).attr("dy", "-5.1em")
+     .attr("text-anchor", "end").attr("font-size", "18px")
+     .attr("stroke", "blue").text("Number of Collisions");
+     
+    //append group elements
+    g.append("g")
+     .attr("transform", "translate(0, 0)")
+     .call(d3.axisLeft(yScale))
+
+    g.selectAll(".bar")
+     .data(collision_data)
+     .enter().append("rect")
+     .attr("class", "bar")
+     .attr('d', barFunc(collision_data))
+     //.attr("x", function(d) { return lineFunc(xScale(d.x)); })
+     //.attr("y", function(d) { console.log(lineFunc(yScale(d.y))); return lineFunc(yScale(d.y)); })
+     .attr("width", xScale.bandwidth())
+     .attr("height", 300);
+  }
   
   //use this to get the actual data
   //if (!gui.headless) { document.getElementById("total_" + object_type + "_exit").innerHTML = total_time; }

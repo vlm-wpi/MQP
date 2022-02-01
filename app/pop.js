@@ -218,17 +218,18 @@ function AdultBike(j, jj) {
 	}
     }
 
+//this function is where an object can be placed on a grid
     function dimension(tpe) {
 	if (tpe == 'Child') {
-	    return [ 1, 1];
+	    return [0,0,0,0];
 	} else if (tpe == 'Adult') {
-	    return [ 2, 1];
+	    return [0, 1, 0, 0];
 	} else if (tpe == 'AdultBike') {
-	    return [ 4, 6];
+	    return [ 0,3,2,3];
 	} else if (tpe == 'AdultBackpack') {
-	    return [2, 2];
+	    return [0,1,0,1];
 	} else {
-	    return [1, 1]; // reasonable
+	    return [1, 1,1,1]; // reasonable
 	}
     }
 
