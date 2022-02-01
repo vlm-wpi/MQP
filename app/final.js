@@ -511,7 +511,7 @@ function State() {
 			}
 		    }
 
-                    avg_collide_total = final.total_collisions/final.total_peds_at_start;
+                     final.avg_collisions_total = final.total_collisions/final.total_peds_at_start;
 
                     if (!gui.headless) { 
                       document.getElementById("avg_collide").innerHTML = final.avg_collisions_total;  // TODO: doesn't change ever?
