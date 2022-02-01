@@ -125,7 +125,7 @@
     numExits.oninput = function() {
 	//if the number of exits is greater than the perimeter of the board
 	//divide by 4? since the number of exits takes up 4 spaces
-	if(this.value>((2*width_i)+(2*width_ii))) {
+	if(this.value>((2*data.width_i)+(2*data.width_ii))) {
 	    //make it floor?
 	    window.alert("Cannot fit this many exits on the grid, please choose another number.");
 	}
@@ -139,7 +139,7 @@
     //function that checks of the number of obstacles is valid
     numObstacles.oninput = function() {
 	//if the number of obstacles is greater than the the area of the board
-	if(this.value>(width_i*width_ii)){
+	if(this.value>(data.width_i*datawidth_ii)){
 	    //make it floor?
 	    window.alert("Cannot fit this many objects on the grid, please choose another number.");
 	}

@@ -732,9 +732,10 @@ function State() {
                 return false; //return false, not at an exit
             }
         }
+        //i think node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
-        var exiti = thing.min_exiti; //get the first x value of the exit cell
-        var exitii = thing.min_exitii; //get the first y value of the exit cell
+        var exiti = thing.min_exiti; //get the first x value of the exit cell, don't think this is needed
+        var exitii = thing.min_exitii; //get the first y value of the exit cell, dont think this is needed
 
         // hack to fix
         var count = 0; //counter used to check if at an exit
@@ -746,7 +747,7 @@ function State() {
                 count++; //if at exit, add one to the count
                 }
         }
-        if (count > 0) { //if the count is greater that zeero, some part is touching the exit
+        if (count > 0) { //if the count is greater that zero, some part is touching the exit
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
         }
@@ -760,7 +761,7 @@ function State() {
             // handles collisions by doing NOTHING. If spot that you are
             // trying to move to DOESN'T HAVE a thing then you are free to
             // move, but you have to check profile. -- i think we changed this
-            try { //I do not know what a try is -- ASK
+            try { //I do not know what a try is -- ASK (basically an if statement)
                 var next = this.temp_grid[j][jj]; //get what is in the spot of the cell trying to move to
                 if (typeof next === 'undefined') {} //is this a sanity check?
                 else {

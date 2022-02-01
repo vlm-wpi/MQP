@@ -98,6 +98,14 @@
                     var jj = jj;
                 }
                 var obj = new Exit(j, jj);
+                //cannot use orientation for random exit, need to check j and jj
+                 if ((obj.anchor_i == 0) || (obj.anchor_i == this.width_i - 1)) {
+                    obj.profile_i = [0, 0, 0, 0];
+                    obj.profile_ii = [0, 1, 2, 3]; //vertical exit
+                } else {
+                    obj.profile_i = [0, 1, 2, 3];
+                    obj.profile_ii = [0, 0, 0, 0]; //horizontal exit
+                }
                 //want to push whole object so that it keeps track of the end
                 this.exit_locations.push(obj);
                 for (var p = 0; p < obj.profile_i.length; p++) { //placing exits on the grid
