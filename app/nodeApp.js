@@ -23,6 +23,9 @@ global.heap = heap['heap'];
 const astar = require('./astar');
 global.astar = astar['astar'];
 
+const voronoi = require('./voronoi');
+global.voronoi = voronoi['voronoi'];
+
 const app = require('./final');
 global.app = astar['final'];
 const lzw = require('./LZWEncoder');

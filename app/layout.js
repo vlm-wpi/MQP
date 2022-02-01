@@ -100,7 +100,6 @@
                 var obj = new Exit(j, jj);
                 //want to push whole object so that it keeps track of the end
                 this.exit_locations.push(obj);
-
                 for (var p = 0; p < obj.profile_i.length; p++) { //placing exits on the grid
                     var dj = obj.profile_i[p];
                     var djj = obj.profile_ii[p];

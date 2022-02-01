@@ -13,6 +13,7 @@
   
   function start_app() {
     this.final.start_simulation();
+    // this.voronoi.pVoronoiD();
   }
 
   function stop_app() {
@@ -27,9 +28,9 @@
 
   <form>
     <input type = "button" value="start" onClick="JavaScript:start_app()">
-    <!-- ; JavaScript:GIF()"> -->
     <input type = "button" value="end" onClick="JavaScript:stop_app()">
     <input type = "button" value="clear" onClick="JavaScript:clear_app()">
+
   </form>
 
 
@@ -164,6 +165,8 @@
     <script type="text/javascript" src="GIFEncoder.js">    </script>
     <script type="text/javascript" src="b64.js">    </script>
     <script type="text/javascript" src="graph.js">    </script>
+    <script type="text/javascript" src="voronoi.js">    </script>
+
 
 
   </body>

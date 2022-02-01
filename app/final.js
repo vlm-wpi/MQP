@@ -21,6 +21,9 @@ function get_random_int(min, max) {
     var avg_total_dens_list = [];
     var total_avg_dens_all_time = 0;
     var dens_sum = 0;
+    var vor_count = 0;
+    final.vor_exits_i = [];
+    final.vor_exits_ii = [];
 
 
     //heuristic options
@@ -108,7 +111,6 @@ function euclideand(x, y, goalX, goalY){
   var h = Math.sqrt(Math.pow(dx,2)+ Math.pow(dy,2)); //squareroot of dx squared and dy squared added together
   return h; //return the distance
 }
-
 
 //function that takes care of initializing the grid, placing items, and updating the board
 function State() {
@@ -1047,73 +1049,15 @@ function start_simulation(max_gen, callback) {
     initialize_simulation();
     interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
     interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
-    ///this is testing out voronoi stuff
-    console.log('before the call to voronoi')
-    function randgp(max) {return Math.floor(Math.random()*max)}
-// HF#2 Random hex color
-function randhclr() {
-  return "#"+
-  ("00"+randgp(256).toString(16)).slice(-2)+
-  ("00"+randgp(256).toString(16)).slice(-2)+
-  ("00"+randgp(256).toString(16)).slice(-2)
-}
-// HF#3 Metrics: Euclidean, Manhattan and Minkovski 3/20/17
-var D = 1;
-var D2 = Math.sqrt(2);
-console.log('inside the call to voronoi')
-var heuristic = manhattand;  // default to manhattan
-	if (euclidean) {
-	    heuristic = euclideand;
-	} else if (diagonal) {
-	    heuristic = diagonald;
-	}
-console.log(heuristic)
-function Metric(x,y,heuristic) {
-var dx = Math.abs(x);
-var dy = Math.abs(y);
-console.log('inside metric function')
-  if(heuristic=='euclideand') {
-  	console.log('the heuristic is euclidean')
-  	return Math.sqrt(x*x + y*y)}
-  if(heuristic=='manhattand') {
-  	console.log('the heuristic is manhattan')
-  	return Math.abs(x) + Math.abs(y)}
-  // if(mt==3) {return(Math.pow(Math.pow(Math.abs(x),3) + Math.pow(Math.abs(y),3),0.33333))}
-  if(heuristic=diagonald) {
-  	console.log('the heuristic is diagonal')
-  	return (D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy))}
-}
-// Plotting Voronoi diagram. aev 3/10/17
-function pVoronoiD() {
-  var cvs=document.getElementById("cvsId");
-  var ctx=cvs.getContext("2d");
-  var w=cvs.width, h=cvs.height;
-  var x=y=d=dm=j=0, w1=w-2, h1=h-2;
-  var n=data.max['Exit'];
-  // document.getElementById("sites").value; //would be num exits for us
-  var heuristic=heuristic
-  // document.getElementById("mt").value; //would be heuristic checkbox for us
-  var X=new Array(n), Y=new Array(n), C=new Array(n);
-  ctx.fillStyle="white"; ctx.fillRect(0,0,w,h);
-  for(var i=0; i<n; i++) {
-    X[i]=randgp(w1); Y[i]=randgp(h1); C[i]=randhclr();
-  }
-  for(y=0; y<h1; y++) {
-    for(x=0; x<w1; x++) {
-      dm=Metric(h1,w1,heuristic); j=-1;
-      for(var i=0; i<n; i++) {
-        d=Metric(X[i]-x,Y[i]-y,heuristic)
-        if(d<dm) {dm=d; j=i;}
-      }//fend i
-      ctx.fillStyle=C[j]; ctx.fillRect(x,y,1,1);
-    }//fend x
-  }//fend y
-  ctx.fillStyle="black";
-  for(var i=0; i<n; i++) {
-    ctx.fillRect(X[i],Y[i],3,3);
-  }
-}
-/////
+
+	//my attempt at making a call to a voronoi file
+    for(i=0; i < board.exit_locations.length; i++) {
+    	final.vor_exits_i.push(board.exit_locations[i].anchor_i);
+    	final.vor_exits_ii.push(board.exit_locations[i].anchor_ii);
+    }
+    voronoi.pVoronoiD()
+
+
 }
 
 take_snapshot_calls = 0;
@@ -1152,6 +1096,9 @@ take_snapshot_calls = 0;
     final.start_simulation = start_simulation;
     final.end_simulation = end_simulation;
     final.clear_simulation = clear_simulation;
+    final.manhattand = manhattand;
+    final.euclideand = euclideand;
+    final.diagonald = diagonald;
 
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
     final.get_state = get_state;
