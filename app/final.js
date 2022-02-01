@@ -765,28 +765,35 @@ function State() {
                 var next = this.temp_grid[j][jj]; //get what is in the spot of the cell trying to move to
                 if (typeof next === 'undefined') {} //is this a sanity check?
                 else {
+                  var collision = 0; //counter for the number of collisions, a person trying to access a spot that anoother one is in
                     if (!next.has_other_thing(thing)) { //if there is nothing in the cell trying to move to
                         // maybe could have break if collides so doesn't
                         // have to keep going through loop. need to check
                         // all of the cells of the thing
-                        var collision = 0; //counter for the number of collisions, a person trying to access a spot that anoother one is in
+                        
+                        //shouln't need collision counter if have break statement -- yes for if statement below
                         for (var x = 0; x < thing.profile_i.length; x++) { //go through all cells of the person
                             //getting the new cell location according to orientation
-                            var new_deltas = data.get_coords_from_orientation_neighbors(thing, x, orientation); 
-                            var r = new_deltas[0]; //x value of the new move
-                            var c = new_deltas[1]; //y value of the new move
-                            var safe_r = data.get_bounded_index_i(r + thing.anchor_i); //bound the x value, making sure on the board
-                            var safe_c = data.get_bounded_index_ii(c + thing.anchor_ii); //bound the y value, making sure on the board
+                           // var new_deltas = data.get_coords_from_orientation_neighbors(thing, x, orientation); //dont think need this
+                           // var r = new_deltas[0]; //x value of the new move
+                          //  var c = new_deltas[1]; //y value of the new move
+                            var safe_r = data.get_bounded_index_i(j + thing.profile_i[x]); //bound the x value, making sure on the board
+                            var safe_c = data.get_bounded_index_ii(jj + thing.profile_ii[x]); //bound the y value, making sure on the board
                             if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something already in the cell
                                 collision = collision + 1; //add one to collision counter
                                 final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
 
                                 //adding collision counter to specific person types
-				final.collisions_total[thing.type] += 1;
-
+				                        final.collisions_total[thing.type] += 1;
                                 break; //since we found a collision on part of the person, break for loop
                             }
                         }
+                    }
+                    else{ //there is something blocking the anchor
+                      collision = 1;
+                      final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
+                      //adding collision counter to specific person types
+				              final.collisions_total[thing.type] += 1;
                     }
                     //now check if you can actually move the person
                     if (collision == 0) { //if no collision for any cells then can move whole piece
@@ -810,7 +817,7 @@ function State() {
                       //if the time waiting is greater than wait time but less than that double the wait time
                       //try to move randomly and then find a path
                       //if the time waiting is more than double the wait time, find another exit
-			if(thing.wait>data.wait_before_random_move*2){
+			              if(thing.wait>data.wait_before_random_move*2){
                         var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
                         var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
                         thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
@@ -823,6 +830,8 @@ function State() {
                         thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii; //update the new goal exit y coordinatee
                         //change the exit and recurrsively call the function
                         thing.wait = 0; //reset the wait time, not totally convinced that this should be here
+                        //--i think correct, can only set this to zero when calling placefootprint/remove footprint
+                        //but the simulation works better with this here...
                         this.move_thing(thing); //try to move the person now with the updated exit
                       }
                           //if the numnber of times waited is greater than the time to wait before making a randome move
@@ -859,6 +868,7 @@ function State() {
                               next_coords = this.get_coords_from_orientation(thing); //get these new coordinates to move to
                               thing.anchor_i = next_coords[0]; //update the anchor x coordinate to its new position
                               thing.anchor_ii = next_coords[1]; //update the anchor y coordinate to its new position
+                              thing.wait = 0; //reset the wait time
                               thing.place_footprint(this); //place the person in the temp grid in its new position
                           }
                       }
@@ -962,7 +972,6 @@ function Cell(i, ii) {
 	if (this.thing == null) { return false; }
 
         if (this.thing instanceof layout.Obstacle) {
-          console.log(true);
             return true;
         } else {
             return false;
