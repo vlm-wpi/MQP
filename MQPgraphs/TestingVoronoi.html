@@ -14,7 +14,11 @@ function randhclr() {
   ("00"+randgp(256).toString(16)).slice(-2)
 }
 // HF#3 Metrics: Euclidean, Manhattan and Minkovski 3/20/17
+          var D = 1;
+          var D2 = Math.sqrt(2);
 function Metric(x,y,mt) {
+  var dx = Math.abs(x);
+  var dy = Math.abs(y);
   if(mt==1) {return Math.sqrt(x*x + y*y)}
   if(mt==2) {return Math.abs(x) + Math.abs(y)}
   if(mt==3) {return (D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy))}
