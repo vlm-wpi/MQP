@@ -956,10 +956,12 @@ function Cell(i, ii) {
         return this.thing;
     };
 
+    //this is the issue!! -- fixed
     this.has_obstacle = function() {
 	if (this.thing == null) { return false; }
 
-        if (this.tpe == 'Obstacle') {
+        if (this.thing instanceof layout.Obstacle) {
+          console.log(true);
             return true;
         } else {
             return false;

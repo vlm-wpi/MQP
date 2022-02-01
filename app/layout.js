@@ -496,6 +496,7 @@
     layout.layouts = layouts;
     layout.factory = factory;
     layout.get_exit_information = get_exit_information;
+    layout.Obstacle = Obstacle;
 
 })(typeof layout === 'undefined'?
             this['layout']={}: layout);
