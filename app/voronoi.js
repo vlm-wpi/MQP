@@ -54,6 +54,7 @@
               ctx.fillStyle = "white";
               ctx.fillRect(0, 0, w, h);
               for (var i = 0; i < n; i++) {
+                //should be pulling actual exits
                   X[i] = final.vor_exits_i[i];
                   // randgp(w1);
                   Y[i] = final.vor_exits_ii[i];
