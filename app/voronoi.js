@@ -45,6 +45,7 @@
                   w1 = w - 2,
                   h1 = h - 2;
               var n = data.max['Exit'];
+              console.log(n)
               // document.getElementById("sites").value; //would be num exits for us
               var heuristic = heuristic
               // document.getElementById("mt").value; //would be heuristic checkbox for us
