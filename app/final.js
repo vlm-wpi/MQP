@@ -554,6 +554,16 @@ function State() {
                     // console.log("average bike: " + avg_bike_collisions)
                     
                     //make the bar graphs here
+                    final.total_data = [];
+                    	if (data.total_collide) {
+                    	    final.total_data.push(final.collisions_total);
+                    	} if (data.average_collide) {
+                    	   final.total_data.push(final.collisions_average);
+                    	}if (data.total_exit) {
+                    	    final.total_data.push(final.exit_total);
+                    	}if (data.average_exit) {
+                    	    final.total_data.push(final.exit_average);
+                    	}
                     graph.createBarGraph();
 
                 }  

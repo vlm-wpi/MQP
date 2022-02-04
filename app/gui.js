@@ -235,7 +235,6 @@
 	total_collideCheckbox.checked = true;
     }
     total_collideCheckbox.oninput = function() {
-	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
 	data.total_collide = total_collideCheckbox.checked;
     }
     
@@ -244,7 +243,6 @@
 	average_collideCheckbox.checked = true;
     }
     average_collideCheckbox.oninput = function() {
-	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
 	data.average_collide = average_collideCheckbox.checked;
     }
     
@@ -253,7 +251,6 @@
 	total_exitCheckbox.checked = true;
     }
     total_exitCheckbox.oninput = function() {
-	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
 	data.total_exit = total_exitCheckbox.checked;
     }
     
@@ -262,7 +259,6 @@
 	average_exitCheckbox.checked = true;
     }
     average_exitCheckbox.oninput = function() {
-	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
 	data.average_exit = average_exitCheckbox.checked;
     }
 
