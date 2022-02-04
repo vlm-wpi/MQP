@@ -136,6 +136,30 @@ function get_random_int(min, max) {
         return bounded_index_i; //return the x coordinate, guarenteed to be on the board
     }
     
+    function get_coords_from_orientation(thing) {
+	var i = thing.anchor_i;
+	var ii = thing.anchor_ii;
+	
+	var orient = thing.orientation;
+	if (orient == data.UP) {
+            return [i, data.get_bounded_index_ii(ii - 1)];
+	} else if (orient == data.DOWN) {
+            return [i, data.get_bounded_index_ii(ii + 1)];
+	} else if (orient == data.LEFT) {
+            return [data.get_bounded_index_i(i - 1), ii];
+	} else if (orient == data.RIGHT) {
+            return [data.get_bounded_index_i(i + 1), ii];
+	} else if (orient == data.diagDownRight) {
+            return [data.get_bounded_index_i(i + 1), data.get_bounded_index_ii(ii + 1)]
+	} else if (orient == data.diagUpRight) {
+            return [data.get_bounded_index_i(i + 1), data.get_bounded_index_ii(ii - 1)]
+	} else if (orient == data.diagDownLeft) {
+            return [data.get_bounded_index_i(i - 1), data.get_bounded_index_ii(ii + 1)]
+	} else {
+            return [data.get_bounded_index_i(i - 1), data.get_bounded_index_ii(ii - 1)]
+	}
+    }
+    
     //need this to because we have to use profile and not anchor
     //function that takes in a person, index, and orientation that the person is directed
     //returns new coordinates accordinating to the given orientation
@@ -168,7 +192,7 @@ function get_random_int(min, max) {
     data.get_bounded_index_i = get_bounded_index_i;
     data.get_bounded_index_ii = get_bounded_index_ii;
     data.get_coords_from_orientation_neighbors = get_coords_from_orientation_neighbors;
-
+    data.get_coords_from_orientation = get_coords_from_orientation;
     data.random_orientation = random_orientation;
     data.calc_distance = calc_distance;
 

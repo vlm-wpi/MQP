@@ -21,18 +21,13 @@ function Child(j, jj) {
     this.width = 1;
     this.height = 1;
     this.wait = 0;
-    this.stuck = 0;
     this.type = 'Child';
     this.exittime = 0;
     this.waitsteps = 0;
     this.local_density = [];
 
     this.color = function() {
-        if (this.stuck == 0) {
-            return "rgb(255,165,0)";
-        } else {
-            return "rgb(255,0,0)";
-        }
+        return "rgb(255,165,0)";
     }
 
     this.place_footprint = function(state) {
@@ -66,15 +61,8 @@ function Adult(j, jj) {
     this.local_density = [];
 
 
-    this.stuck = 0;
-
     this.color = function() {
-        if (this.stuck == 0) {
-            //            return "rgb(255,165,0)";
-            return "rgb(0,0,255)";
-        } else {
-            return "rgb(255,0,0)";
-        }
+        return "rgb(0,0,255)";
     }
 
     this.place_footprint = function(state) {

@@ -87,11 +87,11 @@
     function get_neighbors(x, y, thing, state, others) { //gets the eight neighbors as a possible move
         var parents = []; //initialize array 
         var oix = -1; //initialize counter for the index of its orientation
-        //I do not understand this part
+        // Use deltas of [-1,+1] on both i and ii
         for (var di = -1; di <= 1; di++) {
             for (var dii = -1; dii <= 1; dii++) {
                 if (di == 0 && dii == 0) {
-                    continue; //not 100% sure on the continue statement
+                    continue; 
                 }
                 oix++;
 
@@ -180,7 +180,8 @@
         while (open.heap.length > 0) {
             var q = open.extractMin(); //get the minimun path so far
             //Returns the neighbors that all of the pieces can move to
-            var successors = get_neighbors(q.i, q.ii, thing, state, others); //this function only returns coordinates and orientation
+	    //this function only returns coordinates and orientation
+            var successors = get_neighbors(q.i, q.ii, thing, state, others);
             //shuffle array
             // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
             for (var i = successors.length - 1; i > 0; i--) {
@@ -188,7 +189,8 @@
                 var temp = successors[i];
                 successors[i] = successors[j];
                 successors[j] = temp;
-            } // does this do anything???
+            } 
+
             for (i = 0; i < successors.length; i++) { //go through all the poossible next moves
                 var succ = new Node(successors[i][0], successors[i][1], q.exiti, q.exitii, q.endi, q.endii, q, successors[i][2], q.goali, q.goalii, q.profile_i, q.profile_ii); //create a node with the information from the successsor
 		succ.setHeuristic(heuristic); // be sure to set heurstic function to use
