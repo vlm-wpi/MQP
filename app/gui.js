@@ -100,6 +100,15 @@
 	data.wait_before_random_move = this.value;
     }
     
+    //getting the exit time from user input
+    var exit_speed_slider = document.getElementById("wait_exit");
+    exit_speed_slider.value = data.wait_before_random_exit;
+    //function that sets the wait time
+    exit_speed_slider.oninput = function() {
+	//updating the number of board updates a person is stuck before it tries to find another exit from the user input
+	data.wait_before_random_exit = this.value;
+    }
+    
     //getting the grid width from user input
     var gridWidthi = document.getElementById("gridWidthi");
     gridWidthi.value = data.width_i;

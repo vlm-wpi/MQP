@@ -817,7 +817,7 @@ function State() {
                       //if the time waiting is greater than wait time but less than that double the wait time
                       //try to move randomly and then find a path
                       //if the time waiting is more than double the wait time, find another exit
-			              if(thing.wait>data.wait_before_random_move*2){
+			              if(thing.wait>data.wait_before_random_exit){
                         var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
                         var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
                         thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 

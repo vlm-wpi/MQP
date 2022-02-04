@@ -94,6 +94,7 @@ function get_random_int(min, max) {
 
     // number of board updates a person is stuck before it tries to find another move
     data.wait_before_random_move = 5;
+    data.wait_before_random_exit = 10;
 
     //boolean used to tell if snapshots of the board are taken after every move, can be changed by user input
     data.take_snapshot = false; 
