@@ -9,12 +9,7 @@
   <script src="https://d3js.org/d3.v7.min.js"></script>
 </head>
 <body>
-  <svg id="visualisation" width="500" height="500"></svg>
-  <svg id="visualisation0" width="600" height="500"></svg>
-  <svg id="visualisation1" width="600" height="500"></svg>
-  <svg id="visualisation2" width="600" height="500"></svg>
-  <svg id="visualisation3" width="600" height="500"></svg>
-
+  
   <script type="text/javascript">
   
   function start_app() {
@@ -31,6 +26,90 @@
   }
 
   </script>
+  
+   <table>
+    <tr valign=top>
+        <td><b>Values at initialization:</b><br>
+          Total number of pedestrians on grid: <span id="total_peds_at_start"></span><br>
+          Children: <span id="num_Child_initial"></span><br>
+          Adults: <span id="num_Adult_initial"></span><br>
+          Adults with backpacks: <span id="num_AdultBackpack_initial"></span><br>
+          Adults with bikes: <span id="num_AdultBike_initial"></span><br>
+          Obstacles: <span id="num_Obstacle_initial"></span><br>
+        
+        </td>
+        <td>
+           <h2>Initialize the Simulation:</h2>
+
+          <form>
+            <label for="numChildren">Number of Children:</label><br>
+            <input type="text" id="numChildren" name="numChildren"><br>
+            <label for="numAdults">Number of Adults:</label><br>
+            <input type="text" id="numAdults" name="numAdults"><br>
+            <label for="numBackPacks">Number of Adults with Backpacks:</label><br>
+            <input type="text" id="numBackPacks" name="numBackPacks"><br>
+            <label for="numBikes">Number of Adults with Bikes:</label><br>
+            <input type="text" id="numBikes" name="numBikes"><br>
+            <label for="numExits">Number of Exits:</label><br>
+            <input type="text" id="numExits" name="numExits"><br>
+            <label for="numObstacles">Number of Obstacles:</label><br>
+            <input type="text" id="numObstacles" name="numObstacles">
+          </form>
+        
+        </td>
+        <td>
+          <h2>Board Initialization</h2>
+
+          <form>
+            <div class="slidecontainer">
+              Time between updates: <input type="range" min="1" max="500" value="1" id="ms_speed"><br>
+            </div>
+            <div class="slidecontainer">
+              Time to wait before random move: <input type="range" min="1" max="500" value="1" id="wait_speed"><br>
+            </div>
+            <div class="slidecontainer">
+              Time to wait before random exit: <input type="range" min="1" max="500" value="1" id="wait_exit"><br>
+            </div>
+            <label for="gridWidthi">Width of Grid:</label><br>
+            <input type="text" id="gridWidthi" name="gridWidthi"><br>
+            <label for="gridWidthii">Height of Grid:</label><br>
+            <input type="text" id="gridWidthii" name="gridWidthii"><br>
+
+          </form>
+          </td>
+          <td>
+           <h2>Take Snapshots</h2>
+
+          <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
+
+          <h2>Choose Initial Layout</h2>
+
+	  <select name="layouts" id="LayoutSelect">
+
+	    <option value="Randomized" selected>Randomized</option>
+	    <option value="FullerLower"        >FullerLower</option>
+	    <option value="Classroom"          >Classroom</option>
+	    <option value="LectureHall"        >LectureHall</option>
+	  </select>
+
+          </td>
+          <td>
+          <h2>Choose Heuristic Function</h2>
+          <b>Diagonal Distance:</b> <input type="checkbox" id="diagonal"><br>
+          <b>Manhattan Distance:</b> <input type="checkbox" id="manhattan"><br>
+          <b>Euclidean Distance:</b> <input type="checkbox" id="euclidean"><br>
+          
+          </td>
+          <td>
+           <h2>Choose Graphs to plot</h2>
+          <b>Total collisions:</b> <input type="checkbox" id="total_collide"><br>
+          <b>Average collisions:</b> <input type="checkbox" id="average_collide"><br>
+          <b>Total exit times:</b> <input type="checkbox" id="total_exit"><br>
+          <b>Average exit times:</b> <input type="checkbox" id="average_exit"><br>
+          </td>
+    </tr>
+</table>
+  
 
   <form>
     <input type = "button" value="start" onClick="JavaScript:start_app()">
@@ -40,17 +119,31 @@
   </form>
 
 
-        <b>Values at initialization:</b><br>
-          Total number of pedestrians on grid: <span id="total_peds_at_start"></span><br>
-          Children: <span id="num_Child_initial"></span><br>
-          Adults: <span id="num_Adult_initial"></span><br>
-          Adults with backpacks: <span id="num_AdultBackpack_initial"></span><br>
-          Adults with bikes: <span id="num_AdultBike_initial"></span><br>
-          Obstacles: <span id="num_Obstacle_initial"></span><br>
+        
     <table>
+      
       <tr valign=top>
         <td><canvas id="grid" width="600" height="600"></canvas></td>
         <td valign=top>
+          <svg id="visualisation" width="500" height="500"></svg>
+          </td>
+  </tr>
+  </table>
+  
+  <table>
+      
+  <tr> 
+      
+  <td><svg id="visualisation0" width="600" height="500"></svg></td>
+  <td><svg id="visualisation1" width="600" height="500"></svg></td>
+  <td><svg id="visualisation2" width="600" height="500"></svg></td>
+  <td><svg id="visualisation3" width="600" height="500"></svg></td>
+  </tr>
+  </table>
+  
+  <table>
+    <tr>
+        <td>
           
           <h2>Statistics</h2>
           
@@ -99,67 +192,6 @@
           Total waiting time for adults with bikes: <span id="total_AdultBike_wait"></span><br>
 
           Minimum time possible with no obstacles: 
-
-          <h2>Initialize the Simulation:</h2>
-
-          <form>
-            <label for="numChildren">Number of Children:</label><br>
-            <input type="text" id="numChildren" name="numChildren"><br>
-            <label for="numAdults">Number of Adults:</label><br>
-            <input type="text" id="numAdults" name="numAdults"><br>
-            <label for="numBackPacks">Number of Adults with Backpacks:</label><br>
-            <input type="text" id="numBackPacks" name="numBackPacks"><br>
-            <label for="numBikes">Number of Adults with Bikes:</label><br>
-            <input type="text" id="numBikes" name="numBikes"><br>
-            <label for="numExits">Number of Exits:</label><br>
-            <input type="text" id="numExits" name="numExits"><br>
-            <label for="numObstacles">Number of Obstacles:</label><br>
-            <input type="text" id="numObstacles" name="numObstacles">
-          </form>
-
-          <h2>Board Initialization</h2>
-
-          <form>
-            <div class="slidecontainer">
-              Time between updates: <input type="range" min="1" max="500" value="1" id="ms_speed"><br>
-            </div>
-            <div class="slidecontainer">
-              Time to wait before random move: <input type="range" min="1" max="500" value="1" id="wait_speed"><br>
-            </div>
-            <div class="slidecontainer">
-              Time to wait before random exit: <input type="range" min="1" max="500" value="1" id="wait_exit"><br>
-            </div>
-            <label for="gridWidthi">Width of Grid:</label><br>
-            <input type="text" id="gridWidthi" name="gridWidthi"><br>
-            <label for="gridWidthii">Height of Grid:</label><br>
-            <input type="text" id="gridWidthii" name="gridWidthii"><br>
-
-          </form>
-
-          <h2>Take Snapshots</h2>
-
-          <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
-
-          <h2>Choose Initial Layout</h2>
-
-	  <select name="layouts" id="LayoutSelect">
-
-	    <option value="Randomized" selected>Randomized</option>
-	    <option value="FullerLower"        >FullerLower</option>
-	    <option value="Classroom"          >Classroom</option>
-	    <option value="LectureHall"        >LectureHall</option>
-	  </select>
-
-          <h2>Choose Heuristic Function</h2>
-          <b>Diagonal Distance:</b> <input type="checkbox" id="diagonal"><br>
-          <b>Manhattan Distance:</b> <input type="checkbox" id="manhattan"><br>
-          <b>Euclidean Distance:</b> <input type="checkbox" id="euclidean"><br>
-          
-          <h2>Choose Graphs to plot</h2>
-          <b>Total collisions:</b> <input type="checkbox" id="total_collide"><br>
-          <b>Average collisions:</b> <input type="checkbox" id="average_collide"><br>
-          <b>Total exit times:</b> <input type="checkbox" id="total_exit"><br>
-          <b>Average exit times:</b> <input type="checkbox" id="average_exit"><br>
 
         </td>
       </tr>
