@@ -10,6 +10,8 @@
 </head>
 <body>
   <svg id="visualisation" width="500" height="500"></svg>
+  <svg id="visualisation0" width="600" height="500"></svg>
+  <svg id="visualisation1" width="600" height="500"></svg>
   <svg id="visualisation2" width="600" height="500"></svg>
   <svg id="visualisation3" width="600" height="500"></svg>
 
@@ -72,7 +74,7 @@
           Average number of collisions for adults with bikes: <span id="avg_AdultBike_collide"></span><br>
           Total number of collisions for adults with bikes: <span id="total_AdultBike_collide"></span><br>
 
-          <b>Exit time data (in seconds)</b><br>
+          <b>Exit time data</b><br>
           Average exit time: <span id="avg_exit_time"></span><br>
           Total exit time: <span id="total_exit_time"></span><br>
           Average exit time for children: <span id="avg_exit_Child"></span><br>
@@ -152,6 +154,12 @@
           <b>Diagonal Distance:</b> <input type="checkbox" id="diagonal"><br>
           <b>Manhattan Distance:</b> <input type="checkbox" id="manhattan"><br>
           <b>Euclidean Distance:</b> <input type="checkbox" id="euclidean"><br>
+          
+          <h2>Choose Graphs to plot</h2>
+          <b>Total collisions:</b> <input type="checkbox" id="total_collide"><br>
+          <b>Average collisions:</b> <input type="checkbox" id="average_collide"><br>
+          <b>Total exit times:</b> <input type="checkbox" id="total_exit"><br>
+          <b>Average exit times:</b> <input type="checkbox" id="average_exit"><br>
 
         </td>
       </tr>

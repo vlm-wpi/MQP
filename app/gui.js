@@ -228,6 +228,43 @@
             }
 	}   
     }
+    
+  //graphs
+    var total_collideCheckbox = document.getElementById("total_collide");
+    if (data.total_collide) {
+	total_collideCheckbox.checked = true;
+    }
+    total_collideCheckbox.oninput = function() {
+	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
+	data.total_collide = total_collideCheckbox.checked;
+    }
+    
+  var average_collideCheckbox = document.getElementById("average_collide");
+    if (data.average_collide) {
+	average_collideCheckbox.checked = true;
+    }
+    average_collideCheckbox.oninput = function() {
+	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
+	data.average_collide = average_collideCheckbox.checked;
+    }
+    
+  var total_exitCheckbox = document.getElementById("total_exit");
+    if (data.total_exit) {
+	total_exitCheckbox.checked = true;
+    }
+    total_exitCheckbox.oninput = function() {
+	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
+	data.total_exit = total_exitCheckbox.checked;
+    }
+    
+  var average_exitCheckbox = document.getElementById("average_exit");
+    if (data.average_exit) {
+	average_exitCheckbox.checked = true;
+    }
+    average_exitCheckbox.oninput = function() {
+	//update the boolean value of take snapshot, used to deterrmine if snapshots of the board will be taken
+	data.average_exit = average_exitCheckbox.checked;
+    }
 
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------

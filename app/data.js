@@ -98,6 +98,12 @@ function get_random_int(min, max) {
 
     //boolean used to tell if snapshots of the board are taken after every move, can be changed by user input
     data.take_snapshot = false; 
+    
+    //graphs at the end
+      data.total_collide = true;
+      data.average_collide = false;
+      data.total_exit = false;
+      data.average_exit = false;
 
     //Initial board options: TODO: Better solution than bunch of booleans. Perhaps have
     // a specific new object for each one, and then have generic 'layout' to be set to that

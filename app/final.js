@@ -38,6 +38,10 @@ function get_random_int(min, max) {
     //Collision counters
     final.collisions_total = {};
     final.collisions_average = {};
+    
+    //exit counters, not sure if have to initialize
+    final.exit_total = {};
+    final.exit_average = {};
 
     //counter for the number of collisions for children, in total and average
     final.collisions_total['Child'] = 0;
@@ -476,9 +480,10 @@ function State() {
                 final.exit_times[object_type] += thing.exittime; //add its exit time to the total children exit times
                 final.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total children wait times
 
-                //check if last child
+                //check if last on the board for that type
                 if(data.current[object_type] == 0) {
                     var total_time = thing.exittime; //in board update units
+                    final.exit_total[object_type] = total_time;
                     if (!gui.headless) { document.getElementById("total_" + object_type + "_exit").innerHTML = total_time; }
                     var total_wait_steps = thing.waitsteps; //set the total amount of wait steps for children
                     if (!gui.headless) { document.getElementById("total_" + object_type + "_wait").innerHTML = total_wait_steps; }
@@ -501,6 +506,7 @@ function State() {
 			}
 
 			var avg_exit = final.exit_times[tpe] / data.max[tpe]; //in board update units
+			final.exit_average[tpe] = avg_exit;
 			if (!gui.headless) {
 			    document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
 			}
@@ -518,13 +524,13 @@ function State() {
                       document.getElementById("collide").innerHTML = final.total_collisions;
 		    }
 
-                    total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG]
+                    final.total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG] -- i think right
 
                     var avg_exit_time = (final.sum_of_exit_times) / final.total_peds_at_start; //in board update units
 
 
                     if (!gui.headless) { 
-                      document.getElementById("total_exit_time").innerHTML = total_exit_time;
+                      document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
                       document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
                     }
 

@@ -154,31 +154,47 @@
       .tickSize(5);
   x.transition().call(xAxis);
   }
-  //graphs at the end
+
+  //checking what data to use for graphs
+  var total_data = [];
+	if (data.total_collide) {
+	    total_data.push(final.collisions_total);
+	} if (data.average_collide) {
+	   total_data.push(final.collisions_average);
+	}if (data.total_exit) {
+	    total_data.push(final.exit_total);
+	}if (data.average_exit) {
+	    total_data.push(final.exit_average);
+	}
+  
   function createBarGraph(){
-    var svg = d3.select('#visualisation2'),
+    console.log('here');
+    for(k=0; k<total_data.length; k++){
+      console.log('#visualisation'+k);
+    var svg = d3.select('#visualisation'+k),
             margin = 200,
             width = svg.attr("width") - margin,
             height = svg.attr("height") - margin
 
-    var collision_data = []
+    var data = []
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
-      value = final.collisions_total[tpe];
-      collision_data.push({Type: tpe,Collision: value});
+      var info = total_data[k];
+      value = info[tpe];
+      data.push({Type: tpe,Value: value});
     }
-    collision_data.push({Type: "Total",Collision: final.total_collisions});
+    //data.push({Type: "Total",Value: final.total_collisions});
     
     //array of keys
-    const types = collision_data.map(function(obj){
+    const types = data.map(function(obj){
       return obj.Type;
     });
     //array of values
-    var collisionNum = collision_data.map(function(obj){
-      return obj.Collision;
+    var num = data.map(function(obj){
+      return obj.Value;
     });
     //max value
-    var maxCollision = d3.max(collisionNum);
+    var maxValue = d3.max(num);
    
    var xScale = d3.scaleBand()
     .range([0, width])
@@ -187,7 +203,7 @@
     
     var yScale = d3.scaleLinear()
       .range([0, height])
-      .domain([maxCollision, 0]); //try to change to data.max
+      .domain([maxValue, 0]); //try to change to data.max
       
     var g = svg.append("g")
             .attr("transform", "translate(" + 100 + "," + 100 + ")");
@@ -211,16 +227,18 @@
      .text("Number of Collisions");
     //plotting
     g.selectAll(".bar")
-     .data(collision_data)
+     .data(data)
      .enter().append("rect")
      .attr("class", "bar")
      //.attr('d', barFunc(collision_data))
      .attr("x", function(d) { return xScale(d.Type); })
-     .attr("y", function(d) { return yScale(d.Collision); })
+     .attr("y", function(d) { return yScale(d.Value); })
      .attr("width", xScale.bandwidth())
-     .attr("height", function(d) { return height - yScale(d.Collision); });
+     .attr("height", function(d) { return height - yScale(d.Value); });
      
-     //graph for exit time
+    }
+     
+     /*//graph for exit time
      var svgE = d3.select('#visualisation3'),
             marginE = 200,
             widthE = svgE.attr("width") - marginE,
@@ -229,10 +247,11 @@
     var exit_data = []
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
-      var valueE = final.exit_times[tpe];
+      var valueE = document.getElementById("total_" + tpe + "_exit").innerHTML;
       exit_data.push({Type: tpe,Exit: valueE});
+      console.log({Type: tpe,Exit: valueE});
     }
-    exit_data.push({Type: "Total",Exit: final.sum_of_exit_times});
+    exit_data.push({Type: "Total",Exit: final.total_exit_time});
     
     //array of keys
     const typesE = exit_data.map(function(obj){
@@ -283,7 +302,7 @@
      .attr("x", function(d) { return xScaleE(d.Type); })
      .attr("y", function(d) { return yScaleE(d.Exit); })
      .attr("width", xScale.bandwidth())
-     .attr("height", function(d) { return heightE - yScaleE(d.Exit); });
+     .attr("height", function(d) { return heightE - yScaleE(d.Exit); });*/
   }
   
   //use this to get the actual data
