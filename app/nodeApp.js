@@ -20,6 +20,11 @@ global.pop = pop['pop'];
 const heap = require('./heap');
 global.heap = heap['heap'];
 
+const conflict = require('./conflict');
+global.conflict = astar['conflict'];
+
+final.resolution_strategy = conflict.factory('ChooseDifferentExit', 8);
+
 const astar = require('./astar');
 global.astar = astar['astar'];
 

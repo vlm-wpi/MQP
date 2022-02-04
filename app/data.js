@@ -91,6 +91,12 @@ function get_random_int(min, max) {
 
     // number of milliseconds between a board update
     data.ms_between_updates = 1;
+    
+    //graphs at the end
+      data.total_collide = true;
+      data.average_collide = false;
+      data.total_exit = false;
+      data.average_exit = false;
 
     // number of board updates a person is stuck before it tries to find another move
     data.wait_before_random_move = 5;
@@ -99,11 +105,6 @@ function get_random_int(min, max) {
     //boolean used to tell if snapshots of the board are taken after every move, can be changed by user input
     data.take_snapshot = false; 
     
-    //graphs at the end
-      data.total_collide = true;
-      data.average_collide = false;
-      data.total_exit = false;
-      data.average_exit = false;
 
     //Initial board options: TODO: Better solution than bunch of booleans. Perhaps have
     // a specific new object for each one, and then have generic 'layout' to be set to that
@@ -133,6 +134,30 @@ function get_random_int(min, max) {
             bounded_index_i = data.width_i - 1; //change the x coordinate to one less than the width so it is on the board
         }
         return bounded_index_i; //return the x coordinate, guarenteed to be on the board
+    }
+    
+    function get_coords_from_orientation(thing) {
+	var i = thing.anchor_i;
+	var ii = thing.anchor_ii;
+	
+	var orient = thing.orientation;
+	if (orient == data.UP) {
+            return [i, data.get_bounded_index_ii(ii - 1)];
+	} else if (orient == data.DOWN) {
+            return [i, data.get_bounded_index_ii(ii + 1)];
+	} else if (orient == data.LEFT) {
+            return [data.get_bounded_index_i(i - 1), ii];
+	} else if (orient == data.RIGHT) {
+            return [data.get_bounded_index_i(i + 1), ii];
+	} else if (orient == data.diagDownRight) {
+            return [data.get_bounded_index_i(i + 1), data.get_bounded_index_ii(ii + 1)]
+	} else if (orient == data.diagUpRight) {
+            return [data.get_bounded_index_i(i + 1), data.get_bounded_index_ii(ii - 1)]
+	} else if (orient == data.diagDownLeft) {
+            return [data.get_bounded_index_i(i - 1), data.get_bounded_index_ii(ii + 1)]
+	} else {
+            return [data.get_bounded_index_i(i - 1), data.get_bounded_index_ii(ii - 1)]
+	}
     }
     
     //need this to because we have to use profile and not anchor
@@ -167,7 +192,7 @@ function get_random_int(min, max) {
     data.get_bounded_index_i = get_bounded_index_i;
     data.get_bounded_index_ii = get_bounded_index_ii;
     data.get_coords_from_orientation_neighbors = get_coords_from_orientation_neighbors;
-
+    data.get_coords_from_orientation = get_coords_from_orientation;
     data.random_orientation = random_orientation;
     data.calc_distance = calc_distance;
 

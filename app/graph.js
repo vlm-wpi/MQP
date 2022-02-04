@@ -155,21 +155,10 @@
   x.transition().call(xAxis);
   }
 
-  //checking what data to use for graphs
-  var total_data = [];
-	if (data.total_collide) {
-	    total_data.push(final.collisions_total);
-	} if (data.average_collide) {
-	   total_data.push(final.collisions_average);
-	}if (data.total_exit) {
-	    total_data.push(final.exit_total);
-	}if (data.average_exit) {
-	    total_data.push(final.exit_average);
-	}
-  
   function createBarGraph(){
-    console.log('here');
-    for(k=0; k<total_data.length; k++){
+      //checking what data to use for graphs
+    
+    for(k=0; k<final.total_data.length; k++){
       console.log('#visualisation'+k);
     var svg = d3.select('#visualisation'+k),
             margin = 200,
@@ -179,7 +168,7 @@
     var data = []
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
-      var info = total_data[k];
+      var info = final.total_data[k];
       value = info[tpe];
       data.push({Type: tpe,Value: value});
     }

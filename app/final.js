@@ -10,6 +10,9 @@ function get_random_int(min, max) {
     return Math.floor(Math.random() * (max - min)) + min;
 }
 
+//// -----------------------------------------------------
+
+
     //variable for the total number of people on the grid, updates when it reads the value from html
     final.total_peds_at_start = 0; 
     
@@ -31,6 +34,17 @@ function get_random_int(min, max) {
     var manhattan = false; // boolean to use manhattan distance in heuristic, user can change this
     var euclidean = false; // boolean to use euclidean distance in heuristic, user can change this
     
+    // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
+    // conflict resolution strategy
+    final.resolution_strategy = conflict.factory('ChooseRandomMove', data.wait_before_random_move);
+    //conflict.factory('NullConflictStrategy', 0);
+
+    var resolve_1 = conflict.factory('NullConflictStrategy', 0);
+//    var resolve_1 = conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
+//    resolve_1.next = resolve_3;
+
+//    var resolve_1 = conflict.factory('ChooseRandomMove', data.wait_before_random_move);
+//    resolve_1.next = resolve_2;
 
     // the selected board to use for layout
     var board = undefined;
@@ -169,7 +183,7 @@ function State() {
             var backpack = 0;
             var bike = 0;
             var num_to_divide_by = 0;
-            var location = this.get_coords_from_orientation(thing);
+            var location = data.get_coords_from_orientation(thing);
             //find out the orienation of each pedestrian and set their box based on that
             var orientation = thing.orientation;
             if (orientation == data.UP) {
@@ -554,6 +568,16 @@ function State() {
                     // console.log("average bike: " + avg_bike_collisions)
                     
                     //make the bar graphs here
+                    final.total_data = [];
+                    	if (data.total_collide) {
+                    	    final.total_data.push(final.collisions_total);
+                    	} if (data.average_collide) {
+                    	   final.total_data.push(final.collisions_average);
+                    	}if (data.total_exit) {
+                    	    final.total_data.push(final.exit_total);
+                    	}if (data.average_exit) {
+                    	    final.total_data.push(final.exit_average);
+                    	}
                     graph.createBarGraph();
 
                 }  
@@ -698,31 +722,8 @@ function State() {
 	return true;
     }
 
-  this.get_coords_from_orientation = function(thing) {
-    var i = thing.anchor_i;
-    var ii = thing.anchor_ii;
-
-    var orient = thing.orientation;
-    if (orient == data.UP) {
-        return [i, data.get_bounded_index_ii(ii - 1)];
-    } else if (orient == data.DOWN) {
-        return [i, data.get_bounded_index_ii(ii + 1)];
-    } else if (orient == data.LEFT) {
-        return [data.get_bounded_index_i(i - 1), ii];
-    } else if (orient == data.RIGHT) {
-        return [data.get_bounded_index_i(i + 1), ii];
-    } else if (orient == data.diagDownRight) {
-        return [data.get_bounded_index_i(i + 1), data.get_bounded_index_ii(ii + 1)]
-    } else if (orient == data.diagUpRight) {
-        return [data.get_bounded_index_i(i + 1), data.get_bounded_index_ii(ii - 1)]
-    } else if (orient == data.diagDownLeft) {
-        return [data.get_bounded_index_i(i - 1), data.get_bounded_index_ii(ii + 1)]
-    } else {
-        return [data.get_bounded_index_i(i - 1), data.get_bounded_index_ii(ii - 1)]
-    }
-}
-
-    //function takes in a person, updates the temp grid
+    // function takes in a person, updates the temp grid. Be sure to remove TRUE if you 
+    // are removing from the simulation
     this.move_thing = function(thing) { //returns true if person is at exit, false otherwise
 	var heuristic = manhattand;  // default to manhattan
 	if (euclidean) {
@@ -730,20 +731,20 @@ function State() {
 	} else if (diagonal) {
 	    heuristic = diagonald;
 	}
+
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
-        if (node == null) { //if no move found from initial AStar call
-            node = astar.AStar(state, thing, 1, heuristic); // try to avoid others and break out of deadlock
-            if (node == null) { //if a person still cannot move
-                thing.stuck = 1; //add one to its stuck value
-                return false; //return false, not at an exit
-            }
+        if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
+           return false;
         }
-        //i think node is the initial step
+
+        // node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
         var exiti = thing.min_exiti; //get the first x value of the exit cell, don't think this is needed
         var exitii = thing.min_exitii; //get the first y value of the exit cell, dont think this is needed
 
-        // hack to fix
+        // Simplifying assumption: Once any piece of a thing touches the exit, the whole thing is removed.
+	// Future work: Could be resolved by warping the very profile of a thing to become smaller as it
+	// partially leaves, until it has no presence at which point it would be removed.
         var count = 0; //counter used to check if at an exit
         for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
             //check if at exit
@@ -753,137 +754,142 @@ function State() {
                 count++; //if at exit, add one to the count
                 }
         }
+
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
-        }
-        //now make sure that you can move to the place you want to
-        else {
-            var j = new_coords[0]; //x value of the move you want to make
-            var jj = new_coords[1]; //y value of the move you want to make
-            var orientation = new_coords[2]; // direction to aim
-            
-            //collision handling
-            // handles collisions by doing NOTHING. If spot that you are
-            // trying to move to DOESN'T HAVE a thing then you are free to
-            // move, but you have to check profile. -- i think we changed this
-            try { //I do not know what a try is -- ASK (basically an if statement)
-                var next = this.temp_grid[j][jj]; //get what is in the spot of the cell trying to move to
-                if (typeof next === 'undefined') {} //is this a sanity check?
-                else {
-                  var collision = 0; //counter for the number of collisions, a person trying to access a spot that anoother one is in
-                    if (!next.has_other_thing(thing)) { //if there is nothing in the cell trying to move to
-                        // maybe could have break if collides so doesn't
-                        // have to keep going through loop. need to check
-                        // all of the cells of the thing
-                        
-                        //shouln't need collision counter if have break statement -- yes for if statement below
-                        for (var x = 0; x < thing.profile_i.length; x++) { //go through all cells of the person
-                            //getting the new cell location according to orientation
-                           // var new_deltas = data.get_coords_from_orientation_neighbors(thing, x, orientation); //dont think need this
-                           // var r = new_deltas[0]; //x value of the new move
-                          //  var c = new_deltas[1]; //y value of the new move
-                            var safe_r = data.get_bounded_index_i(j + thing.profile_i[x]); //bound the x value, making sure on the board
-                            var safe_c = data.get_bounded_index_ii(jj + thing.profile_ii[x]); //bound the y value, making sure on the board
-                            if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something already in the cell
-                                collision = collision + 1; //add one to collision counter
-                                final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
+	}
 
-                                //adding collision counter to specific person types
-				                        final.collisions_total[thing.type] += 1;
-                                break; //since we found a collision on part of the person, break for loop
-                            }
-                        }
-                    }
-                    else{ //there is something blocking the anchor
-                      collision = 1;
-                      final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
-                      //adding collision counter to specific person types
-				              final.collisions_total[thing.type] += 1;
-                    }
-                    //now check if you can actually move the person
-                    if (collision == 0) { //if no collision for any cells then can move whole piece
-                        // where thing is RIGHT NOW
-                        var i = thing.anchor_i; //x coordinate of the person
-                        var ii = thing.anchor_ii; //y coordinate of the person
-                        // clear old one
-                        thing.remove_footprint(this); //remove the person from its current position
-                        thing.anchor_i = j; //update the anchor x coordinate for the move to make
-                        thing.anchor_ii = jj; //update the anchor y coordinate for the move to make
-                        
-                        // move into new one
-                        thing.wait = 0; //reset its wait since making a move
-                        thing.place_footprint(this); //update the person's position on the temp grid
-                    }
-                    else { //if there is a collision
-                      
-                      thing.wait++; //add one to its wait
-                      thing.waitsteps++; //add one to its total waits
-                      //find another exit to go to
-                      //if the time waiting is greater than wait time but less than that double the wait time
-                      //try to move randomly and then find a path
-                      //if the time waiting is more than double the wait time, find another exit
-			              if(thing.wait>data.wait_before_random_exit){
-                        var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
-                        var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
-                        thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
-                        thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
-                        thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
-                        thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii; //update the person's last exit y cell
-                        var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
-                        var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
-                        thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i; //update the new goal exit x coordinate
-                        thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii; //update the new goal exit y coordinatee
-                        //change the exit and recurrsively call the function
-                        thing.wait = 0; //reset the wait time, not totally convinced that this should be here
-                        //--i think correct, can only set this to zero when calling placefootprint/remove footprint
-                        //but the simulation works better with this here...
-                        this.move_thing(thing); //try to move the person now with the updated exit
-                      }
-                          //if the numnber of times waited is greater than the time to wait before making a randome move
-                          //try to move in any other direction other than the one you are trying to go to
-                          //wait_before_random_move can be changed by user input
-                          else if(thing.wait>data.wait_before_random_move){ 
-                            //get random orientation and try to move there
-                            var orientation = data.random_orientation(); //random orientation
-                            var can_move = true; //initially assume you can move
-                            for (var x = 0; x < thing.profile_i.length; x++) { //go through every cell the person is occupying
-                            //get next potential coordinates based off of the orientation
-                                var new_deltas = data.get_coords_from_orientation_neighbors(thing, x, orientation);
-                                var r = new_deltas[0]; //x value of new potential coordinate
-                                var c = new_deltas[1]; //y value of new potential coordinate
-                                var safe_r = data.get_bounded_index_i(r + thing.anchor_i); //bound the x coordiinate to make not out of bounds
-                                var safe_c = data.get_bounded_index_ii(c + thing.anchor_ii); //bound the y coordinate to make not out of bounds
-                                if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell trying ti move into
-                                  can_move = false; //cannot move here
-                              }
-                              //if move puts you off the grid you cannot move in this orientation
-                              // can't move off the board
-                              //do we even need safe_r???
-                              else if (safe_r != thing.anchor_i + r) {
-                                  can_move = false; //cannot move off grid
-                              }
-                              else if (safe_c != thing.anchor_ii + c) {
-                                  can_move = false; //cannot move off grid
-                              }
-                          }
-                          if (can_move){ //if the person can move
-                              //change anchor and call place footprint
-                              thing.remove_footprint(this); // remove the person from its current position on grid
-                              thing.orientation = orientation; //update the person's orientation
-                              next_coords = this.get_coords_from_orientation(thing); //get these new coordinates to move to
-                              thing.anchor_i = next_coords[0]; //update the anchor x coordinate to its new position
-                              thing.anchor_ii = next_coords[1]; //update the anchor y coordinate to its new position
-                              thing.wait = 0; //reset the wait time
-                              thing.place_footprint(this); //place the person in the temp grid in its new position
-                          }
-                      }
-                  }
-              }
-          } catch (error) {
-            console.error(error);
+        // Now make sure that you can move to the place you want to
+        var j = new_coords[0];           // x value of the move you want to make
+        var jj = new_coords[1];          // y value of the move you want to make
+        var orientation = new_coords[2]; // direction to aim
+            
+        //collision handling
+        // handles collisions by doing NOTHING. If spot that you are
+        // trying to move to DOESN'T HAVE a thing then you are free to
+        // move, but you have to check profile. -- i think we changed this
+
+        var next = this.temp_grid[j][jj]; //get what is in the spot of the cell trying to move to
+        if (typeof next === 'undefined') { return false; } // Sanity check: Leave now if undefined
+
+        var collision = 0; //counter for the number of collisions, a person trying to access a spot that anoother one is in
+        if (!next.has_other_thing(thing)) { //if there is nothing in the cell trying to move to
+            // maybe could have break if collides so doesn't
+            // have to keep going through loop. need to check
+            // all of the cells of the thing
+            
+            //shouln't need collision counter if have break statement -- yes for if statement below
+            for (var x = 0; x < thing.profile_i.length; x++) { //go through all cells of the person
+                //getting the new cell location according to orientation
+                // var new_deltas = data.get_coords_from_orientation_neighbors(thing, x, orientation); //dont think need this
+                // var r = new_deltas[0]; //x value of the new move
+                //  var c = new_deltas[1]; //y value of the new move
+                var safe_r = data.get_bounded_index_i(j + thing.profile_i[x]); //bound the x value, making sure on the board
+                var safe_c = data.get_bounded_index_ii(jj + thing.profile_ii[x]); //bound the y value, making sure on the board
+                if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something already in the cell
+                    collision = collision + 1; //add one to collision counter
+                    final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
+		    
+                    //adding collision counter to specific person types
+		    final.collisions_total[thing.type] += 1;
+                    break; //since we found a collision on part of the person, break for loop
+                }
+            }
+        } else { //there is something blocking the anchor
+            collision = 1;
+            final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
+            //adding collision counter to specific person types
+	    final.collisions_total[thing.type] += 1;
         }
-    }
+	
+        //now check if you can actually move the person
+        if (collision == 0) { //if no collision for any cells then can move whole piece
+            // where thing is RIGHT NOW
+            var i = thing.anchor_i; //x coordinate of the person
+            var ii = thing.anchor_ii; //y coordinate of the person
+            // clear old one
+            thing.remove_footprint(this); //remove the person from its current position
+            thing.anchor_i = j; //update the anchor x coordinate for the move to make
+            thing.anchor_ii = jj; //update the anchor y coordinate for the move to make
+            
+            // move into new one
+            thing.wait = 0; //reset its wait since making a move
+            thing.place_footprint(this); //update the person's position on the temp grid
+	    return false;
+        }
+
+	// now there is a collision to handle..
+        thing.wait++; //add one to its wait
+        thing.waitsteps++; //add one to its total waits
+
+	// see what you can do...
+	final.resolution_strategy.try_to_resolve(thing, state, board);
+
+/*******
+        //find another exit to go to
+        //if the time waiting is greater than wait time but less than that double the wait time
+        //try to move randomly and then find a path
+        //if the time waiting is more than double the wait time, find another exit
+	if (thing.wait > data.wait_before_random_exit){
+            var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
+            var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
+            thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
+            thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
+            thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
+            thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii; //update the person's last exit y cell
+            var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
+            var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
+            thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i; //update the new goal exit x coordinate
+            thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii; //update the new goal exit y coordinatee
+            //change the exit and recurrsively call the function
+            thing.wait = 0; //reset the wait time, not totally convinced that this should be here
+            //--i think correct, can only set this to zero when calling placefootprint/remove footprint
+            //but the simulation works better with this here...
+	    return false;
+        }
+
+        //if the numnber of times waited is greater than the time to wait before making a randome move
+        //try to move in any other direction other than the one you are trying to go to
+        //wait_before_random_move can be changed by user input
+        if (thing.wait > data.wait_before_random_move) { 
+            //get random orientation and try to move there
+            var orientation = data.random_orientation(); //random orientation
+            var can_move = true; //initially assume you can move
+            for (var x = 0; x < thing.profile_i.length; x++) { //go through every cell the person is occupying
+                //get next potential coordinates based off of the orientation
+                var new_deltas = data.get_coords_from_orientation_neighbors(thing, x, orientation);
+                var r = new_deltas[0]; //x value of new potential coordinate
+                var c = new_deltas[1]; //y value of new potential coordinate
+                var safe_r = data.get_bounded_index_i(r + thing.anchor_i); //bound the x coordiinate to make not out of bounds
+                var safe_c = data.get_bounded_index_ii(c + thing.anchor_ii); //bound the y coordinate to make not out of bounds
+                if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell trying ti move into
+                    can_move = false; //cannot move here
+                }
+                //if move puts you off the grid you cannot move in this orientation
+                // can't move off the board
+                //do we even need safe_r???
+                else if (safe_r != thing.anchor_i + r) {
+                    can_move = false; //cannot move off grid
+                }
+                else if (safe_c != thing.anchor_ii + c) {
+                    can_move = false; //cannot move off grid
+                }
+            }
+            if (can_move){ //if the person can move
+                //change anchor and call place footprint
+                thing.remove_footprint(this); // remove the person from its current position on grid
+                thing.orientation = orientation; //update the person's orientation
+                next_coords = data.get_coords_from_orientation(thing); //get these new coordinates to move to
+                thing.anchor_i = next_coords[0]; //update the anchor x coordinate to its new position
+                thing.anchor_ii = next_coords[1]; //update the anchor y coordinate to its new position
+                thing.wait = 0; //reset the wait time
+                thing.place_footprint(this); //place the person in the temp grid in its new position
+            }
+        }
+*******/
+
+
         return false; // do not remove
    }
 }
@@ -1086,7 +1092,7 @@ function start_simulation(max_gen, callback) {
 take_snapshot_calls = 0;
     function simulate_and_visualize() {
       number_generations += 1;
-      console.log("gen:" + number_generations);
+	//console.log("gen:" + number_generations);
       if (number_generations >= max_generation) {
          end_simulation();
          return;
