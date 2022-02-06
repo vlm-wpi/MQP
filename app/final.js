@@ -29,14 +29,9 @@ function get_random_int(min, max) {
     final.vor_exits_ii = [];
 
 
-    //heuristic options
-    var diagonal = true;   // initialize heuristic using diagonal distance
-    var manhattan = false; // boolean to use manhattan distance in heuristic, user can change this
-    var euclidean = false; // boolean to use euclidean distance in heuristic, user can change this
-    
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
-    final.resolution_strategy = conflict.factory('ChooseRandomMove', data.wait_before_random_move);
+    final.resolution_strategy = conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
     //conflict.factory('NullConflictStrategy', 0);
 
     var resolve_1 = conflict.factory('NullConflictStrategy', 0);
@@ -102,33 +97,6 @@ function get_random_int(min, max) {
     // callback hook once done.
     var callback_done = undefined;
 
-//global variables for the diaginal distance
-var D = 1; //distance of one edge of the square
-var D2 = Math.sqrt(2); //distance from one corner of a square to the other
-
-//function that returns the diagonal distance between a current (x,y) position to a goal (x,y) position
-function diagonald(x, y, goalX, goalY) { //diagonal distance heuristic
-    var dx = Math.abs(x - goalX); //the absolute value of the difference between the current position x value and the goal x value
-    var dy = Math.abs(y - goalY); //the absolute value of the difference between the current position y value and the goal y value
-  //maybe try too explain better
-    var h = D * (dx + dy) + (D2 - 2 * D) * Math.min(dx, dy); //dx and dy added together plus the minumum of dx and dy times the squareroot of 2 minus 2
-    return h; //the diagoonal distance is returned
-}
-
-//function that returns the manhattan distance between a current (x,y) position to a goal (x,y) position
-function manhattand(x, y, goalX, goalY){ 
-  var h = Math.abs(x-goalX) + Math.abs(y-goalY); //the absolute values of the differences of the current x and goal x and current y and goal y values added together
-  return h; //return the distance
-}
-
-//function that returns the euclidean distance between a current (x,y) position to a goal (x,y) position
-function euclideand(x, y, goalX, goalY){ 
-  var dx = Math.abs(x - goalX); //the absolute value of the difference between the current position x value and the goal x value
-  var dy = Math.abs(y - goalY); //the absolute value of the difference between the current position y value and the goal y value
-  //distance formula
-  var h = Math.sqrt(Math.pow(dx,2)+ Math.pow(dy,2)); //squareroot of dx squared and dy squared added together
-  return h; //return the distance
-}
 
 //function that takes care of initializing the grid, placing items, and updating the board
 function State() {
@@ -725,11 +693,11 @@ function State() {
     // function takes in a person, updates the temp grid. Be sure to remove TRUE if you 
     // are removing from the simulation
     this.move_thing = function(thing) { //returns true if person is at exit, false otherwise
-	var heuristic = manhattand;  // default to manhattan
-	if (euclidean) {
-	    heuristic = euclideand;
-	} else if (diagonal) {
-	    heuristic = diagonald;
+	var heuristic = metrics.manhattand;  // default to manhattan
+	if (metrics.euclidean) {
+	    heuristic = metrics.euclideand;
+	} else if (metrics.diagonal) {
+	    heuristic = metrics.diagonald;
 	}
 
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
@@ -1084,19 +1052,25 @@ function start_simulation(max_gen, callback) {
     	final.vor_exits_i.push(board.exit_locations[i].anchor_i);
     	final.vor_exits_ii.push(board.exit_locations[i].anchor_ii);
     }
-    voronoi.pVoronoiD()
-
-
+    voronoi.pVoronoiD(board);
 }
 
 take_snapshot_calls = 0;
     function simulate_and_visualize() {
-      number_generations += 1;
-	//console.log("gen:" + number_generations);
-      if (number_generations >= max_generation) {
-         end_simulation();
-         return;
-      }
+	number_generations += 1;
+
+	var report = "";
+	for (r = 0; r < voronoi.regions.length; r++) {
+	    var f = voronoi.count(r, state); //voronoi.density(r, state);
+	    report = report + f + ",";
+	}
+
+	console.log("gen:" + number_generations + ", density:" + report);
+
+	if (number_generations >= max_generation) {
+            end_simulation();
+            return;
+	}
 
     state.move_things();
     if (!gui.headless) { draw_grid(state.grid.map(function(row) {
@@ -1125,9 +1099,6 @@ take_snapshot_calls = 0;
     final.start_simulation = start_simulation;
     final.end_simulation = end_simulation;
     final.clear_simulation = clear_simulation;
-    final.manhattand = manhattand;
-    final.euclideand = euclideand;
-    final.diagonald = diagonald;
 
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
     final.get_state = get_state;

@@ -3,6 +3,8 @@
  *
  * export gui.headless = False to state to others that code is run with GUI. To run 
  *
+ * Access values from metrics
+ *
  * in headless mode, simply put "global.gui.headless = True;"
  */
 (function(exports) {
@@ -177,14 +179,14 @@
 
     //getting from user input if the diagonal distance will be used on the heuristic
     var diagonalCheckbox = document.getElementById("diagonal");
-    if (diagonal) {
+    if (metrics.diagonal) {
 	diagonalCheckbox.checked = true;
     }
     //function that updates the diagonal heuristic value and makes sure only one heuristic is checked
     diagonalCheckbox.oninput = function() {
 	//update the boolean value of the diagonal, used to determine if the diagonal distance will be used
-	diagonal = diagonalCheckbox.checked;
-	if (diagonal ==  true) { //if the diagonal dostance is checked
+	metrics.diagonal = diagonalCheckbox.checked;
+	if (metrics.diagonal ==  true) { //if the diagonal dostance is checked
             num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
             console.log("diagonal" + num_checked_h)
             if(num_checked_h > 1) { //if the number of heuristics checked is more than one, someway to change to make more accurate???
@@ -194,14 +196,14 @@
     }
 
     var manhattanCheckbox = document.getElementById("manhattan"); //getting from user input if the manhattan distance will be used as the heuristic
-    if (manhattan) {
+    if (metrics.manhattan) {
 	manhattanCheckbox.checked = true;
     }
     //function that updates the manhattan heuristic value and makes sure only one heuristic is checked
     manhattanCheckbox.oninput = function() {
 	//update the boolean value of manhattan, used to determine if the manhattan distance will be used 
-	manhattan = manhattanCheckbox.checked;
-	if (manhattan ==  true) { //if the manhattan dostance is checked
+	metrics.manhattan = manhattanCheckbox.checked;
+	if (metrics.manhattan ==  true) { //if the manhattan dostance is checked
             num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
             console.log("manhattan" + num_checked_h)
             if(num_checked_h > 1) { //if the number of heuristics checked is more than one, someway to change to make more accurate???
@@ -212,14 +214,14 @@
 
     //getting from user input if the euclidean distance will be used as the heuristic
     var euclideanCheckbox = document.getElementById("euclidean");
-    if (euclidean) {
+    if (metrics.euclidean) {
 	euclideanCheckbox.checked = true;
     }
     //function that updates the euclidean heuristic value and makes sure only one heuristic is checked
     euclideanCheckbox.oninput = function() { 
 	//update the boolean value of euclidean, used to determine if the euclidean distance will be used 
-	euclidean = euclideanCheckbox.checked;
-	if (euclidean ==  true) { //if the euclidean dostance is checked
+	metrics.euclidean = euclideanCheckbox.checked;
+	if (metrics.euclidean ==  true) { //if the euclidean dostance is checked
             num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
             console.log("euclidean" + num_checked_h)
 	    //if the number of heuristics checked is more than one, someway to change to make more accurate???

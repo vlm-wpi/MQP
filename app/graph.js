@@ -82,13 +82,14 @@
     .call(yAxis);
     
   // Add the text label for the Y axis
-  vis.append("text")
-      .attr("transform", "rotate(-90)")
-      .attr("y", 0 - margin.left)
-      .attr("x",0 - (height / 2))
-      .attr("dy", "1em")
-      .style("text-anchor", "middle")
-      .text("Number of People");
+    vis.append("text")
+        .attr("y", margin.left-45)
+        .attr("x",-220)
+        .attr('transform', 'rotate(-90)')
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text("Number of People on Grid");
+    
   //title
   vis.append("text")
    .attr("x", width/2)

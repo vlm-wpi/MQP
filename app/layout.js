@@ -75,6 +75,7 @@
 	this.width_i = i;
 	this.width_ii = ii;
 	this.exit_locations = [];
+	this.obstacles = [];
 
 	this.initialize = function(temp_grid) {
             for (var n = 0; n < data.max['Obstacle']; n++) {
@@ -82,6 +83,7 @@
                 var jj = get_random_int(0, this.width_ii)
 
                 var obj = new Obstacle(j, jj);
+		this.obstacles.push(obj);
                 temp_grid[j][jj].thing = obj;
             }
 
@@ -124,6 +126,7 @@
 	this.width_i = 40;
 	this.width_ii = 35;
 	this.exit_locations = [];
+	this.obstacles = [];
 
 
 	this.initialize = function(temp_grid) {
@@ -163,6 +166,7 @@
 	this.width_i = 50;
 	this.width_ii = 75;
 	this.exit_locations = [];
+	this.obstacles = [];
 
 	this.initialize = function(temp_grid) {
             //first quarter of the room
@@ -244,6 +248,7 @@
         this.width_i = 56;
         this.width_ii = 45;
 	this.exit_locations = [];
+	this.obstacles = [];
     
 	this.initialize = function(temp_grid) {
             //first set of seats at the back of the room (left)

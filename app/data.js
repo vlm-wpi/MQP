@@ -83,7 +83,7 @@ function get_random_int(min, max) {
     data.current['AdultBike'] = data.max['AdultBike']; 
 
     //number of oobstacles to place on the board, can be changed by user input
-    data.max['Obstacle'] = 150; 
+    data.max['Obstacle'] = 50; 
 
     // number of exits on grid, can be changed by user input
     data.max['Exit'] = 4;
