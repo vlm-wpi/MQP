@@ -83,7 +83,7 @@
                 var jj = get_random_int(0, this.width_ii)
 
                 var obj = new Obstacle(j, jj);
-		this.obstacles.push(obj);
+		        this.obstacles.push(obj);
                 temp_grid[j][jj].thing = obj;
             }
 

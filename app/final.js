@@ -164,7 +164,8 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        // if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -196,7 +197,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -227,7 +228,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -258,7 +259,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -289,7 +290,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -320,7 +321,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -351,7 +352,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -382,7 +383,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -1065,7 +1066,7 @@ take_snapshot_calls = 0;
 	    report = report + f + ",";
 	}
 
-	console.log("gen:" + number_generations + ", density:" + report);
+	// console.log("gen:" + number_generations + ", density:" + report);
 
 	if (number_generations >= max_generation) {
             end_simulation();
