@@ -22,12 +22,12 @@ function get_random_int(min, max) {
     var avg_backpack_dens_list = [];
     var avg_bike_dens_list = [];
     var avg_total_dens_list = [];
-    var total_avg_dens_all_time = 0;
+    final.total_avg_dens_all_time = 0;
     var dens_sum = 0;
     var vor_count = 0;
     final.vor_exits_i = [];
     final.vor_exits_ii = [];
-
+    final.evaluation_metric = 0;
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
@@ -69,6 +69,8 @@ function get_random_int(min, max) {
     final.avg_collisions_total = 0; //counter for the number of collisions for people, as an average
 
     //Exit time counters (in units of board updates)
+    final.total_exit_time = 0; //counter for total exit time (taken to be the max exit time; exit time of last ped to leave the board)
+
     final.sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
     final.sum_wait_steps = 0; //number of times everyone has waited, all added together
 
@@ -481,7 +483,7 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
 			var tpe = things[i];
 			data.current[tpe] = 0; //set everyone's population to zero
-			console.log("collisions:" +final.collisions_average[tpe]);
+			// console.log("collisions:" +final.collisions_average[tpe]);
 			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
 			    document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
@@ -514,6 +516,7 @@ function State() {
 
                     if (!gui.headless) { 
                       document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
+                      // console.log('line 519: ' + final.total_exit_time)
                       document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
                     }
 
@@ -549,7 +552,7 @@ function State() {
                     	}
                     graph.createBarGraph();
 
-                }  
+                }
                 // console.log("current_population: " + current_population)
                 // console.log(total_population_over_time)
                 // console.log("current_num_children: " + current_num_children)
@@ -1023,8 +1026,19 @@ function end_simulation() {
     for (i = 0; i <= avg_total_dens_list.length - 1; i++) {
     	dens_sum = dens_sum + avg_total_dens_list[i];
     }
-    total_avg_dens_all_time = dens_sum/avg_total_dens_list.length;
-    console.log('total average density of all time: ' + total_avg_dens_all_time)
+    final.total_avg_dens_all_time = dens_sum/avg_total_dens_list.length;
+    console.log('total average density of all time: ' + final.total_avg_dens_all_time)
+
+     
+    //the final evaluation metric for comparing different runs and characterizing them as good/bad
+    //higher number is bad
+
+	//get overall total exit time
+	final.overall_exit_time = Math.max(final.exit_total['Child'], final.exit_total['Adult'], final.exit_total['AdultBackpack'], final.exit_total['AdultBike']);
+    final.evaluation_metric = (final.overall_exit_time + final.total_collisions - final.total_avg_dens_all_time);
+    // console.log('overall exit time: ' + final.overall_exit_time);
+    // console.log('total collisions: ' + final.total_collisions);
+    console.log('final evaluation metric 1041: ' + final.evaluation_metric);
 }
 
 function clear_simulation() {
@@ -1070,6 +1084,7 @@ take_snapshot_calls = 0;
 
 	if (number_generations >= max_generation) {
             end_simulation();
+
             return;
 	}
 

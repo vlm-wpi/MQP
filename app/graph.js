@@ -160,7 +160,7 @@
       //checking what data to use for graphs
     
     for(k=0; k<final.total_data.length; k++){
-      console.log('#visualisation'+k);
+      // console.log('#visualisation'+k);
     var svg = d3.select('#visualisation'+k),
             margin = 200,
             width = svg.attr("width") - margin,
