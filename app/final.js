@@ -3,7 +3,6 @@
  *
  * Refactor out the alorithm used for each individual entity.
  */
-
 (function(final) {
 
 function get_random_int(min, max) {
@@ -14,7 +13,7 @@ function get_random_int(min, max) {
 
 
     //variable for the total number of people on the grid, updates when it reads the value from html
-    final.total_peds_at_start = 0; 
+    final.total_peds_at_start = 0;
     
     //initializations for average density lists
     var avg_child_dens_list = [];
@@ -106,12 +105,12 @@ function State() {
     var num_children_initial = parseInt(data.max['Child']);
     if (!gui.headless) {
 	document.getElementById("total_peds_at_start").innerHTML = final.total_peds_at_start;
- 
       	var things = pop.types();
 	for (i = 0; i < things.length; i++) {
 	    var tpe = things[i];
 	    document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
 	}
+	document.getElementById("num_Obstacle_initial").innerHTML = data.max['Obstacle']
     }
     this.grid = []; //data structure for grid, initially empty
     this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
@@ -154,6 +153,7 @@ function State() {
             var bike = 0;
             var num_to_divide_by = 0;
             var location = data.get_coords_from_orientation(thing);
+            // console.log('location: ' + location)
             //find out the orienation of each pedestrian and set their box based on that
             var orientation = thing.orientation;
             if (orientation == data.UP) {
@@ -166,7 +166,6 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        // if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
                         	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
@@ -427,6 +426,8 @@ function State() {
         }
         //calculates the average density across each ped type at a given time step
         avg_child_dens = child_dens/data.current['Child'];
+        // console.log('child dens: ' + child_dens)
+        // console.log('avg child dens: ' + avg_child_dens)
         avg_child_dens_list.push(avg_child_dens);
         // console.log('average child density list: ' + avg_child_dens_list);
         avg_adult_dens = adult_dens/data.current['Adult'];
@@ -440,6 +441,16 @@ function State() {
         // console.log('average bike density list: ' + avg_bike_dens_list);
         avg_total_dens = (child_dens + adult_dens + backpack_dens + bike_dens)/(data.current['Child']+data.current['Adult']+data.current['AdultBackpack']+data.current['AdultBike']);
         avg_total_dens_list.push(avg_total_dens);
+        // console.log('child density: ' + child_dens)
+        // console.log('adult density: ' + adult_dens)
+        // console.log('bp density: ' + backpack_dens)
+        // console.log('bike density: ' + bike_dens)
+        // console.log('current child: ' + data.current['Child'])
+        // console.log('current adult: ' + data.current['Adult'])
+        // console.log('current backpack: ' + data.current['AdultBackpack'])
+        // console.log('current bike: ' + data.current['AdultBike'])
+        // console.log('AVERAGE TOTAL DENS: ' + avg_total_dens)
+
         // console.log(avg_total_dens_list);
 
         // move everyone at TOP level of abstraction
@@ -1025,6 +1036,7 @@ function end_simulation() {
     }
     for (i = 0; i <= avg_total_dens_list.length - 1; i++) {
     	dens_sum = dens_sum + avg_total_dens_list[i];
+    	// console.log('dens sum: ' + dens_sum)
     }
     final.total_avg_dens_all_time = dens_sum/avg_total_dens_list.length;
     console.log('total average density of all time: ' + final.total_avg_dens_all_time)
@@ -1068,6 +1080,19 @@ function start_simulation(max_gen, callback) {
     	final.vor_exits_ii.push(board.exit_locations[i].anchor_ii);
     }
     voronoi.pVoronoiD(board);
+    	var report = "";
+    	final.m = 0;
+	for (r = 0; r < voronoi.regions.length; r++) {
+	    var f = voronoi.density(r, state); //voronoi.count(r, state);
+	    report = report + f + ",";
+	    if(f>final.m) {
+	    	final.m=f;
+	    	final.most_dense_exit_i = final.vor_exits_i[r];
+	    	final.most_dense_exit_ii = final.vor_exits_ii[r];
+	    }
+	}
+		console.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m)
+	
 }
 
 take_snapshot_calls = 0;
@@ -1076,9 +1101,9 @@ take_snapshot_calls = 0;
 
 	var report = "";
 	for (r = 0; r < voronoi.regions.length; r++) {
-	    var f = voronoi.count(r, state); //voronoi.density(r, state);
+	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report = report + f + ",";
-	}
+	}	
 
 	// console.log("gen:" + number_generations + ", density:" + report);
 

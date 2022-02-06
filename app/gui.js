@@ -31,7 +31,7 @@
 	    window.alert("Cannot fit this many objects on the grid, please choose another number.");
 	}
 	//updating the initial number of children on the grid
-	data.max['Child'] = this.value; 
+	data.max['Child'] = this.value;
 	//updating the current number of children on the grid, should we update this somewhere else?
 	data.current['Child'] = data.max['Child'];
     }
