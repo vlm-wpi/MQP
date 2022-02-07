@@ -1068,7 +1068,7 @@ function end_simulation() {
     for(n=0; n<=final.total_visited_i.length-1; n++) {
     	j = final.total_visited_i[n];
     	jj = final.total_visited_ii[n];
-    	visited_coords = (j,jj);
+    	visited_coords = [j,jj];
     	final.all_visited.push(visited_coords);
     } console.log('all visited: ' + final.all_visited)
     //counter for num times each location was visited
