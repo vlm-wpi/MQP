@@ -29,6 +29,7 @@ function get_random_int(min, max) {
     final.evaluation_metric = 0;
     final.total_visited_i = [];
     final.total_visited_ii = [];
+    var max_visits = 0;
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
@@ -441,16 +442,20 @@ function State() {
         avg_bike_dens = bike_dens/data.current['AdultBike'];
         avg_bike_dens_list.push(avg_bike_dens);
         // console.log('average bike density list: ' + avg_bike_dens_list);
-        avg_total_dens = (child_dens + adult_dens + backpack_dens + bike_dens)/(data.current['Child']+data.current['Adult']+data.current['AdultBackpack']+data.current['AdultBike']);
+        avg_total_dens = (child_dens + adult_dens + backpack_dens + bike_dens)/(parseInt(data.current['Child'])+parseInt(data.current['Adult'])+parseInt(data.current['AdultBackpack'])+parseInt(data.current['AdultBike']));
         avg_total_dens_list.push(avg_total_dens);
+        total_test = child_dens+adult_dens+backpack_dens+bike_dens;
+        current_count_test = parseInt(data.current['Child'])+parseInt(data.current['Adult'])+parseInt(data.current['AdultBackpack'])+parseInt(data.current['AdultBike']);
         // console.log('child density: ' + child_dens)
         // console.log('adult density: ' + adult_dens)
         // console.log('bp density: ' + backpack_dens)
         // console.log('bike density: ' + bike_dens)
+        // console.log('total: ' + total_test)
         // console.log('current child: ' + data.current['Child'])
         // console.log('current adult: ' + data.current['Adult'])
         // console.log('current backpack: ' + data.current['AdultBackpack'])
         // console.log('current bike: ' + data.current['AdultBike'])
+        // console.log('current count: ' + current_count_test)
         // console.log('AVERAGE TOTAL DENS: ' + avg_total_dens)
 
         // console.log(avg_total_dens_list);
@@ -1070,7 +1075,8 @@ function end_simulation() {
     	jj = final.total_visited_ii[n];
     	visited_coords = [j,jj];
     	final.all_visited.push(visited_coords);
-    } console.log('all visited: ' + final.all_visited)
+    } 
+    // console.log('all visited: ' + final.all_visited)
     //counter for num times each location was visited
     const count = [];
     for(const element of final.all_visited) {
@@ -1080,7 +1086,14 @@ function end_simulation() {
     		count[element] = 1;
     	}
     }
-    console.log(count)
+    for(const element of final.all_visited) {
+    	if(count[element]>max_visits) {
+    		max_visits = count[element];
+    		max_element = element;
+    	}
+    }
+    // console.log(count)
+    console.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
 
 }
 
