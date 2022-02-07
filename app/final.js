@@ -527,7 +527,6 @@ function State() {
 
                     if (!gui.headless) { 
                       document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
-                      // console.log('line 519: ' + final.total_exit_time)
                       document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
                     }
 
@@ -722,6 +721,7 @@ function State() {
 
         // node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
+        
         var exiti = thing.min_exiti; //get the first x value of the exit cell, don't think this is needed
         var exitii = thing.min_exitii; //get the first y value of the exit cell, dont think this is needed
 
@@ -791,6 +791,13 @@ function State() {
             // where thing is RIGHT NOW
             var i = thing.anchor_i; //x coordinate of the person
             var ii = thing.anchor_ii; //y coordinate of the person
+
+            //add current position to the ped's path
+            thing.path_i.push(i);
+            thing.path_ii.push(ii);
+            // console.log('path_i: ' + thing.path_i)
+            // console.log('path_ii: ' + thing.path_ii)
+
             // clear old one
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make

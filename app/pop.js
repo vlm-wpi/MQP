@@ -25,6 +25,8 @@ function Child(j, jj) {
     this.exittime = 0;
     this.waitsteps = 0;
     this.local_density = [];
+    this.path_i = [];
+    this.path_ii = [];
 
     this.color = function() {
         return "rgb(255,165,0)";
@@ -59,7 +61,8 @@ function Adult(j, jj) {
     this.exittime = 0;
     this.waitsteps = 0;
     this.local_density = [];
-
+    this.path_i = [];
+    this.path_ii = [];
 
     this.color = function() {
         return "rgb(0,0,255)";
@@ -106,7 +109,8 @@ function AdultBackpack(j, jj) {
     this.exittime = 0;
     this.waitsteps = 0;
     this.local_density = [];
-
+    this.path_i = [];
+    this.path_ii = [];
 
     this.color = function() {
         return "rgb(0,128,0)";
@@ -148,7 +152,9 @@ function AdultBike(j, jj) {
     this.exittime = 0;
     this.waitsteps = 0;
     this.local_density = [];
-
+    this.path_i = [];
+    this.path_ii = [];
+    
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];
     this.profile_ii = [0, 0, 2, 1, 0, -1, -2, -3, 2, 1, 0, -1, -2, -3];
