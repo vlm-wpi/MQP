@@ -27,6 +27,8 @@ function get_random_int(min, max) {
     final.vor_exits_i = [];
     final.vor_exits_ii = [];
     final.evaluation_metric = 0;
+    final.total_visited_i = [];
+    final.total_visited_ii = [];
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
@@ -795,6 +797,8 @@ function State() {
             //add current position to the ped's path
             thing.path_i.push(i);
             thing.path_ii.push(ii);
+            final.total_visited_i.push(i);
+            final.total_visited_ii.push(ii);
             // console.log('path_i: ' + thing.path_i)
             // console.log('path_ii: ' + thing.path_ii)
 
@@ -1035,6 +1039,7 @@ function initialize_simulation() {
 }
 var end_sim_counter = 0;
 function end_simulation() {
+	final.all_visited = [];
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
     clearInterval(interval_id2);
@@ -1058,6 +1063,25 @@ function end_simulation() {
     // console.log('overall exit time: ' + final.overall_exit_time);
     // console.log('total collisions: ' + final.total_collisions);
     console.log('final evaluation metric 1041: ' + final.evaluation_metric);
+
+    //making list of all the coords visited as (i,ii)
+    for(n=0; n<=final.total_visited_i.length-1; n++) {
+    	j = final.total_visited_i[n];
+    	jj = final.total_visited_ii[n];
+    	visited_coords = (j,jj);
+    	final.all_visited.push(visited_coords);
+    } console.log('all visited: ' + final.all_visited)
+    //counter for num times each location was visited
+    const count = [];
+    for(const element of final.all_visited) {
+    	if(count[element]) {
+    		count[element] += 1;
+    	} else {
+    		count[element] = 1;
+    	}
+    }
+    console.log(count)
+
 }
 
 function clear_simulation() {
