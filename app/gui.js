@@ -185,6 +185,39 @@
 	console.log(layoutChoice);
 	data.layout = layoutChoice;
     }
+    
+    //conflict resolusion strategies
+    var ResolutionChoice1 = document.getElementById("conflift_strategy1");
+    ResolutionChoice1.oninput = function() {
+
+	    var ResolutionChoice = ResolutionChoice1.options[ResolutionChoice1.selectedIndex].value;
+	    console.log(ResolutionChoice);
+	    data.resolve1 = ResolutionChoice;
+    }
+        
+    var ResolutionChoice2 = document.getElementById("conflift_strategy2");
+    ResolutionChoice2.oninput = function() {
+
+	    var ResolutionChoice = ResolutionChoice2.options[ResolutionChoice2.selectedIndex].value;
+	    console.log(ResolutionChoice);
+	    data.resolve2 = ResolutionChoice;
+    }
+        
+    var ResolutionChoice3 = document.getElementById("conflift_strategy3");
+    ResolutionChoice3.oninput = function() {
+
+	    var ResolutionChoice = ResolutionChoice3.options[ResolutionChoice3.selectedIndex].value;
+	    console.log(ResolutionChoice);
+	    data.resolve3 = ResolutionChoice;
+    }
+        
+    var ResolutionChoice4 = document.getElementById("conflift_strategy4");
+    ResolutionChoice4.oninput = function() {
+
+	    var ResolutionChoice = ResolutionChoice4.options[ResolutionChoice4.selectedIndex].value;
+	    console.log(ResolutionChoice);
+	    data.resolve4 = ResolutionChoice;
+    }
 
     //getting from user input if the diagonal distance will be used on the heuristic
     var diagonalCheckbox = document.getElementById("diagonal");

@@ -97,6 +97,12 @@ function get_random_int(min, max) {
       data.average_collide = false;
       data.total_exit = false;
       data.average_exit = false;
+      
+    //conflict resolutions
+      data.resolve1 = "ChooseDifferentExit";
+      data.resolve2 = "ChooseDifferentExit";
+      data.resolve3 = "ChooseDifferentExit";
+      data.resolve4 = "ChooseDifferentExit";
 
     // number of board updates a person is stuck before it tries to find another move
     data.wait_before_random_move = 5;

@@ -33,7 +33,10 @@ function get_random_int(min, max) {
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
-    final.resolution_strategy = conflict.factory('ChooseDifferentExitDensity', data.wait_before_random_exit);
+    final.resolution_strategy1 = conflict.factory(data.resolve1, 5); //need to change threshold
+    final.resolution_strategy2 = conflict.factory(data.resolve2, 5);
+    final.resolution_strategy3 = conflict.factory(data.resolve3, 5);
+    final.resolution_strategy4 = conflict.factory(data.resolve4, 5);
     //conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
     //conflict.factory('NullConflictStrategy', 0);
 
@@ -825,7 +828,10 @@ function State() {
         thing.waitsteps++; //add one to its total waits
 
 	// see what you can do...
-	final.resolution_strategy.try_to_resolve(thing, state, board);
+	final.resolution_strategy1.try_to_resolve(thing, state, board);
+	final.resolution_strategy2.try_to_resolve(thing, state, board);
+	final.resolution_strategy3.try_to_resolve(thing, state, board);
+	final.resolution_strategy4.try_to_resolve(thing, state, board);
 
 /*******
         //find another exit to go to

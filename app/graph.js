@@ -251,7 +251,7 @@
     
     //adding legend
    //mouseover
-   svg.container.call(div);
+  // svg.container.call(div);
     //plotting
     svg.selectAll(".bar")
      .data(data)
@@ -265,7 +265,7 @@
      .style('fill', function(d){return d.Color;})
      .on('mouseover', function (d, i) {
       // div.html(function(d) { return `<strong>${d3.format(',')(d.Value)}</strong> people`; });
-        div.show(d,this);
+       // div.show(d,this);
           d3.select(this).transition()
                .duration('50')
                .attr('opacity', '.85')

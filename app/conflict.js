@@ -235,7 +235,7 @@
 		return new ChooseDifferentExitDensity(threshold);
 	} else {
 	    console.log("unknown type:" + tpe);
-	    return None;
+	    return None; //does not work to return none, what should i do?
 	}
     }
 
