@@ -3,7 +3,6 @@
  *
  * Refactor out the alorithm used for each individual entity.
  */
-
 (function(final) {
 
 function get_random_int(min, max) {
@@ -14,7 +13,7 @@ function get_random_int(min, max) {
 
 
     //variable for the total number of people on the grid, updates when it reads the value from html
-    final.total_peds_at_start = 0; 
+    final.total_peds_at_start = 0;
     
     //initializations for average density lists
     var avg_child_dens_list = [];
@@ -22,16 +21,20 @@ function get_random_int(min, max) {
     var avg_backpack_dens_list = [];
     var avg_bike_dens_list = [];
     var avg_total_dens_list = [];
-    var total_avg_dens_all_time = 0;
+    final.total_avg_dens_all_time = 0;
     var dens_sum = 0;
     var vor_count = 0;
     final.vor_exits_i = [];
     final.vor_exits_ii = [];
-
+    final.evaluation_metric = 0;
+    final.total_visited_i = [];
+    final.total_visited_ii = [];
+    var max_visits = 0;
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
-    final.resolution_strategy = conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
+    final.resolution_strategy = conflict.factory('ChooseDifferentExitDensity', data.wait_before_random_exit);
+    //conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
     //conflict.factory('NullConflictStrategy', 0);
 
     var resolve_1 = conflict.factory('NullConflictStrategy', 0);
@@ -69,6 +72,8 @@ function get_random_int(min, max) {
     final.avg_collisions_total = 0; //counter for the number of collisions for people, as an average
 
     //Exit time counters (in units of board updates)
+    final.total_exit_time = 0; //counter for total exit time (taken to be the max exit time; exit time of last ped to leave the board)
+
     final.sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
     final.sum_wait_steps = 0; //number of times everyone has waited, all added together
 
@@ -104,12 +109,12 @@ function State() {
     var num_children_initial = parseInt(data.max['Child']);
     if (!gui.headless) {
 	document.getElementById("total_peds_at_start").innerHTML = final.total_peds_at_start;
- 
       	var things = pop.types();
 	for (i = 0; i < things.length; i++) {
 	    var tpe = things[i];
 	    document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
 	}
+	document.getElementById("num_Obstacle_initial").innerHTML = data.max['Obstacle']
     }
     this.grid = []; //data structure for grid, initially empty
     this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
@@ -152,6 +157,7 @@ function State() {
             var bike = 0;
             var num_to_divide_by = 0;
             var location = data.get_coords_from_orientation(thing);
+            // console.log('location: ' + location)
             //find out the orienation of each pedestrian and set their box based on that
             var orientation = thing.orientation;
             if (orientation == data.UP) {
@@ -164,7 +170,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -196,7 +202,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -227,7 +233,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -258,7 +264,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -289,7 +295,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -320,7 +326,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -351,7 +357,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -382,7 +388,7 @@ function State() {
                         var safei = data.get_bounded_index_i(box_position_i);
                         var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        if(this.temp_grid[safei][safeii].has_other_thing(thing)) {
+                        	if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -424,6 +430,8 @@ function State() {
         }
         //calculates the average density across each ped type at a given time step
         avg_child_dens = child_dens/data.current['Child'];
+        // console.log('child dens: ' + child_dens)
+        // console.log('avg child dens: ' + avg_child_dens)
         avg_child_dens_list.push(avg_child_dens);
         // console.log('average child density list: ' + avg_child_dens_list);
         avg_adult_dens = adult_dens/data.current['Adult'];
@@ -435,8 +443,22 @@ function State() {
         avg_bike_dens = bike_dens/data.current['AdultBike'];
         avg_bike_dens_list.push(avg_bike_dens);
         // console.log('average bike density list: ' + avg_bike_dens_list);
-        avg_total_dens = (child_dens + adult_dens + backpack_dens + bike_dens)/(data.current['Child']+data.current['Adult']+data.current['AdultBackpack']+data.current['AdultBike']);
+        avg_total_dens = (child_dens + adult_dens + backpack_dens + bike_dens)/(parseInt(data.current['Child'])+parseInt(data.current['Adult'])+parseInt(data.current['AdultBackpack'])+parseInt(data.current['AdultBike']));
         avg_total_dens_list.push(avg_total_dens);
+        total_test = child_dens+adult_dens+backpack_dens+bike_dens;
+        current_count_test = parseInt(data.current['Child'])+parseInt(data.current['Adult'])+parseInt(data.current['AdultBackpack'])+parseInt(data.current['AdultBike']);
+        // console.log('child density: ' + child_dens)
+        // console.log('adult density: ' + adult_dens)
+        // console.log('bp density: ' + backpack_dens)
+        // console.log('bike density: ' + bike_dens)
+        // console.log('total: ' + total_test)
+        // console.log('current child: ' + data.current['Child'])
+        // console.log('current adult: ' + data.current['Adult'])
+        // console.log('current backpack: ' + data.current['AdultBackpack'])
+        // console.log('current bike: ' + data.current['AdultBike'])
+        // console.log('current count: ' + current_count_test)
+        // console.log('AVERAGE TOTAL DENS: ' + avg_total_dens)
+
         // console.log(avg_total_dens_list);
 
         // move everyone at TOP level of abstraction
@@ -480,7 +502,7 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
 			var tpe = things[i];
 			data.current[tpe] = 0; //set everyone's population to zero
-			console.log("collisions:" +final.collisions_average[tpe]);
+			// console.log("collisions:" +final.collisions_average[tpe]);
 			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
 			    document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
@@ -549,7 +571,7 @@ function State() {
                     	}
                     graph.createBarGraph();
 
-                }  
+                }
                 // console.log("current_population: " + current_population)
                 // console.log(total_population_over_time)
                 // console.log("current_num_children: " + current_num_children)
@@ -708,6 +730,7 @@ function State() {
 
         // node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
+        
         var exiti = thing.min_exiti; //get the first x value of the exit cell, don't think this is needed
         var exitii = thing.min_exitii; //get the first y value of the exit cell, dont think this is needed
 
@@ -777,6 +800,15 @@ function State() {
             // where thing is RIGHT NOW
             var i = thing.anchor_i; //x coordinate of the person
             var ii = thing.anchor_ii; //y coordinate of the person
+
+            //add current position to the ped's path
+            thing.path_i.push(i);
+            thing.path_ii.push(ii);
+            final.total_visited_i.push(i);
+            final.total_visited_ii.push(ii);
+            // console.log('path_i: ' + thing.path_i)
+            // console.log('path_ii: ' + thing.path_ii)
+
             // clear old one
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make
@@ -1014,6 +1046,7 @@ function initialize_simulation() {
 }
 var end_sim_counter = 0;
 function end_simulation() {
+	final.all_visited = [];
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
     clearInterval(interval_id2);
@@ -1022,9 +1055,48 @@ function end_simulation() {
     }
     for (i = 0; i <= avg_total_dens_list.length - 1; i++) {
     	dens_sum = dens_sum + avg_total_dens_list[i];
+    	// console.log('dens sum: ' + dens_sum)
     }
-    total_avg_dens_all_time = dens_sum/avg_total_dens_list.length;
-    console.log('total average density of all time: ' + total_avg_dens_all_time)
+    final.total_avg_dens_all_time = dens_sum/avg_total_dens_list.length;
+    console.log('total average density of all time: ' + final.total_avg_dens_all_time)
+
+     
+    //the final evaluation metric for comparing different runs and characterizing them as good/bad
+    //higher number is bad
+
+	//get overall total exit time
+	final.overall_exit_time = Math.max(final.exit_total['Child'], final.exit_total['Adult'], final.exit_total['AdultBackpack'], final.exit_total['AdultBike']);
+    final.evaluation_metric = (final.overall_exit_time + final.total_collisions - final.total_avg_dens_all_time);
+    // console.log('overall exit time: ' + final.overall_exit_time);
+    // console.log('total collisions: ' + final.total_collisions);
+    console.log('final evaluation metric 1041: ' + final.evaluation_metric);
+
+    //making list of all the coords visited as (i,ii)
+    for(n=0; n<=final.total_visited_i.length-1; n++) {
+    	j = final.total_visited_i[n];
+    	jj = final.total_visited_ii[n];
+    	visited_coords = [j,jj];
+    	final.all_visited.push(visited_coords);
+    } 
+    // console.log('all visited: ' + final.all_visited)
+    //counter for num times each location was visited
+    const count = [];
+    for(const element of final.all_visited) {
+    	if(count[element]) {
+    		count[element] += 1;
+    	} else {
+    		count[element] = 1;
+    	}
+    }
+    for(const element of final.all_visited) {
+    	if(count[element]>max_visits) {
+    		max_visits = count[element];
+    		max_element = element;
+    	}
+    }
+    // console.log(count)
+    console.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
+
 }
 
 function clear_simulation() {
@@ -1054,6 +1126,38 @@ function start_simulation(max_gen, callback) {
     	final.vor_exits_ii.push(board.exit_locations[i].anchor_ii);
     }
     voronoi.pVoronoiD(board);
+    	var report = "";
+    	final.m = 0;
+	for (var r = 0; r < voronoi.regions.length; r++) {
+	    var f = voronoi.density(r, state); //voronoi.count(r, state);
+	    report = report + f + ",";
+	    if(f>final.m) {
+	    	final.m=f;
+	    	final.most_dense_exit_i = final.vor_exits_i[r];
+	    	final.most_dense_exit_ii = final.vor_exits_ii[r];
+	    }
+	}
+	//finding min density region and saving the index
+	final.least_dense_index = 0;
+	report2 = "";
+	final.min = 10000; //initialization to find min density region (slightly sketchy but I don't think it'll cause problems)
+	for (var r = 0; r < voronoi.regions.length; r++) {
+	    var f = voronoi.density(r, state); //voronoi.count(r, state);
+	    report2 = report2 + f + ",";
+	    if(f<final.min) {
+	    	final.min=f;
+	    	final.least_dense_exit_i = final.vor_exits_i[r];
+	    	final.least_dense_exit_ii = final.vor_exits_ii[r];
+	    	final.least_dense_index = r;
+	    }
+	}
+	console.log('report: ' + report);
+	console.log('final.vor_exits_i: ' + final.vor_exits_i)
+		console.log('final.vor_exits_ii: ' + final.vor_exits_ii)
+
+		console.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m);
+		console.log('least dense exit location at start: (' + final.least_dense_exit_i + ', ' + final.least_dense_exit_ii + '), with a density of: ' + final.min);
+		console.log('least dense index: ' + final.least_dense_index);
 }
 
 take_snapshot_calls = 0;
@@ -1062,14 +1166,15 @@ take_snapshot_calls = 0;
 
 	var report = "";
 	for (r = 0; r < voronoi.regions.length; r++) {
-	    var f = voronoi.count(r, state); //voronoi.density(r, state);
+	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report = report + f + ",";
-	}
+	}	
 
-	console.log("gen:" + number_generations + ", density:" + report);
+	// console.log("gen:" + number_generations + ", density:" + report);
 
 	if (number_generations >= max_generation) {
             end_simulation();
+
             return;
 	}
 

@@ -5,7 +5,9 @@
  */
 
 (function(conflict) {
-
+	//initialization
+	var new_exit_profile_i = [];
+	var new_exit_profile_ii = [];
     function get_random_int(min, max) {
 	return Math.floor(Math.random() * (max - min)) + min;
     }
@@ -171,6 +173,55 @@
 	}
     }
 
+        /**
+     * Choose a different exit if thing.wait exceeds threshold.
+     */
+    function ChooseDifferentExitDensity(threshold) {
+	this.threshold = threshold;
+
+	this.next = undefined;
+
+	this.try_to_resolve = function (thing, state, board) {
+	    if (this.resolve(thing, state, board)) {
+		return true;
+	    }		
+
+	    // Is there nothing next to try? DONE!
+	    if (typeof this.next === 'undefined') {
+		return false;
+	    }
+	    
+	    return this.next.try_to_resolve(thing, state, board);
+	}
+
+	this.resolve = function (thing, state, board) {
+	    if (thing.wait > this.threshold) {
+	    thing.min_exiti = final.least_dense_exit_i; //get the i value of the least dense exit
+		thing.min_exitii = final.least_dense_exit_ii; //get the ii value of the least dense exit
+		if((final.least_dense_exit_i == 0) || (final.least_dense_exit_i == (data.width_i-1))) { //set the profiles of the new exit
+			new_exit_profile_i = [0,0,0,0];
+			new_exit_profile_ii = [0,1,2,3];
+		} else {
+			new_exit_prfile_i = [0,1,2,3];
+			new_exit_profile_ii = [0,0,0,0];
+		}
+		thing.endi = new_exit_profile_i[3] + final.least_dense_exit_i; //update person's exit i cell
+		thing.endii = new_exit_profile_ii[3] + final.least_dense_exit_ii; //update the person's exit ii cell
+		var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
+		var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
+		
+		// prepare for next
+		thing.goali = new_exit_profile_i[ranx] + final.least_dense_exit_i; //update the new goal exit x coordinate
+		thing.goalii = new_exit_profile_ii[rany]+ final.least_dense_exit_ii; //update the new goal exit y coordinatee
+		thing.wait = 0; //reset the wait time, not totally convinced that this should be here
+		return true;
+	    }
+	    
+	    // didn't do anythin
+	    return false; 
+	}
+    }
+
     function factory(tpe, threshold) {
 	if (tpe == 'NullConflictStrategy') {
 	    return new NullConflictStrategy();
@@ -180,6 +231,8 @@
 	    return new ChooseDifferentExitAndReset(threshold);
 	} else if (tpe == 'ChooseRandomMove') {
 	    return new ChooseRandomMove(threshold);
+	} else if (tpe == 'ChooseDifferentExitDensity') {
+		return new ChooseDifferentExitDensity(threshold);
 	} else {
 	    console.log("unknown type:" + tpe);
 	    return None;

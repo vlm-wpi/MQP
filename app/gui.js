@@ -31,7 +31,7 @@
 	    window.alert("Cannot fit this many objects on the grid, please choose another number.");
 	}
 	//updating the initial number of children on the grid
-	data.max['Child'] = this.value; 
+	data.max['Child'] = this.value;
 	//updating the current number of children on the grid, should we update this somewhere else?
 	data.current['Child'] = data.max['Child'];
     }
@@ -117,6 +117,10 @@
     //function the set the grid width
     gridWidthi.oninput = function() {
 	//updating the board width from the user input
+    //setting min grid size to be 25x25
+    if(this.value<25) {
+        window.alert("Minimum grid size is 25x25.  Please enter a new value.")
+    }
 	data.width_i = this.value;
     }
 
@@ -125,7 +129,11 @@
     gridWidthii.value = data.width_ii;
     //function to set the grid height
     gridWidthii.oninput = function() {
-	//updating th board height from the uder input
+	//updating the board height from the user input
+    //setting min grid size to be 25x25
+    if(this.value<25) {
+        window.alert("Minimum grid size is 25x25.  Please enter a new value.")
+    }
 	data.width_ii = this.value;
     }
 
@@ -150,12 +158,13 @@
     //function that checks of the number of obstacles is valid
     numObstacles.oninput = function() {
 	//if the number of obstacles is greater than the the area of the board
-	if(this.value>(data.width_i*datawidth_ii)){
+	if(this.value>(data.width_i*data.width_ii)){
 	    //make it floor?
 	    window.alert("Cannot fit this many objects on the grid, please choose another number.");
 	}
 	//updating the number of obstacles on the board
-	max_obstacles_on_grid = this.value;
+    data.max['Obstacle'] = this.value;
+	// max_obstacles_on_grid = this.value;
     }
 
     //getting from user input if snapshots of the board will be taken
