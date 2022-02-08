@@ -159,20 +159,19 @@
   function createBarGraph(){
       //checking what data to use for graphs
     
-    for(k=0; k<final.total_data.length; k++){
-      console.log('#visualisation'+k);
-    var svg = d3.select('#visualisation'+k),
-            margin = 200,
-            width = svg.attr("width") - margin,
-            height = svg.attr("height") - margin
-
-    var data = []
+  for(k=0; k<final.total_data.length; k++){
+    var svg = d3.select('#visualisation'+k);
+    var colors = [];
+    var data = [];
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
-      var info = final.total_data[k];
+      var info = final.total_data[k][0];
       value = info[tpe];
-      data.push({Type: tpe,Value: value});
+      //create new object to get its color, there might be a better way to do this
+      var obj = pop.factory(tpe,0,0);
+      data.push({Type: tpe,Value: value, Color: obj.color()});
     }
+
     //data.push({Type: "Total",Value: final.total_collisions});
     
     //array of keys
@@ -187,36 +186,72 @@
     var maxValue = d3.max(num);
    
    var xScale = d3.scaleBand()
-    .range([0, width])
+    .range([margin.left, width])
     .padding(0.05)
     .domain(types)
     
     var yScale = d3.scaleLinear()
-      .range([0, height])
+      .range([margin.bottom, height])
       .domain([maxValue, 0]); //try to change to data.max
-      
-    var g = svg.append("g")
-            .attr("transform", "translate(" + 100 + "," + 100 + ")");
+
     //adding x axis
-    g.append("g")
-      .attr("transform", "translate(0," + height + ")")
-     .call(d3.axisBottom(xScale)).append("text")
-     .attr("y", height - 250).attr("x", width - 100)
-     .attr("text-anchor", "end").attr("font-size", "15px")
-     .text("Type of Person");
+    svg.append("g")
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,'+ height + ')')
+      .call(d3.axisBottom(xScale));
+      
+   //text for x
+  svg.append("text")
+    .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom+10) + ")")
+    .style("text-anchor", "middle")
+    .text("Type of Person");
+
     //adding y axis
-    g.append("g")
+    svg.append("g")
+      .attr('class', 'y axis')
+      .attr('transform', 'translate(' + (margin.left) + ',0)')
       .call(d3.axisLeft(yScale).tickFormat(function(d){
              return d;
-         }).ticks(10))
-     .append("text")
-     .attr("transform", "rotate(-90)")
-     .attr("y", 6)
-     .attr("dy", "-5.1em")
-     .attr("text-anchor", "end")
-     .text("Number of Collisions");
+         }).ticks(10));
+     //text for y
+    svg.append("text")
+      .attr('transform', 'rotate(-90)')
+        .attr("y",margin.left-40)
+        .attr("x",0-(height/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text(final.total_data[k][1]);
+        
+  //title
+  svg.append("text")
+   .attr("x", width/2)
+   .attr("y", margin.top)
+   .attr("text-anchor", "middle")
+   .style("font-size", "16px")
+   .text(final.total_data[k][2]);
+   
+   //used for mouseover
+   var tooltip = d3.select("body")
+    .append("div")
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .style("background", "#000")
+    .text("a simple tooltip");
+   
+   //data to hover over
+   var div = d3.select('body').append("div")
+    .attr("classs", "tooltip")
+    .style("opacity", 0)
+    .style("position", "absolute")
+    .style("z-index", "10")
+    .style("visibility", "hidden")
+    .style("background", "#000")
+    .text("a simple tooltip");;
+    
+   
     //plotting
-    g.selectAll(".bar")
+    svg.selectAll(".bar")
      .data(data)
      .enter().append("rect")
      .attr("class", "bar")
@@ -224,75 +259,40 @@
      .attr("x", function(d) { return xScale(d.Type); })
      .attr("y", function(d) { return yScale(d.Value); })
      .attr("width", xScale.bandwidth())
-     .attr("height", function(d) { return height - yScale(d.Value); });
+     .attr("height", function(d) { return height - yScale(d.Value); })
+     .style('fill', function(d){return d.Color;})
+     .on("mouseover", function(d){div.text(d); return div.style("visibility", "visible");})
+    // .on('mouseover', function (d, i) {
+      //    d3.select(this).transition()
+           //    .duration('50')
+           //    .attr('opacity', '.85')
+          //Makes the new div appear on hover:
+         // div.transition()
+             //  .duration(50)
+             //  .style("opacity", 1)
+            
+      //  var mouse_coordinates = d3.pointer(d);
+      //  console.log(mouse_coordinates);
+     //   var x = mouse_coordinates[0];
+     //   var y = mouse_coordinates[1];
+            
+       // div.html(num)
+       //   .style("left", (x+ 10) + "px")
+      //    .style("top", (y - 15) + "px");
+    // })
+    .on("mouseout", function(){return div.style("visibility", "hidden");});
+    // .on('mouseout', function (d, i) {
+    //      d3.select(this).transition()
+    //           .duration('50')
+    //           .attr('opacity', '1')
+       //Makes the new div disappear:
+    //      div.transition()
+    //           .duration('50')
+    //           .style("opacity", 0);
+    // });
+     
      
     }
-     
-     /*//graph for exit time
-     var svgE = d3.select('#visualisation3'),
-            marginE = 200,
-            widthE = svgE.attr("width") - marginE,
-            heightE = svgE.attr("height") - marginE
-
-    var exit_data = []
-    for (i = 0; i < things.length; i++) {
-      var tpe = things[i];
-      var valueE = document.getElementById("total_" + tpe + "_exit").innerHTML;
-      exit_data.push({Type: tpe,Exit: valueE});
-      console.log({Type: tpe,Exit: valueE});
-    }
-    exit_data.push({Type: "Total",Exit: final.total_exit_time});
-    
-    //array of keys
-    const typesE = exit_data.map(function(obj){
-      return obj.Type;
-    });
-    //array of values
-    var exitNum = exit_data.map(function(obj){
-      return obj.Exit;
-    });
-    //max value
-    var maxExit = d3.max(exitNum);
-   
-   var xScaleE = d3.scaleBand()
-    .range([0, widthE])
-    .padding(0.05)
-    .domain(typesE)
-    
-    var yScaleE = d3.scaleLinear()
-      .range([0, heightE])
-      .domain([maxExit, 0]); //try to change to data.max
-      
-    var gE = svgE.append("g")
-            .attr("transform", "translate(" + 100 + "," + 100 + ")");
-    //adding x axis
-    gE.append("g")
-      .attr("transform", "translate(0," + heightE + ")")
-     .call(d3.axisBottom(xScale)).append("text")
-     .attr("y", heightE - 250).attr("x", widthE - 100)
-     .attr("text-anchor", "end").attr("font-size", "15px")
-     .text("Type of Person");
-    //adding y axis
-    gE.append("g")
-      .call(d3.axisLeft(yScaleE).tickFormat(function(d){
-             return d;
-         }).ticks(10))
-     .append("text")
-     .attr("transform", "rotate(-90)")
-     .attr("y", 6)
-     .attr("dy", "-5.1em")
-     .attr("text-anchor", "end")
-     .text("Time taken to exit (in board updates)");
-    //plotting
-    gE.selectAll(".bar")
-     .data(exit_data)
-     .enter().append("rect")
-     .attr("class", "bar")
-     //.attr('d', barFunc(collision_data))
-     .attr("x", function(d) { return xScaleE(d.Type); })
-     .attr("y", function(d) { return yScaleE(d.Exit); })
-     .attr("width", xScale.bandwidth())
-     .attr("height", function(d) { return heightE - yScaleE(d.Exit); });*/
   }
   
   //use this to get the actual data

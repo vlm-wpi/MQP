@@ -536,15 +536,16 @@ function State() {
                     // console.log("average bike: " + avg_bike_collisions)
                     
                     //make the bar graphs here
+                    //adding strings for the axis labels and titles
                     final.total_data = [];
                     	if (data.total_collide) {
-                    	    final.total_data.push(final.collisions_total);
+                    	    final.total_data.push([final.collisions_total, "Number of Collisions", "Total Number of collisions by Type of Person"]);
                     	} if (data.average_collide) {
-                    	   final.total_data.push(final.collisions_average);
+                    	   final.total_data.push([final.collisions_average, "Number of Collisions", "Average Number of Collisions by Type of Person"]);
                     	}if (data.total_exit) {
-                    	    final.total_data.push(final.exit_total);
+                    	    final.total_data.push([final.exit_total, "Time taken to exit (in board updates)", "Time taken for each type of person to leave the board"]);
                     	}if (data.average_exit) {
-                    	    final.total_data.push(final.exit_average);
+                    	    final.total_data.push([final.exit_average, "Time taken to exit (in board updates)", "Average Time taken for each type of Person to Exit the board"]);
                     	}
                     graph.createBarGraph();
 
