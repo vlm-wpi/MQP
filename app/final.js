@@ -33,7 +33,8 @@ function get_random_int(min, max) {
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
-    final.resolution_strategy = conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
+    final.resolution_strategy = conflict.factory('ChooseDifferentExitDensity', data.wait_before_random_exit);
+    //conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
     //conflict.factory('NullConflictStrategy', 0);
 
     var resolve_1 = conflict.factory('NullConflictStrategy', 0);
@@ -1126,7 +1127,7 @@ function start_simulation(max_gen, callback) {
     voronoi.pVoronoiD(board);
     	var report = "";
     	final.m = 0;
-	for (r = 0; r < voronoi.regions.length; r++) {
+	for (var r = 0; r < voronoi.regions.length; r++) {
 	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report = report + f + ",";
 	    if(f>final.m) {
@@ -1135,8 +1136,27 @@ function start_simulation(max_gen, callback) {
 	    	final.most_dense_exit_ii = final.vor_exits_ii[r];
 	    }
 	}
-		console.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m)
-	
+	//finding min density region and saving the index
+	final.least_dense_index = 0;
+	report2 = "";
+	final.min = 10000; //initialization to find min density region (slightly sketchy but I don't think it'll cause problems)
+	for (var r = 0; r < voronoi.regions.length; r++) {
+	    var f = voronoi.density(r, state); //voronoi.count(r, state);
+	    report2 = report2 + f + ",";
+	    if(f<final.min) {
+	    	final.min=f;
+	    	final.least_dense_exit_i = final.vor_exits_i[r];
+	    	final.least_dense_exit_ii = final.vor_exits_ii[r];
+	    	final.least_dense_index = r;
+	    }
+	}
+	console.log('report: ' + report);
+	console.log('final.vor_exits_i: ' + final.vor_exits_i)
+		console.log('final.vor_exits_ii: ' + final.vor_exits_ii)
+
+		console.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m);
+		console.log('least dense exit location at start: (' + final.least_dense_exit_i + ', ' + final.least_dense_exit_ii + '), with a density of: ' + final.min);
+		console.log('least dense index: ' + final.least_dense_index);
 }
 
 take_snapshot_calls = 0;
