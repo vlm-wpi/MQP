@@ -1104,6 +1104,7 @@ function clear_simulation() {
 }
 
 function start_simulation(max_gen, callback) {
+    console.log(final.start_data);
     data._data = undefined; // clear everything to clean up after 1st run
 
     if (typeof max_gen === 'undefined') {

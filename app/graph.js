@@ -6,7 +6,7 @@
  * //use data from app??
  */
 (function(graph) {
-  
+
 	  var things = pop.types(); //each type of a person
 	  var value2 = 0; //for x Axis, number of board updates
 	  //empty arrays for each type of person. Make sure the population types never changes order!
@@ -243,13 +243,15 @@
    var div = d3.select('body').append("div")
     .attr("classs", "tooltip")
     .style("opacity", 0)
-    .style("position", "absolute")
-    .style("z-index", "10")
-    .style("visibility", "hidden")
-    .style("background", "#000")
-    .text("a simple tooltip");;
+    .style("color", "white")
+    .style("background-color", "black")
+    .style("padding", "6px")
+    .style("border-radius", "4px")
+    .style("font-size", "12px");
     
-   
+    //adding legend
+   //mouseover
+   svg.container.call(div);
     //plotting
     svg.selectAll(".bar")
      .data(data)
@@ -261,15 +263,12 @@
      .attr("width", xScale.bandwidth())
      .attr("height", function(d) { return height - yScale(d.Value); })
      .style('fill', function(d){return d.Color;})
-     .on("mouseover", function(d){div.text(d); return div.style("visibility", "visible");})
-    // .on('mouseover', function (d, i) {
-      //    d3.select(this).transition()
-           //    .duration('50')
-           //    .attr('opacity', '.85')
-          //Makes the new div appear on hover:
-         // div.transition()
-             //  .duration(50)
-             //  .style("opacity", 1)
+     .on('mouseover', function (d, i) {
+      // div.html(function(d) { return `<strong>${d3.format(',')(d.Value)}</strong> people`; });
+        div.show(d,this);
+          d3.select(this).transition()
+               .duration('50')
+               .attr('opacity', '.85')
             
       //  var mouse_coordinates = d3.pointer(d);
       //  console.log(mouse_coordinates);
@@ -279,17 +278,14 @@
        // div.html(num)
        //   .style("left", (x+ 10) + "px")
       //    .style("top", (y - 15) + "px");
-    // })
-    .on("mouseout", function(){return div.style("visibility", "hidden");});
-    // .on('mouseout', function (d, i) {
-    //      d3.select(this).transition()
-    //           .duration('50')
-    //           .attr('opacity', '1')
-       //Makes the new div disappear:
-    //      div.transition()
-    //           .duration('50')
-    //           .style("opacity", 0);
-    // });
+     })
+
+     .on('mouseout', function (d, i) {
+       div.hide();
+         d3.select(this).transition()
+               .duration('50')
+               .attr('opacity', '1')
+     });
      
      
     }
