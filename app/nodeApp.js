@@ -53,3 +53,8 @@ function process_all() {
 console.log(app);
 app.final.start_simulation(10, process_all);
 
+//https://www.npmjs.com/package/random-seed//used this site for random seed info
+var rand = require('random-seed').create(); //random seed
+var n = rand(1000); // generate a number between 0 and 999
+console.log('n: ' + n);
+
