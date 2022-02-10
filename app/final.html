@@ -10,7 +10,24 @@
 </head>
 <body>
   
+  <input type="file" name="inputfile"
+            id="inputfile">
+    <br>
+    <pre id="output"></pre>
+  
   <script type="text/javascript">
+  //testing file input
+  document.getElementById('inputfile')
+            .addEventListener('change', function() {
+              
+            var fr=new FileReader();
+            fr.onload=function(){
+                document.getElementById('output')
+                        .textContent=fr.result;
+            }
+              
+            fr.readAsText(this.files[0]);
+        })
   
   function start_app() {
     this.final.start_simulation();

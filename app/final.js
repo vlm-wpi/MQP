@@ -150,6 +150,7 @@ function State() {
     	var avg_total_dens = 0;
         //adding in calculation of local density
         //loop through the population and get the coordinates of each pedestrian
+        //I think this can be condensed
         for (var p = this.population.length - 1; p >= 0; p--) {
             var thing = this.population[p][0]
             var open_cells = 49;
