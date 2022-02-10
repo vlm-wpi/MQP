@@ -103,10 +103,10 @@ function get_random_int(min, max) {
       data.resolve2 = "ChooseDifferentExit";
       data.resolve3 = "ChooseDifferentExit";
       data.resolve4 = "ChooseDifferentExit";
-
-    // number of board updates a person is stuck before it tries to find another move
-    data.wait_before_random_move = 5;
-    data.wait_before_random_exit = 10;
+      data.threshold1 = 1;
+      data.threshold2 = 2;
+      data.threshold3 = 3;
+      data.threshold4 = 4;
 
     //boolean used to tell if snapshots of the board are taken after every move, can be changed by user input
     data.take_snapshot = false; 
