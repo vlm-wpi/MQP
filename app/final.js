@@ -11,7 +11,6 @@ function get_random_int(min, max) {
 
 //// -----------------------------------------------------
 
-
     //variable for the total number of people on the grid, updates when it reads the value from html
     final.total_peds_at_start = 0;
     
