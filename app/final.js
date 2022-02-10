@@ -661,8 +661,8 @@ function State() {
             var times_not_placed = 0;
             while (num_thing < data.max[tpe]) {
 		// not sure what is a good number, have it at 1000 right now, changed to area
-		if (times_not_placed > (data.width_i*data.width_ii)) { 
-		    console.log("Cannot place this many " + tpe + " on the grid, please reset and choose another number");
+		if (times_not_placed > (data.width_i*data.width_ii)) {
+		    window.alert("Cannot place this many " + tpe + " on the grid, please reset and choose another number");
 		    return false;
 		}
 

@@ -127,6 +127,7 @@
 	this.width_ii = 35;
 	this.exit_locations = [];
 	this.obstacles = [];
+    data.max['Exit'] = 1;
 
 
 	this.initialize = function(temp_grid) {
