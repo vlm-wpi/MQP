@@ -32,10 +32,10 @@ function get_random_int(min, max) {
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
-    final.resolution_strategy1 = conflict.factory(data.resolve1, 5); //need to change threshold
-    final.resolution_strategy2 = conflict.factory(data.resolve2, 5);
-    final.resolution_strategy3 = conflict.factory(data.resolve3, 5);
-    final.resolution_strategy4 = conflict.factory(data.resolve4, 5);
+    final.resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1); //need to change threshold
+    final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
+    final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
+    final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
     //conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
     //conflict.factory('NullConflictStrategy', 0);
 
@@ -149,6 +149,7 @@ function State() {
     	var avg_total_dens = 0;
         //adding in calculation of local density
         //loop through the population and get the coordinates of each pedestrian
+        //I think this can be condensed
         for (var p = this.population.length - 1; p >= 0; p--) {
             var thing = this.population[p][0]
             var open_cells = 49;

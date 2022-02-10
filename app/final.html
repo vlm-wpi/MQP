@@ -10,7 +10,24 @@
 </head>
 <body>
   
+  <input type="file" name="inputfile"
+            id="inputfile">
+    <br>
+    <pre id="output"></pre>
+  
   <script type="text/javascript">
+  //testing file input
+  document.getElementById('inputfile')
+            .addEventListener('change', function() {
+              
+            var fr=new FileReader();
+            fr.onload=function(){
+                document.getElementById('output')
+                        .textContent=fr.result;
+            }
+              
+            fr.readAsText(this.files[0]);
+        })
   
   function start_app() {
     this.final.start_simulation();
@@ -64,12 +81,6 @@
             <div class="slidecontainer">
               Time between updates: <input type="range" min="1" max="500" value="1" id="ms_speed"><br>
             </div>
-            <div class="slidecontainer">
-              Time to wait before random move: <input type="range" min="1" max="500" value="1" id="wait_speed"><br>
-            </div>
-            <div class="slidecontainer">
-              Time to wait before random exit: <input type="range" min="1" max="500" value="1" id="wait_exit"><br>
-            </div>
             <label for="gridWidthi">Width of Grid:</label><br>
             <input type="text" id="gridWidthi" name="gridWidthi"><br>
             <label for="gridWidthii">Height of Grid:</label><br>
@@ -109,7 +120,7 @@
           </td>
           
           <td>
-            <label for="conflift_strategy1">Choose a first collision strategy:</label>
+            <label for="conflift_strategy1">Choose a first conflict strategy:</label>
             <select name="resolution-strategy" id="conflift_strategy1">
             <option value="ChooseDifferentExit">Random Exit</option>
             <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
@@ -118,7 +129,10 @@
             <option value="NullConflictStrategy">None</option>
             </select><br>
             
-            <label for="conflift_strategy2">Choose a second collision strategy:</label>
+            <label for="threshold1">Threshold for conflict strategy 1:</label><br>
+            <input type="text" id="threshold1" name="threshold1"><br>
+            
+            <label for="conflift_strategy2">Choose a second conflict strategy:</label>
             <select name="resolution-strategy" id="conflift_strategy2">
             <option value="ChooseDifferentExit">Random Exit</option>
             <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
@@ -127,7 +141,10 @@
             <option value="NullConflictStrategy">None</option>
             </select><br>
             
-            <label for="conflift_strategy3">Choose a third collision strategy:</label>
+            <label for="threshold2">Threshold for conflict strategy 2:</label><br>
+            <input type="text" id="threshold2" name="threshold2"><br>
+            
+            <label for="conflift_strategy3">Choose a third conflict strategy:</label>
             <select name="resolution-strategy" id="conflift_strategy3">
             <option value="ChooseDifferentExit">Random Exit</option>
             <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
@@ -136,14 +153,20 @@
             <option value="NullConflictStrategy">None</option>
             </select><br>
             
-            <label for="conflift_strategy4">Choose a fourth collision strategy:</label>
+            <label for="threshold3">Threshold for conflict strategy 3:</label><br>
+            <input type="text" id="threshold3" name="threshold3"><br>
+            
+            <label for="conflift_strategy4">Choose a fourth conflict strategy:</label>
             <select name="resolution-strategy" id="conflift_strategy4">
             <option value="ChooseDifferentExit">Random Exit</option>
             <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
             <option value="ChooseRandomMove">Random move</option>
             <option value="ChooseDifferentExitDensity">Exit based on Density</option>
             <option value="NullConflictStrategy">None</option>
-            </select>
+            </select><br>
+            
+            <label for="threshold4">Threshold for conflict strategy 4:</label><br>
+            <input type="text" id="threshold4" name="threshold4">
           </td>
     </tr>
 </table>

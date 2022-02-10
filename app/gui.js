@@ -92,24 +92,6 @@
 	//set the user input of the update time to the number of milliseconds between a board update
 	data.ms_between_updates = this.value;
     }
-
-    //getting the wait time from user input
-    var wait_speed_slider = document.getElementById("wait_speed");
-    wait_speed_slider.value = data.wait_before_random_move;
-    //function that sets the wait time
-    wait_speed_slider.oninput = function() {
-	//updating the number of board updates a person is stuck before it tries to find another move from the user input
-	data.wait_before_random_move = this.value;
-    }
-    
-    //getting the exit time from user input
-    var exit_speed_slider = document.getElementById("wait_exit");
-    exit_speed_slider.value = data.wait_before_random_exit;
-    //function that sets the wait time
-    exit_speed_slider.oninput = function() {
-	//updating the number of board updates a person is stuck before it tries to find another exit from the user input
-	data.wait_before_random_exit = this.value;
-    }
     
     //getting the grid width from user input
     var gridWidthi = document.getElementById("gridWidthi");
@@ -187,6 +169,7 @@
     }
     
     //conflict resolusion strategies
+    //can make this a lot shorter!
     var ResolutionChoice1 = document.getElementById("conflift_strategy1");
     ResolutionChoice1.oninput = function() {
 
@@ -217,6 +200,27 @@
 	    var ResolutionChoice = ResolutionChoice4.options[ResolutionChoice4.selectedIndex].value;
 	    console.log(ResolutionChoice);
 	    data.resolve4 = ResolutionChoice;
+    }
+    
+    //getting thresholds
+    for (i=1; i<5; i++){
+      var threshold = document.getElementById("threshold"+i);
+      threshold.oninput = function(){
+        var threshold_value = this.value;
+        if(i==1){
+          data.threshold1 = threshold_value;
+          console.log("threshold value"+threshold_value);
+        } else if (i==2){
+          data.threshold2 = threshold_value;
+          console.log("threshold value"+threshold_value);
+        } else if (i==3){
+          data.threshold3 = threshold_value;
+          console.log("threshold value"+threshold_value);
+        } else {
+          data.threshold4 = threshold_value;
+          console.log("threshold value"+threshold_value);
+        }
+      }
     }
 
     //getting from user input if the diagonal distance will be used on the heuristic
