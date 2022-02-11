@@ -202,25 +202,25 @@
 	    data.resolve4 = ResolutionChoice;
     }
     
-    //getting thresholds
-    for (i=1; i<5; i++){
-      var threshold = document.getElementById("threshold"+i);
-      threshold.oninput = function(){
-        var threshold_value = this.value;
-        if(i==1){
-          data.threshold1 = threshold_value;
-          console.log("threshold value"+threshold_value);
-        } else if (i==2){
-          data.threshold2 = threshold_value;
-          console.log("threshold value"+threshold_value);
-        } else if (i==3){
-          data.threshold3 = threshold_value;
-          console.log("threshold value"+threshold_value);
-        } else {
-          data.threshold4 = threshold_value;
-          console.log("threshold value"+threshold_value);
-        }
-      }
+    var thresholdChoice1 = document.getElementById("threshold1");
+    thresholdChoice1.value = data.threshold1;
+    thresholdChoice1.onchange = function() {
+	    data.threshold1 = this.value;
+    }
+    var thresholdChoice2 = document.getElementById("threshold2");
+    thresholdChoice2.value = data.threshold2;
+    thresholdChoice2.onchange = function() {
+	    data.threshold2 = this.value;
+    }
+    var thresholdChoice3 = document.getElementById("threshold3");
+    thresholdChoice3.value = data.threshold3;
+    thresholdChoice3.onchange = function() {
+	    data.threshold3 = this.value;
+    }
+    var thresholdChoice4 = document.getElementById("threshold4");
+    thresholdChoice4.value = data.threshold4;
+    thresholdChoice4.onchange = function() {
+	    data.threshold4 = this.value;
     }
 
     //getting from user input if the diagonal distance will be used on the heuristic

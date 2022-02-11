@@ -113,7 +113,7 @@
      * Choose a different exit if thing.wait exceeds threshold.
      */
     function ChooseRandomMove(threshold) {
-	this.threshold = threshold;
+	//this.threshold = threshold;
 
 	this.next = undefined;
 
@@ -131,7 +131,7 @@
 	}
 
 	this.resolve = function (thing, state, board) {
-            if (thing.wait > this.threshold) { 
+            if (thing.wait > threshold) { 
 		//get random orientation and try to move there
 		var orientation = data.random_orientation(); //random orientation
 		var can_move = true; //initially assume you can move
@@ -217,7 +217,7 @@
 		return true;
 	    }
 	    
-	    // didn't do anythin
+	    // didn't do anything
 	    return false; 
 	}
     }

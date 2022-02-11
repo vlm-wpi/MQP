@@ -32,10 +32,11 @@ function get_random_int(min, max) {
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
-    final.resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1); //need to change threshold
-    final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
-    final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
-    final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
+   // console.log("threshold1:"+data.threshold["threshold1"]);
+  //  final.resolution_strategy1 = conflict.factory(data.resolve1, data.threshold["threshold1"]);
+  //  final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold["threshold2"]);
+  //  final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold["threshold3"]);
+  //  final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold["threshold4"]);
     //conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
     //conflict.factory('NullConflictStrategy', 0);
 
@@ -826,8 +827,10 @@ function State() {
 	// now there is a collision to handle..
         thing.wait++; //add one to its wait
         thing.waitsteps++; //add one to its total waits
-
-	// see what you can do...
+  final.resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1);
+  final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
+  final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
+  final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
 	final.resolution_strategy1.try_to_resolve(thing, state, board);
 	final.resolution_strategy2.try_to_resolve(thing, state, board);
 	final.resolution_strategy3.try_to_resolve(thing, state, board);
