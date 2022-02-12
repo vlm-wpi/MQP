@@ -29,6 +29,7 @@ function get_random_int(min, max) {
     final.total_visited_i = [];
     final.total_visited_ii = [];
     var max_visits = 0;
+    final.last_coords = [];
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
@@ -731,9 +732,13 @@ function State() {
         }
 
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
+            //get the last coordinate for each ped and push to a list
+            final.last_coords.push([exiti,exitii])
+            // console.log('final last coords line 740: ' + final.last_coords)
+	
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
-	}
+}
 
         // Now make sure that you can move to the place you want to
         var j = new_coords[0];           // x value of the move you want to make
@@ -1081,6 +1086,26 @@ function end_simulation() {
     		max_element = element;
     	}
     }
+    // console.log('final.last_coords: ' + final.last_coords)
+    //do a count for the last coord of each ped to get num peds using each exit
+    const count_last = [];
+    var num_through_exit = [];
+    var exits = []
+    for(const element of final.last_coords) {
+    	if(count_last[element]) {
+    		count_last[element] += 1;
+    	} else {
+    		count_last[element] = 1;
+    		exits.push(element);
+    	}
+    }
+    for(const element of exits) {
+    	num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
+
+    }
+    console.log('exits: ' + exits)
+	console.log('count of last coords: ' + num_through_exit);
+
     // console.log(count)
     console.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
 
