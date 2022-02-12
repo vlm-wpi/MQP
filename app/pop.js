@@ -24,7 +24,7 @@ function Child(j, jj) {
     this.type = 'Child';
     this.exittime = 0;
     this.waitsteps = 0;
-    this.local_density = [];
+    this.local_occupancy = [];
     this.path_i = [];
     this.path_ii = [];
 
@@ -60,7 +60,7 @@ function Adult(j, jj) {
     this.type = 'Adult';
     this.exittime = 0;
     this.waitsteps = 0;
-    this.local_density = [];
+    this.local_occupancy = [];
     this.path_i = [];
     this.path_ii = [];
 
@@ -108,7 +108,7 @@ function AdultBackpack(j, jj) {
     this.type = 'AdultBackpack';
     this.exittime = 0;
     this.waitsteps = 0;
-    this.local_density = [];
+    this.local_occupancy = [];
     this.path_i = [];
     this.path_ii = [];
 
@@ -151,7 +151,7 @@ function AdultBike(j, jj) {
     this.wait = 0;
     this.exittime = 0;
     this.waitsteps = 0;
-    this.local_density = [];
+    this.local_occupancy = [];
     this.path_i = [];
     this.path_ii = [];
     
