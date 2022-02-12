@@ -30,6 +30,11 @@ function get_random_int(min, max) {
     final.total_visited_ii = [];
     var max_visits = 0;
     final.last_coords = [];
+    final.final_child_occ = 0;
+    final.final_adult_occ = 0;
+    final.final_backpack_occ = 0;
+    final.final_bike_occ = 0;
+    final.average_occupancy = [];
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
@@ -552,6 +557,8 @@ function State() {
                     	    final.total_data.push([final.exit_total, "Time taken to exit (in board updates)", "Time taken for each type of person to leave the board"]);
                     	}if (data.average_exit) {
                     	    final.total_data.push([final.exit_average, "Time taken to exit (in board updates)", "Average Time taken for each type of Person to Exit the board"]);
+                    	} if (data.average_occupancy) {
+                    		final.total_data.push([final.average_occupancy, "Average area occupancy (in ped/sq ft)", "Total average area occupancy by pedestrian type"])
                     	}
                     graph.createBarGraph();
 
@@ -1052,16 +1059,12 @@ function end_simulation() {
     final.total_avg_occ_all_time = occ_sum/avg_total_occ_list.length;
     console.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time)
 
-     
     //the final evaluation metric for comparing different runs and characterizing them as good/bad
     //higher number is bad
-
 	//get overall total exit time
 	final.overall_exit_time = Math.max(final.exit_total['Child'], final.exit_total['Adult'], final.exit_total['AdultBackpack'], final.exit_total['AdultBike']);
     final.evaluation_metric = (final.overall_exit_time + final.total_collisions - final.total_avg_occ_all_time);
-    // console.log('overall exit time: ' + final.overall_exit_time);
-    // console.log('total collisions: ' + final.total_collisions);
-    console.log('final evaluation metric 1041: ' + final.evaluation_metric);
+	console.log('final evaluation metric 1041: ' + final.evaluation_metric);
 
     //making list of all the coords visited as (i,ii)
     for(n=0; n<=final.total_visited_i.length-1; n++) {
@@ -1101,13 +1104,63 @@ function end_simulation() {
     }
     for(const element of exits) {
     	num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
-
     }
     console.log('exits: ' + exits)
 	console.log('count of last coords: ' + num_through_exit);
-
-    // console.log(count)
     console.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
+
+    if(data.heatmap) {
+    	graph.heatmap();
+    }
+
+    //calculating the final average occupancy for each ped type
+    //children
+    var sum_child_occ = 0;
+    var child_on_board_count = 0;
+    for(var i=0; i<avg_child_occ_list.length;i++) {
+    	if(avg_child_occ_list[i] >= 0) {
+    		child_on_board_count = child_on_board_count + 1;
+    	sum_child_occ += avg_child_occ_list[i];
+    }
+}
+    var sum_adult_occ = 0;
+    var adult_on_board_count = 0;
+    for(var i=0; i<avg_adult_occ_list.length;i++) {
+    	if(avg_adult_occ_list[i] >= 0) {
+    		adult_on_board_count = adult_on_board_count + 1;
+    	sum_adult_occ += avg_adult_occ_list[i];
+    }
+}
+    var sum_backpack_occ = 0;
+    var backpack_on_board_count = 0;
+    for(var i=0; i<avg_backpack_occ_list.length;i++) {
+    	if(avg_backpack_occ_list[i] >= 0) {
+    		backpack_on_board_count = backpack_on_board_count + 1;
+    	sum_backpack_occ += avg_backpack_occ_list[i];
+    }
+}
+    var sum_bike_occ = 0;
+    var bike_on_board_count = 0;
+    for(var i=0; i<avg_bike_occ_list.length;i++) {
+    	if(avg_bike_occ_list[i] >= 0) {
+    		bike_on_board_count = bike_on_board_count + 1;
+    	sum_bike_occ += avg_bike_occ_list[i];
+    }
+}
+    final.final_child_occ = sum_child_occ/child_on_board_count;
+    final.average_occupancy.push(final.final_child_occ)
+    final.final_adult_occ = sum_adult_occ/adult_on_board_count;
+    final.average_occupancy.push(final.final_adult_occ)
+    final.final_backpack_occ = sum_backpack_occ/backpack_on_board_count;
+    final.average_occupancy.push(final.final_backpack_occ)
+    final.final_bike_occ = sum_bike_occ/bike_on_board_count;
+    final.average_occupancy.push(final.final_bike_occ)
+    // console.log('final child occ for graph: ' + final.final_child_occ)
+    // console.log('final adult occ for graph: ' + final.final_adult_occ)
+    // console.log('final backpack occ for graph: ' + final.final_backpack_occ)
+    // console.log('final bike occ for graph: ' + final.final_bike_occ)
+    console.log('final occ list: ' + final.average_occupancy)
+
 
 }
 
