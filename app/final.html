@@ -87,22 +87,15 @@
             <input type="text" id="gridWidthii" name="gridWidthii"><br>
 
           </form>
-          </td>
-          <td>
-           <h2>Take Snapshots</h2>
+           <h2>Choose Initial Layout</h2>
 
-          <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
+	        <select name="layouts" id="LayoutSelect">
 
-          <h2>Choose Initial Layout</h2>
-
-	  <select name="layouts" id="LayoutSelect">
-
-	    <option value="Randomized" selected>Randomized</option>
-	    <option value="FullerLower"        >FullerLower</option>
-	    <option value="Classroom"          >Classroom</option>
-	    <option value="LectureHall"        >LectureHall</option>
-	  </select>
-
+	        <option value="Randomized" selected>Randomized</option>
+	      <option value="FullerLower"        >FullerLower</option>
+	       <option value="Classroom"          >Classroom</option>
+	       <option value="LectureHall"        >LectureHall</option>
+	       </select>
           </td>
           <td>
           <h2>Choose Heuristic Function</h2>
@@ -178,6 +171,7 @@
     <input type = "button" value="start" onClick="JavaScript:start_app()">
     <input type = "button" value="end" onClick="JavaScript:stop_app()">
     <input type = "button" value="clear" onClick="JavaScript:clear_app()">
+    <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
 
   </form>
 

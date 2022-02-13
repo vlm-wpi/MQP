@@ -173,7 +173,7 @@
     }
 
     //data.push({Type: "Total",Value: final.total_collisions});
-    
+    console.log(data);
     //array of keys
     const types = data.map(function(obj){
       return obj.Type;

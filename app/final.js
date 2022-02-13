@@ -37,7 +37,7 @@ function get_random_int(min, max) {
     for (i=0; i<things.length; i++){
       final.final_occ[things[i]] = 0;
     }
-    final.average_occupancy = [];
+    final.average_occupancy = {};
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
@@ -221,9 +221,10 @@ function State() {
         }
         //calculates the average area occupancy across each ped type at a given time step
         for (i=0; i<things.length; i++){
+          if(data.current[things[i]] != 0){
           avg_occ[things[i]] = occ[things[i]]/data.current[things[i]];
-           console.log("occupancy: "+data.current[things[i]]);
           avg_occ_list[things[i]].push(avg_occ[things[i]]); //pushing to a specific list in a list?
+          }
         }
         //got through every type in the total occupancy list and add to together
         var total_occ = 0
@@ -908,14 +909,15 @@ function end_simulation() {
    for(i=0; i<things.length; i++){
      var sum_occ = 0;
      var on_board_count = 0;
-     for(j=0; j<avg_occ_list[things[i]].length; j++){
-       if(avg_occ_list[things[i]]>=0){
+     var list_index = avg_occ_list[things[i]];
+     for(j=0; j<list_index.length; j++){
+       if(list_index[j]>=0){
          on_board_count++;
-         sum_occ += avg_occ_list[things[i]];
+         sum_occ += list_index[j];
        }
      }
      final.final_occ = sum_occ/on_board_count;
-     final.average_occupancy.push(final.final_occ);
+     final.average_occupancy[things[i]] = final.final_occ;
    }
     console.log('final occ list: ' + final.average_occupancy)
 }
