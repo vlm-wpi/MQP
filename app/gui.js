@@ -310,6 +310,23 @@
 	data.average_exit = average_exitCheckbox.checked;
     }
 
+  var average_occupancyCheckbox = document.getElementById("average_occupancy");
+    if (data.average_occupancy) {
+    average_occupancyCheckbox.checked = true;
+    }
+    average_occupancyCheckbox.oninput = function() {
+    data.average_occupancy = average_occupancyCheckbox.checked;
+    }
+
+  var heatmap_Checkbox = document.getElementById("heatmap");
+    if (data.heatmap) {
+    heatmap_Checkbox.checked = true;
+    console.log('heatmap checked gui')
+    }
+    heatmap_Checkbox.oninput = function() {
+    data.heatmap = heatmap_Checkbox.checked;
+    }
+
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
     exports.headless = false;

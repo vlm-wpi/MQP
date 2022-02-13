@@ -261,7 +261,7 @@
      .attr("x", function(d) { return xScale(d.Type); })
      .attr("y", function(d) { return yScale(d.Value); })
      .attr("width", xScale.bandwidth())
-     .attr("height", function(d) { return height - yScale(d.Value); })
+     .attr("height", function(d) { return (height - yScale(d.Value)); })
      .style('fill', function(d){return d.Color;})
      .on('mouseover', function (d, i) {
       // div.html(function(d) { return `<strong>${d3.format(',')(d.Value)}</strong> people`; });
@@ -290,13 +290,138 @@
      
     }
   }
-  
+function heatmap() {
+  console.log('heatmap was called')
+  // set the dimensions and margins of the graph
+
+var margin = {top: 80, right: 25, bottom: 30, left: 40},
+  width = 450 - margin.left - margin.right,
+  height = 450 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+.append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+.append("g")
+  .attr("transform",
+        "translate(" + margin.left + "," + margin.top + ")");
+
+//Read the data
+d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/heatmap_data.csv", function(data) {
+  // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
+  // var myGroups = final.total_visited_i;
+  d3.map(data, function(d){return d.group;}).keys()
+  // var myVars = final.total_visited_ii;
+  d3.map(data, function(d){return d.variable;}).keys()
+
+  // Build X scales and axis:
+  var x = d3.scaleBand()
+    .range([ 0, width ])
+    // .domain(final.total_visited_i)
+    .domain(myGroups)
+    .padding(0.05);
+  svg.append("g")
+    .style("font-size", 15)
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(x).tickSize(0))
+    .select(".domain").remove()
+
+  // Build Y scales and axis:
+  var y = d3.scaleBand()
+    .range([ height, 0 ])
+    // .domain(final.total_visited_ii)
+    .domain(myVars)
+    .padding(0.05);
+  svg.append("g")
+    .style("font-size", 15)
+    .call(d3.axisLeft(y).tickSize(0))
+    .select(".domain").remove()
+
+  // Build color scale
+  var myColor = d3.scaleSequential()
+    .interpolator(d3.interpolateInferno)
+    .domain([1,100])
+
+  // create a tooltip
+  var tooltip = d3.select("#my_dataviz")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var mouseover = function(d) {
+    tooltip
+      .style("opacity", 1)
+    d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
+  }
+  var mousemove = function(d) {
+    tooltip
+      .html("The exact value of<br>this cell is: " + d.value)
+      .style("left", (d3.mouse(this)[0]+70) + "px")
+      .style("top", (d3.mouse(this)[1]) + "px")
+  }
+  var mouseleave = function(d) {
+    tooltip
+      .style("opacity", 0)
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 0.8)
+  }
+
+  // add the squares
+  svg.selectAll()
+    .data(data, function(d) {return d.group+':'+d.variable;})
+    .enter()
+    .append("rect")
+      .attr("x", function(d) { return x(d.group) })
+      .attr("y", function(d) { return y(d.variable) })
+      .attr("rx", 4)
+      .attr("ry", 4)
+      .attr("width", x.bandwidth() )
+      .attr("height", y.bandwidth() )
+      .style("fill", function(d) { return myColor(d.value)} )
+      .style("stroke-width", 4)
+      .style("stroke", "none")
+      .style("opacity", 0.8)
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave)
+})
+
+// Add title to graph
+svg.append("text")
+        .attr("x", 0)
+        .attr("y", -50)
+        .attr("text-anchor", "left")
+        .style("font-size", "22px")
+        .text("A d3.js heatmap");
+
+// Add subtitle to graph
+svg.append("text")
+        .attr("x", 0)
+        .attr("y", -20)
+        .attr("text-anchor", "left")
+        .style("font-size", "14px")
+        .style("fill", "grey")
+        .style("max-width", 400)
+        .text("A short description of the take-away message of this chart.");
+
+  }
   //use this to get the actual data
   //if (!gui.headless) { document.getElementById("total_" + object_type + "_exit").innerHTML = total_time; }
 
     // export JUST what we want to
     graph.simulate = simulate;
     graph.createBarGraph = createBarGraph;
+    graph.heatmap = heatmap;
 //do i need a getter
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
    // graph.get_graph = get_graph;

@@ -94,9 +94,11 @@ function get_random_int(min, max) {
     
     //graphs at the end
       data.total_collide = true;
-      data.average_collide = false;
-      data.total_exit = false;
-      data.average_exit = false;
+      data.average_collide = true;
+      data.total_exit = true;
+      data.average_exit = true;
+      data.average_occupancy = true;
+      data.heatmap = false;
       
     //conflict resolutions
       data.resolve1 = "ChooseDifferentExit";
