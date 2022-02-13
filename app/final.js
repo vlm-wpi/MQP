@@ -167,6 +167,24 @@ function State() {
             if (orientation == data.UP) {
                 box_profile_i = [-3,-2,-1,0,1,2,3];
                 box_profile_ii = [0,1,2,3,4,5,6];
+            } else if (orientation == data.DOWN) {
+            	  box_profile_i = [-3,-2,-1,0,1,2,3];
+                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
+            } else if (orientation == data.LEFT) {
+            	  box_profile_i = [0,-1,-2,-3,-4,-5,-6];
+                box_profile_ii = [-3,-2,-1,0,1,2,3];
+            } else if (orientation == data.RIGHT) {
+            	  box_profile_i = [0,1,2,3,4,5,6];
+                box_profile_ii = [-3,-2,-1,0,1,2,3];
+            } else if (orientation == data.diagDownRight) {
+                box_profile_i = [0,1,2,3,4,5,6];
+                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
+            } else if (orientation == data.diagUpRight) {
+                box_profile_i = [0,1,2,3,4,5,6];
+                box_profile_ii = [0,1,2,3,4,5,6];
+            } else if (orientation == data.diagDownLeft) {
+                box_profile_i = [0,-1,-2,-3,-4,-5,-6];
+                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
                 for (var i = 0; i <= box_profile_i.length - 1; i++) {
                     box_position_i = location[0] + box_profile_i[i];
                     for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
