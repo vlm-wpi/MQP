@@ -14,11 +14,14 @@ function get_random_int(min, max) {
     //variable for the total number of people on the grid, updates when it reads the value from html
     final.total_peds_at_start = 0;
     
+    var things = pop.types(); //each type of a person
+    
     //initializations for average area occupancy lists
-    var avg_child_occ_list = [];
-    var avg_adult_occ_list = [];
-    var avg_backpack_occ_list = [];
-    var avg_bike_occ_list = [];
+    var avg_occ_list = {};
+    var population_types = pop.types();
+    for (i=0; i<population_types.length; i++){
+      avg_occ_list[population_types[i]] = [];
+    }
     var avg_total_occ_list = [];
     final.total_avg_occ_all_time = 0;
     var occ_sum = 0;
@@ -30,10 +33,10 @@ function get_random_int(min, max) {
     final.total_visited_ii = [];
     var max_visits = 0;
     final.last_coords = [];
-    final.final_child_occ = 0;
-    final.final_adult_occ = 0;
-    final.final_backpack_occ = 0;
-    final.final_bike_occ = 0;
+    final.final_occ = {};
+    for (i=0; i<things.length; i++){
+      final.final_occ[things[i]] = 0;
+    }
     final.average_occupancy = [];
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
@@ -46,36 +49,20 @@ function get_random_int(min, max) {
     //conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
     //conflict.factory('NullConflictStrategy', 0);
 
-    var resolve_1 = conflict.factory('NullConflictStrategy', 0);
-//    var resolve_1 = conflict.factory('ChooseDifferentExit', data.wait_before_random_exit);
-//    resolve_1.next = resolve_3;
-
-//    var resolve_1 = conflict.factory('ChooseRandomMove', data.wait_before_random_move);
-//    resolve_1.next = resolve_2;
-
     // the selected board to use for layout
     var board = undefined;
 
     //Collision counters
     final.collisions_total = {};
+    //initialize each value to zero
+    for (i=0; i<things.length; i++){
+      final.collisions_total[things[i]] = 0;
+    }
     final.collisions_average = {};
     
     //exit counters, not sure if have to initialize
     final.exit_total = {};
     final.exit_average = {};
-
-    //counter for the number of collisions for children, in total and average
-    final.collisions_total['Child'] = 0;
-    final.collisions_average['Child'] = 0;
-
-    final.collisions_total['Adult'] = 0;
-    final.collisions_average['Adult'] = 0;
-
-    final.collisions_total['AdultBike'] = 0;
-    final.collisions_average['AdultBike'] = 0;
-
-    final.collisions_total['AdultBackpack'] = 0;
-    final.collisions_average['AdultBackpack'] = 0;
 
     final.total_collisions = 0; //counter for the number of collisions for people, in total
     final.avg_collisions_total = 0; //counter for the number of collisions for people, as an average
@@ -87,21 +74,15 @@ function get_random_int(min, max) {
     final.sum_wait_steps = 0; //number of times everyone has waited, all added together
 
     final.exit_times = {};
+    for (i=0; i<things.length; i++){
+      final.exit_times[things[i]] = 0;
+    }
     final.wait_steps = {};
-
-    final.exit_times['Child'] = 0;
-    final.wait_steps['Child'] = 0;
-
-    final.exit_times['Adult'] = 0;
-    final.wait_steps['Adult'] = 0;
-
-    final.exit_times['AdultBike'] = 0;
-    final.wait_steps['AdultBike'] = 0;
-
-    final.exit_times['AdultBackpack'] = 0;
-    final.wait_steps['AdultBackpack'] = 0;
+    for (i=0; i<things.length; i++){
+      final.wait_steps[things[i]] = 0;
+    }
    
-    //counter for the number of children currently on the board
+    //counter for the number of people currently on the board
     final.current_population = 0;
 
     // number of generations, run up to max_generation
@@ -114,11 +95,13 @@ function get_random_int(min, max) {
 
 //function that takes care of initializing the grid, placing items, and updating the board
 function State() {
-    final.total_peds_at_start = parseInt(data.max['Child']) + parseInt(data.max['Adult']) + parseInt(data.max['AdultBackpack']) + parseInt(data.max['AdultBike']);
-    var num_children_initial = parseInt(data.max['Child']);
+    var things = pop.types();
+    final.total_peds_at_start = 0;
+    for (i=0; i<things.length; i++){
+      final.total_peds_at_start+=parseInt(data.max[things[i]]);
+    }
     if (!gui.headless) {
 	document.getElementById("total_peds_at_start").innerHTML = final.total_peds_at_start;
-      	var things = pop.types();
 	for (i = 0; i < things.length; i++) {
 	    var tpe = things[i];
 	    document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
@@ -145,14 +128,12 @@ function State() {
     //function to move people on the board, does not require any input
     this.move_things = function() {
     	//initializations for later
-    	var child_occ = 0;
-    	var avg_child_occ = 0;
-    	var adult_occ = 0;
-    	var avg_adult_occ = 0;
-    	var backpack_occ = 0;
-    	var avg_backpack_occ = 0;
-        var bike_occ = 0;
-    	var avg_bike_occ = 0;
+    	var occ = {};
+    	var things = pop.types(); //each type of a person
+    	for(i=0; i<things.length; i++){
+    	  occ[things[i]] = 0;
+    	}
+    	var avg_occ = {};
     	var avg_total_occ = 0;
         //adding in calculation of average area occupancy
         //loop through the population and get the coordinates of each pedestrian
@@ -161,10 +142,12 @@ function State() {
             var thing = this.population[p][0]
             var open_cells = 49;
             var local_occ = 0;
-            var child = 0;
-            var adult = 0;
-            var backpack = 0;
-            var bike = 0;
+            var type_counter = {};
+            var things = pop.types();
+            for (i=0; i<things.length; i++){
+              var tpe = things[i];
+              type_counter[tpe] = 0; //initializing so we can add to them
+            }
             var num_to_divide_by = 0;
             var location = data.get_coords_from_orientation(thing);
             // console.log('location: ' + location)
@@ -191,6 +174,10 @@ function State() {
             } else if (orientation == data.diagDownLeft) {
                 box_profile_i = [0,-1,-2,-3,-4,-5,-6];
                 box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
+            } else {
+                box_profile_i = [0,-1,-2,-3,-4,-5,-6];
+                box_profile_ii = [0,1,2,3,4,5,6];
+            }
                 for (var i = 0; i <= box_profile_i.length - 1; i++) {
                     box_position_i = location[0] + box_profile_i[i];
                     for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
@@ -203,269 +190,54 @@ function State() {
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
                             //Here we can condense
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
+                            //since type might be obstacle, need to go through the pop types
+                            var type = thing_type.type;
+                            var types = pop.types();
+                            for(k=0; k<types.length; k++){
+                              if (type == types[k]){
+                                type_counter[type]+=1; //add one to the counter for the type of person
+                              }
+                            }
+                            
                             }
                     }
                 }
                 //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
-                //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
-                local_occ = (open_cells)/num_to_divide_by;
-
-            } else if (orientation == data.DOWN) {
-            	box_profile_i = [-3,-2,-1,0,1,2,3];
-                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
-                        //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
-                            open_cells--;
-                            thing_type = this.temp_grid[safei][safeii].thing;
-                            //get a count for how many cells are taken up by peds of each type
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
-                            }
-                    }
+                var num_to_divide_by = 0;
+                for (i=0; i<things.length; i++){
+                  var person = pop.factory(things[i],0,0); //make a new person to get its profile length
+                  var profile = person.profile_i;
+                  var weight_by_type = type_counter[things[i]]/profile.length;
+                  num_to_divide_by+=weight_by_type;
                 }
-                //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
+                num_to_divide_by += 1; //add one after everything has been calculated
                 //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
                 local_occ = (open_cells)/num_to_divide_by;
-
-            } else if (orientation == data.LEFT) {
-            	box_profile_i = [0,-1,-2,-3,-4,-5,-6];
-                box_profile_ii = [-3,-2,-1,0,1,2,3];
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
-                        //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
-                            open_cells--;
-                            thing_type = this.temp_grid[safei][safeii].thing;
-                            //get a count for how many cells are taken up by peds of each type
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
-                            }
-                    }
-                }
-                //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
-                //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
-                local_occ = (open_cells)/num_to_divide_by;
-
-            } else if (orientation == data.RIGHT) {
-            	box_profile_i = [0,1,2,3,4,5,6];
-                box_profile_ii = [-3,-2,-1,0,1,2,3];
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
-                        //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
-                            open_cells--;
-                            thing_type = this.temp_grid[safei][safeii].thing;
-                            //get a count for how many cells are taken up by peds of each type
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
-                            }
-                    }
-                }
-                //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
-                //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
-                local_occ = (open_cells)/num_to_divide_by;
-
-            } else if (orientation == data.diagDownRight) {
-                box_profile_i = [0,1,2,3,4,5,6];
-                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
-                        //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
-                            open_cells--;
-                            thing_type = this.temp_grid[safei][safeii].thing;
-                            //get a count for how many cells are taken up by peds of each type
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
-                            }
-                    }
-                }
-                //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
-                //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
-                local_occ = (open_cells)/num_to_divide_by;
-
-            } else if (orientation == data.diagUpRight) {
-                box_profile_i = [0,1,2,3,4,5,6];
-                box_profile_ii = [0,1,2,3,4,5,6];
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
-                        //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
-                            open_cells--;
-                            thing_type = this.temp_grid[safei][safeii].thing;
-                            //get a count for how many cells are taken up by peds of each type
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
-                            }
-                    }
-                }
-                //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
-                //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
-                local_occ = (open_cells)/num_to_divide_by;
-
-            } else if (orientation == data.diagDownLeft) {
-                box_profile_i = [0,-1,-2,-3,-4,-5,-6];
-                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
-                        //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
-                            open_cells--;
-                            thing_type = this.temp_grid[safei][safeii].thing;
-                            //get a count for how many cells are taken up by peds of each type
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
-                            }
-                    }
-                }
-                //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
-                //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
-                local_occ = (open_cells)/num_to_divide_by;
-
-            } else {
-                box_profile_i = [0,-1,-2,-3,-4,-5,-6];
-                box_profile_ii = [0,1,2,3,4,5,6];
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
-                        //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
-                            open_cells--;
-                            thing_type = this.temp_grid[safei][safeii].thing;
-                            //get a count for how many cells are taken up by peds of each type
-                            if(thing_type.type == 'Child') {
-                                    child++;
-                                } else if (thing_type.type == 'Adult') {
-                                    adult++;
-                                } else if (thing_type.type == 'AdultBackpack') {
-                                    backpack++;
-                                } else if (thing_type.type == 'AdultBike') {
-                                    bike++;
-                                }
-                            }
-                    }
-                }
-                //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
-                var num_to_divide_by = ((child/1)+(adult/2)+(backpack/4)+(bike/14)) + 1;
-                //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
-                local_occ = (open_cells)/num_to_divide_by;
-
-            }
             //adds to the list of the individual's average area occupancy at each time step
-            thing.local_occupancy.push(local_occ)
+            thing.local_occupancy.push(local_occ);
 
             //adds together the average area occupancy of each ped type at a given time step
-            if(thing.type == 'Child') {
-            	child_occ = child_occ + local_occ;
-
-            } else if (thing.type == 'Adult') {
-            	adult_occ = adult_occ + local_occ;
-
-            } else if (thing.type == 'AdultBackpack') {
-            	backpack_occ = backpack_occ + local_occ;
-
-            } else if (thing.type == 'AdultBike') {
-            	bike_occ = bike_occ + local_occ;
-
-            }
+            occ[thing.type]+= local_occ;
         }
         //calculates the average area occupancy across each ped type at a given time step
-        avg_child_occ = child_occ/data.current['Child'];
-        avg_child_occ_list.push(avg_child_occ);
-        avg_adult_occ = adult_occ/data.current['Adult'];
-        avg_adult_occ_list.push(avg_adult_occ);
-        avg_backpack_occ = backpack_occ/data.current['AdultBackpack'];
-        avg_backpack_occ_list.push(avg_backpack_occ);
-        avg_bike_occ = bike_occ/data.current['AdultBike'];
-        avg_bike_occ_list.push(avg_bike_occ);
-        avg_total_occ = (child_occ + adult_occ + backpack_occ + bike_occ)/(parseInt(data.current['Child'])+parseInt(data.current['Adult'])+parseInt(data.current['AdultBackpack'])+parseInt(data.current['AdultBike']));
+        for (i=0; i<things.length; i++){
+          avg_occ[things[i]] = occ[things[i]]/data.current[things[i]];
+           console.log("occupancy: "+data.current[things[i]]);
+          avg_occ_list[things[i]].push(avg_occ[things[i]]); //pushing to a specific list in a list?
+        }
+        //got through every type in the total occupancy list and add to together
+        var total_occ = 0
+        for (i=0; i<things.length; i++){
+          var to_add = occ[things[i]];
+          total_occ+=to_add;
+        }
+        //go through data.current tyoes and add all together
+        var total_current = 0;
+        for (i=0; i<things.length; i++){
+          var to_add = parseInt(data.current[things[i]]);
+          total_current+=to_add;
+        }
+        avg_total_occ = total_occ/total_current;
         avg_total_occ_list.push(avg_total_occ);
 
         // move everyone at TOP level of abstraction
@@ -488,15 +260,15 @@ function State() {
                 if (!gui.headless) { document.getElementById("current_" + object_type).innerHTML = data.current[object_type]; }
 
                 //add to sum of everyones exit times
-                final.exit_times[object_type] += thing.exittime; //add its exit time to the total children exit times
-                final.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total children wait times
+                final.exit_times[object_type] += thing.exittime; //add its exit time to the total person type exit times
+                final.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total person type wait times
 
                 //check if last on the board for that type
                 if(data.current[object_type] == 0) {
                     var total_time = thing.exittime; //in board update units
                     final.exit_total[object_type] = total_time;
                     if (!gui.headless) { document.getElementById("total_" + object_type + "_exit").innerHTML = total_time; }
-                    var total_wait_steps = thing.waitsteps; //set the total amount of wait steps for children
+                    var total_wait_steps = thing.waitsteps; //set the total amount of wait steps for each type of person
                     if (!gui.headless) { document.getElementById("total_" + object_type + "_wait").innerHTML = total_wait_steps; }
                 }
 
@@ -509,7 +281,6 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
 			var tpe = things[i];
 			data.current[tpe] = 0; //set everyone's population to zero
-			// console.log("collisions:" +final.collisions_average[tpe]);
 			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
 			    document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
@@ -653,11 +424,7 @@ function State() {
 
         }
 	
-
 	// all exits have been generated
-        var num_children = 0;
-
-
 	// iterate over ALL types and see how many are needed of each type
 	var things = pop.types();
 	for (i = 0; i < things.length; i++) {
@@ -1075,12 +842,18 @@ function end_simulation() {
     	occ_sum = occ_sum + avg_total_occ_list[i];
     }
     final.total_avg_occ_all_time = occ_sum/avg_total_occ_list.length;
-    console.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time)
+    console.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
 
     //the final evaluation metric for comparing different runs and characterizing them as good/bad
     //higher number is bad
 	//get overall total exit time
-	final.overall_exit_time = Math.max(final.exit_total['Child'], final.exit_total['Adult'], final.exit_total['AdultBackpack'], final.exit_total['AdultBike']);
+	//findinig the max exit time throughout all exit times
+	final.overall_exit_time = 0;
+	for(i=0; i<things.length; i++){
+	  if (final.exit_total[things[i]]>final.overall_exit_time){
+	    final.overall_exit_time = final.exit_total[things[i]];
+	  }
+	}
     final.evaluation_metric = (final.overall_exit_time + final.total_collisions - final.total_avg_occ_all_time);
 	console.log('final evaluation metric 1041: ' + final.evaluation_metric);
 
@@ -1132,54 +905,19 @@ function end_simulation() {
     }
 
     //calculating the final average occupancy for each ped type
-    //children
-    var sum_child_occ = 0;
-    var child_on_board_count = 0;
-    for(var i=0; i<avg_child_occ_list.length;i++) {
-    	if(avg_child_occ_list[i] >= 0) {
-    		child_on_board_count = child_on_board_count + 1;
-    	sum_child_occ += avg_child_occ_list[i];
-    }
-}
-    var sum_adult_occ = 0;
-    var adult_on_board_count = 0;
-    for(var i=0; i<avg_adult_occ_list.length;i++) {
-    	if(avg_adult_occ_list[i] >= 0) {
-    		adult_on_board_count = adult_on_board_count + 1;
-    	sum_adult_occ += avg_adult_occ_list[i];
-    }
-}
-    var sum_backpack_occ = 0;
-    var backpack_on_board_count = 0;
-    for(var i=0; i<avg_backpack_occ_list.length;i++) {
-    	if(avg_backpack_occ_list[i] >= 0) {
-    		backpack_on_board_count = backpack_on_board_count + 1;
-    	sum_backpack_occ += avg_backpack_occ_list[i];
-    }
-}
-    var sum_bike_occ = 0;
-    var bike_on_board_count = 0;
-    for(var i=0; i<avg_bike_occ_list.length;i++) {
-    	if(avg_bike_occ_list[i] >= 0) {
-    		bike_on_board_count = bike_on_board_count + 1;
-    	sum_bike_occ += avg_bike_occ_list[i];
-    }
-}
-    final.final_child_occ = sum_child_occ/child_on_board_count;
-    final.average_occupancy.push(final.final_child_occ)
-    final.final_adult_occ = sum_adult_occ/adult_on_board_count;
-    final.average_occupancy.push(final.final_adult_occ)
-    final.final_backpack_occ = sum_backpack_occ/backpack_on_board_count;
-    final.average_occupancy.push(final.final_backpack_occ)
-    final.final_bike_occ = sum_bike_occ/bike_on_board_count;
-    final.average_occupancy.push(final.final_bike_occ)
-    // console.log('final child occ for graph: ' + final.final_child_occ)
-    // console.log('final adult occ for graph: ' + final.final_adult_occ)
-    // console.log('final backpack occ for graph: ' + final.final_backpack_occ)
-    // console.log('final bike occ for graph: ' + final.final_bike_occ)
+   for(i=0; i<things.length; i++){
+     var sum_occ = 0;
+     var on_board_count = 0;
+     for(j=0; j<avg_occ_list[things[i]].length; j++){
+       if(avg_occ_list[things[i]]>=0){
+         on_board_count++;
+         sum_occ += avg_occ_list[things[i]];
+       }
+     }
+     final.final_occ = sum_occ/on_board_count;
+     final.average_occupancy.push(final.final_occ);
+   }
     console.log('final occ list: ' + final.average_occupancy)
-
-
 }
 
 function clear_simulation() {
