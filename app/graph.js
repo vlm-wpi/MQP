@@ -234,71 +234,53 @@
    .attr("text-anchor", "middle")
    .style("font-size", "16px")
    .text(final.total_data[k][2]);
-   
-   //used for mouseover
-   var tooltip = d3.select("body")
-    .append("div")
-    .style("position", "absolute")
-    .style("z-index", "10")
-    .style("visibility", "hidden")
-    .style("background", "#000")
-    .text("a simple tooltip");
-   
-   //data to hover over
-   var div = d3.select('body').append("div")
-    .attr("class", "tooltip")
-    .style("opacity", 0)
-    .style("color", "white")
-    .style("background-color", "black")
-    .style("padding", "6px")
-    .style("border-radius", "4px")
-    .style("font-size", "12px");
     
-    //adding legend
-   //mouseover
-  // svg.container.call(div);
+    // create a tooltip
+  var Tooltip = d3.select('#visualisation'+k)
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "2px")
+    .style("border-radius", "5px")
+    .style("padding", "5px")
+
+  // Three function that change the tooltip when user hover / move / leave a cell
+  var mouseover = function(d) {
+    Tooltip
+      .style("opacity", 1)
+    d3.select(this)
+      .style("stroke", "black")
+      .style("opacity", 1)
+  }
+  var mousemove = function(d) {
+    Tooltip
+      .html("The exact value of<br>this bar is: " + d.Value)
+      .style("left", (event.pageX+70) + "px")
+      .style("top", (event.pageY) + "px")
+  }
+  var mouseleave = function(d) {
+    Tooltip
+      .style("opacity", 0)
+    d3.select(this)
+      .style("stroke", "none")
+      .style("opacity", 0.8)
+  }
+
     //plotting
     svg.selectAll(".bar")
      .data(data)
      .enter().append("rect")
-     .attr("class", "bar")
-     //.attr('d', barFunc(collision_data))
-     .attr("x", function(d) { return xScale(d.Type); })
-     .attr("y", function(d) { return yScale(d.Value); })
-     .attr("width", xScale.bandwidth())
-     .attr("height", function(d) { return (height - yScale(d.Value)); })
-     .style('fill', function(d){return d.Color;})
-     .on('mouseover', function (d,i) {
-      console.log(d); //looks like we should be able to get value from here
-
-      tooltip.html(function(d) {
-        return `<strong>${d3.format(',')(d.Value)}</strong> people`; });
-       // div.show(d,this);
-          d3.select(this).transition()
-               .duration('50')
-               .attr('opacity', '.85')
-            
-      //  var mouse_coordinates = d3.pointer(d);
-      //  console.log(mouse_coordinates);
-     //   var x = mouse_coordinates[0];
-     //   var y = mouse_coordinates[1];
-            
-       // div.html(num)
-       //   .style("left", (x+ 10) + "px")
-      //    .style("top", (y - 15) + "px");
-     })
-     // .on("mousemove", function(){
-     //  return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
-
-     // .on('mouseout',function(){
-     //  return tooltip.style('visibility','hidden');
-     // });
-     .on('mouseout', function (d, i) {
-       // div.hide();
-         d3.select(this).transition()
-               .duration('50')
-               .attr('opacity', '1')
-     });
+      .attr("class", "bar")
+      .attr("x", function(d) { return xScale(d.Type); })
+      .attr("y", function(d) { return yScale(d.Value); })
+      .attr("width", xScale.bandwidth())
+      .attr("height", function(d) { return (height - yScale(d.Value)); })
+      .style('fill', function(d){return d.Color;})
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseleave", mouseleave)
      
    //add error bars
  //  svg.append("g")

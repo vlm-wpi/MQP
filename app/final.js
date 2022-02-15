@@ -508,8 +508,8 @@ function State() {
         }
         if(thing.initial_path.length == 0){ //if empty, we want to try to find an initial path to compare
           var path = node.initial_path(); //get the "best" path
-          console.log("initial path: "+path);
           thing.initial_path = path;
+         // console.log("initial path: "+thing.initial_path);
         }
         // node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
@@ -537,11 +537,12 @@ function State() {
 	          //get length of initial optimal path
 	          var init_path_length = thing.initial_path.length;
 	          //get length of actual path
-	          var actual_path_length = thing.path_i.length;
+	          var actual_path_length = thing.path_i.length+2+thing.waitsteps; //add 2 because a lot of the people don't get to goal exit
+	          //just the first one they touch
 	          //get the difference
 	          var path_difference = actual_path_length - init_path_length;
 	          //divide difference from actual
-	          var percent_diff = path_difference / actual_path_length
+	          var percent_diff = path_difference / actual_path_length;
 	          //push this percent to array of total for that type
 	          var person_type = thing.type;
 	          final.eval_path[person_type].push(percent_diff);
@@ -605,19 +606,7 @@ function State() {
             final.total_visited_ii.push(ii);
             // console.log('path_i: ' + thing.path_i)
             // console.log('path_ii: ' + thing.path_ii)
-	          //get length of initial optimal path
-	          var init_path_length = thing.initial_path.length;
-	          //console.log("initial: "+init_path_length);
-	          //get length of actual path
-	          var actual_path_length = thing.path_i.length;
-	          //console.log("actual: "+actual_path_length);
-	          //get the difference
-	          var path_difference = actual_path_length - init_path_length;
-	          //divide difference from actual
-	          var percent_diff = path_difference / init_path_length;
-	          //push this percent to array of total for that type
-	          var person_type = thing.type;
-	          final.eval_path[person_type].push(percent_diff);
+	           
             // clear old one
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make
@@ -958,14 +947,13 @@ function end_simulation() {
       //add up all values in list
       for (j=0; j<this_list.length; j++){
         eval_ratio+=this_list[j];
-       // console.log("individual: "+this_list[j]);
       }
       //divide by length of the list
-      eval_ratio = eval_ratio/(this_list.length+1);
+      var type_eval_ratio = eval_ratio/(this_list.length+1);
       //add to total list
-      final.total_eval_path.push(eval_ratio);
+      final.total_eval_path.push(type_eval_ratio);
       //console log fir now, show on screen in future
-      console.log("eval by type: "+eval_ratio);
+      console.log("eval by type: "+type_eval_ratio);
     }
     //sum up total list
     var total_eval = 0;
@@ -973,7 +961,7 @@ function end_simulation() {
       total_eval+=final.total_eval_path[i];
     }
     //divide by length of list
-    total_eval = total_eval / (final.total_eval_path.length+1);
+    var total_eval_ratio = total_eval / (final.total_eval_path.length+1);
     //show in screen
     console.log("total: "+ total_eval);
 }
