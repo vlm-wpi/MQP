@@ -86,13 +86,13 @@
             for (var n = 0; n < data.max['Exit']; n++) {
                 var j = random.nextIntBetween(0, this.width_i - 3);
                 var jj = random.nextIntBetween(0, this.width_ii - 3);
-                var choose = random.nextInt(2)
+                var choose = Math.round(random.next());
                 if (choose == 0) {
                     var j = j;
-                    var jj = Math.round((this.width_ii - 1) * random.next());
+                    var jj = (this.width_ii - 1) * Math.round(random.next());
                 }
                 else if (choose == 1) {
-                    var j = Math.round((this.width_i - 1) * random.next());
+                    var j = (this.width_i - 1) * (Math.round(random.next()));
                     var jj = jj;
                 }
                 var obj = new Exit(j, jj);
