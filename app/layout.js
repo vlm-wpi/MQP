@@ -14,10 +14,6 @@
 
 (function(layout) {
 
-    function get_random_int(min, max) {
-	return Math.floor(Math.random() * (max - min)) + min;
-    }
-
     function Obstacle(j, jj) {
 	this.orientation = data.random_orientation();
 	this.anchor_i = j
@@ -79,8 +75,8 @@
 
 	this.initialize = function(temp_grid) {
             for (var n = 0; n < data.max['Obstacle']; n++) {
-                var j = get_random_int(0, this.width_i)
-                var jj = get_random_int(0, this.width_ii)
+                var j = random.nextInt(this.width_i)
+                var jj = random.nextInt(this.width_ii)
 
                 var obj = new Obstacle(j, jj);
 		        this.obstacles.push(obj);
@@ -88,15 +84,15 @@
             }
 
             for (var n = 0; n < data.max['Exit']; n++) {
-                var j = get_random_int(0, this.width_i - 3);
-                var jj = get_random_int(0, this.width_ii - 3);
-                var choose = Math.round(Math.random());
+                var j = random.nextIntBetween(0, this.width_i - 3);
+                var jj = random.nextIntBetween(0, this.width_ii - 3);
+                var choose = random.nextInt(2)
                 if (choose == 0) {
                     var j = j;
-                    var jj = ((this.width_ii - 1) * (Math.round(Math.random())));
+                    var jj = Math.round((this.width_ii - 1) * random.next());
                 }
                 else if (choose == 1) {
-                    var j = ((this.width_i - 1) * (Math.round(Math.random())));
+                    var j = Math.round((this.width_i - 1) * random.next());
                     var jj = jj;
                 }
                 var obj = new Exit(j, jj);
@@ -466,8 +462,8 @@
         //added this in as part of exit distances
         exit_distances = [];
         //randomly getting a specific exit cell goal
-        var rand_x = get_random_int(0, 3);
-        var rand_y = get_random_int(0, 3);
+        var rand_x = random.nextInt(4);
+        var rand_y = random.nextInt(4);
         for (var exit = 0; exit < board.exit_locations.length; exit++) {
             var exiti = board.exit_locations[exit].anchor_i;
             var exitii = board.exit_locations[exit].anchor_ii;

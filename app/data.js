@@ -7,21 +7,21 @@
 (function(data) {
 
     function random_orientation() {
-    var r = Math.random() * 8;
+    var r = random.nextInt(8);
 
-    if (r < 1) {
+    if (r == 0) {
         return data.LEFT;
-    } else if (r < 2) {
+    } else if (r == 1) {
         return data.UP;
-    } else if (r < 3) {
+    } else if (r == 2) {
         return data.RIGHT;
-    } else if (r < 4) {
+    } else if (r == 3) {
         return data.DOWN
-    } else if (r < 5) {
+    } else if (r == 4) {
         return data.diagDownRight;
-    } else if (r < 6) {
+    } else if (r == 5) {
         return data.diagUpRight;
-    } else if (r < 7) {
+    } else if (r == 6) {
         return data.diagDownLeft;
     } else {
         return data.diagUpLeft;
@@ -30,10 +30,6 @@
 
 function calc_distance(i, ii, j, jj) {
     return Math.pow(Math.pow(Math.abs(i - j), 2) + Math.pow(Math.abs(ii - jj), 2), 0.5);
-}
-
-function get_random_int(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
 }
 
     // GUI state from prior update

@@ -5,9 +5,6 @@
  */
 (function(final) {
 
-function get_random_int(min, max) {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
 
 //// -----------------------------------------------------
 
@@ -55,7 +52,7 @@ function get_random_int(min, max) {
     //conflict.factory('NullConflictStrategy', 0);
 
     // the selected board to use for layout
-    var board = undefined;
+    final.board = undefined;
 
     //Collision counters
     final.collisions_total = {};
@@ -448,10 +445,10 @@ function State() {
 		// ensure stays fully on the board.
 		var dd = pop.dimension(tpe);
 		//this was changed
-		var j = get_random_int(dd[0], data.width_i - dd[1]);
-		var jj = get_random_int(dd[2], data.width_ii - dd[3]);
+		var j = random.nextIntBetween(dd[0], data.width_i - dd[1]);
+		var jj = random.nextIntBetween(dd[2], data.width_ii - dd[3]);
 		
-		var exit_information = layout.get_exit_information(board, j, jj);
+		var exit_information = layout.get_exit_information(final.board, j, jj);
 		
 		// construct the actual thing using the factory in pop
 		var obj = pop.factory(tpe, j, jj);
@@ -639,10 +636,10 @@ function State() {
   final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
   final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
   final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
-	final.resolution_strategy1.try_to_resolve(thing, state, board);
-	final.resolution_strategy2.try_to_resolve(thing, state, board);
-	final.resolution_strategy3.try_to_resolve(thing, state, board);
-	final.resolution_strategy4.try_to_resolve(thing, state, board);
+	final.resolution_strategy1.try_to_resolve(thing, state, final.board);
+	final.resolution_strategy2.try_to_resolve(thing, state, final.board);
+	final.resolution_strategy3.try_to_resolve(thing, state, final.board);
+	final.resolution_strategy4.try_to_resolve(thing, state, final.board);
 
 /*******
         //find another exit to go to
@@ -650,14 +647,14 @@ function State() {
         //try to move randomly and then find a path
         //if the time waiting is more than double the wait time, find another exit
 	if (thing.wait > data.wait_before_random_exit){
-            var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
-            var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
+            var ran_exit_index = random.nextInt(data.max['Exit']); //get a random index to choose the exit
+            var new_exit = final.board.exit_locations[ran_exit_index]; //get the exit from the list of exits
             thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
             thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
             thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
             thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii; //update the person's last exit y cell
-            var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
-            var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
+            var ranx = random.nextInt(4); //get random number 0-3 for the goal cell of the exit x value
+            var rany = random.nextInt(4); //get random number 0-3 for the goal cell of the exit y value
             thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i; //update the new goal exit x coordinate
             thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii; //update the new goal exit y coordinatee
             //change the exit and recurrsively call the function
@@ -832,7 +829,7 @@ var interval_id = 0;
 function initialize_simulation() {
     if (interval_id) {
         clearInterval(interval_id);
-        clearInterval(interval_id2);
+        if (!gui.headless) { clearInterval(interval_id2); }
     }
     
     /**
@@ -840,13 +837,13 @@ function initialize_simulation() {
      * 2. Once boundaries are set, create state to use layout for all dimensions
      * 3. Once state is constructed, then can initialize properly using temp_grid
      */
-    board = layout.factory(data.layout, data.width_i, data.width_ii)
-    data.width_i = board.width_i;
-    data.width_ii = board.width_ii;
+    final.board = layout.factory(data.layout, data.width_i, data.width_ii)
+    data.width_i = final.board.width_i;
+    data.width_ii = final.board.width_ii;
     state = new State();
     state.init_grids();
 
-    board.initialize(state.temp_grid);
+    final.board.initialize(state.temp_grid);
 
     // TODO: Messy when user selects width_i, width_ii but also selects a layout type
 
@@ -866,7 +863,7 @@ function end_simulation() {
 	final.all_visited = [];
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
-    clearInterval(interval_id2);
+    if (!gui.headless) { clearInterval(interval_id2); }
     if (typeof callback_done !== 'undefined') {
        callback_done();
     }
@@ -1001,17 +998,18 @@ function start_simulation(max_gen, callback) {
 
     initialize_simulation();
     interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
-    interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
-
-	//my attempt at making a call to a voronoi file
-    for(i=0; i < board.exit_locations.length; i++) {
-    	final.vor_exits_i.push(board.exit_locations[i].anchor_i);
-    	final.vor_exits_ii.push(board.exit_locations[i].anchor_ii);
+    if (!gui.headless) {
+      interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
     }
-    voronoi.pVoronoiD(board);
-    	var report = "";
-    	final.m = 0;
-	for (var r = 0; r < voronoi.regions.length; r++) {
+      //my attempt at making a call to a voronoi file
+      for(i=0; i < final.board.exit_locations.length; i++) {
+    	final.vor_exits_i.push(final.board.exit_locations[i].anchor_i);
+    	final.vor_exits_ii.push(final.board.exit_locations[i].anchor_ii);
+      }
+    if (!gui.headless) { voronoi.pVoronoiD(final.board); }
+      var report = "";
+      final.m = 0;
+      for (var r = 0; r < voronoi.regions.length; r++) {
 	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report = report + f + ",";
 	    if(f>final.m) {
@@ -1019,11 +1017,11 @@ function start_simulation(max_gen, callback) {
 	    	final.most_dense_exit_i = final.vor_exits_i[r];
 	    	final.most_dense_exit_ii = final.vor_exits_ii[r];
 	    }
-	}
-	//finding min density region and saving the index
-	final.least_dense_index = 0;
-	report2 = "";
-	final.min = 10000; //initialization to find min density region (slightly sketchy but I don't think it'll cause problems)
+      }
+      //finding min density region and saving the index
+      final.least_dense_index = 0;
+      report2 = "";
+      final.min = 10000; //initialization to find min density region (slightly sketchy but I don't think it'll cause problems)
 	for (var r = 0; r < voronoi.regions.length; r++) {
 	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report2 = report2 + f + ",";

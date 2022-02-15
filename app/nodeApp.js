@@ -14,6 +14,11 @@ global.data.max['Child'] = 0;
 global.gui = {}
 global.gui.headless = true;
 
+
+const random = require('./random');
+global.random = random['random'];
+global.random.create(1234);  // SEED IT NOW
+
 const pop = require('./pop');
 global.pop = pop['pop'];
 
@@ -21,40 +26,46 @@ const heap = require('./heap');
 global.heap = heap['heap'];
 
 const conflict = require('./conflict');
-global.conflict = astar['conflict'];
-
-final.resolution_strategy = conflict.factory('ChooseDifferentExit', 8);
+global.conflict = conflict['conflict'];
 
 const astar = require('./astar');
 global.astar = astar['astar'];
 
+const layout = require('./layout');
+global.layout = layout['layout'];
+
+const metrics = require('./metrics');
+global.metrics = metrics['metrics'];
+
 const voronoi = require('./voronoi');
 global.voronoi = voronoi['voronoi'];
 
-const app = require('./final');
-global.app = astar['final'];
+// has to be named 'final' because of dependencies between graph.js and final (?? why there ??)
+const final = require('./final');
+global.final = final['final'];
+
+// d3 as part of gui
+//const graph = require('./graph');
+//global.graph = graph['graph'];
+
 const lzw = require('./LZWEncoder');
 const nq = require('./NeuQuant');
 const gife = require('./GIFEncoder');
 const b64 = require('./b64');
 
+final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
+
 function process_all() {
-   console.log(app.final.get_state().population);
+   console.log(final.final.get_state().population);
    console.log("DONE");
    var things = global.pop.types();
 
    for (i = 0; i < things.length; i++) {
      var tpe = things[i];
-     console.log(tpe + ": " + app.final.collisions_total[tpe]);
+     console.log(tpe + ": " + final.final.collisions_total[tpe]);
    }
 }
 
 // run for 100 steps...
-console.log(app);
-app.final.start_simulation(10, process_all);
-
-//https://www.npmjs.com/package/random-seed//used this site for random seed info
-var rand = require('random-seed').create(); //random seed
-var n = rand(1000); // generate a number between 0 and 999
-// console.log('n: ' + n);
-
+console.log(final);
+final.final.start_simulation(10, process_all);

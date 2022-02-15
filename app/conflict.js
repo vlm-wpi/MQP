@@ -8,10 +8,7 @@
 	//initialization
 	var new_exit_profile_i = [];
 	var new_exit_profile_ii = [];
-    function get_random_int(min, max) {
-	return Math.floor(Math.random() * (max - min)) + min;
-    }
-
+    
     /** End of the chain. */
     function NullConflictStrategy() {
 	
@@ -45,14 +42,14 @@
 
 	this.resolve = function (thing, state, board) {
 	    if (thing.wait > this.threshold) {
-		var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
+		var ran_exit_index = random.nextInt(data.max['Exit']); //get a random index to choose the exit
 		var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
 		thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
 		thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
 		thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
 		thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii; //update the person's last exit y cell
-		var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
-		var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
+		var ranx = random.nextInt(4); //get random number 0-3 for the goal cell of the exit x value
+		var rany = random.nextInt(4); //get random number 0-3 for the goal cell of the exit y value
 		
 		// prepare for next
 		thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i; //update the new goal exit x coordinate
@@ -89,14 +86,14 @@
 
 	this.resolve = function (thing, state, board) {
 	    if (thing.wait > this.threshold) {
-		var ran_exit_index = Math.floor(Math.random() * data.max['Exit']); //get a random index to choose the exit
+		var ran_exit_index = random.nextInt(data.max['Exit']); //get a random index to choose the exit
 		var new_exit = board.exit_locations[ran_exit_index]; //get the exit from the list of exits
 		thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
 		thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
 		thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
 		thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii; //update the person's last exit y cell
-		var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
-		var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
+		var ranx = random.nextInt(4); //get random number 0-3 for the goal cell of the exit x value
+		var rany = random.nextInt(4); //get random number 0-3 for the goal cell of the exit y value
 		
 		// prepare for next
 		thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i; //update the new goal exit x coordinate
@@ -207,8 +204,8 @@
 		}
 		thing.endi = new_exit_profile_i[3] + final.least_dense_exit_i; //update person's exit i cell
 		thing.endii = new_exit_profile_ii[3] + final.least_dense_exit_ii; //update the person's exit ii cell
-		var ranx = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit x value
-		var rany = get_random_int(0,3); //get random number 0-3 for the goal cell of the exit y value
+		var ranx = random.nextInt(4);  //get random number 0-3 for the goal cell of the exit x value
+		var rany = random.nextInt(4);  //get random number 0-3 for the goal cell of the exit y value
 		
 		// prepare for next
 		thing.goali = new_exit_profile_i[ranx] + final.least_dense_exit_i; //update the new goal exit x coordinate

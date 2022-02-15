@@ -201,7 +201,8 @@
             //shuffle array
             // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
             for (var i = successors.length - 1; i > 0; i--) {
-                var j = Math.floor(Math.random() * (i + 1));
+                //var j = Math.floor(Math.random() * (i + 1));
+                var j = random.nextInt(i+1);
                 var temp = successors[i];
                 successors[i] = successors[j];
                 successors[j] = temp;
