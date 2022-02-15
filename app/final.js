@@ -279,7 +279,7 @@ function State() {
                 //not sure if we need to set these to zero, should all be zero???
       		    var things = pop.types();
 
-		    end_simulation(); 
+		    //end_simulation(); 
 
 		    for (i = 0; i < things.length; i++) {
 			var tpe = things[i];
@@ -326,18 +326,7 @@ function State() {
                       document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
                       document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
                     }
-                    // console.log("total collisions: " + total_collisions)
-                    // console.log("total peds at start: " + total_peds_at_start)
-                    // console.log("average collisions total: " + avg_collisions_total)                    
-                    // console.log("total child collisions: " + total_child_collisions)
-                    // console.log("average child: " + avg_child_collisions)
-                    // console.log("total adult collisions: " + total_adult_collisions)
-                    // console.log("average adult: " + avg_adult_collisions)
-                    // console.log("total backpack collisions: " + total_backpack_collisions)
-                    // console.log("average backpack: " + avg_backpack_collisions)
-                    // console.log("total bike collisions: " + total_bike_collisions)
-                    // console.log("average bike: " + avg_bike_collisions)
-                    
+
                     //make the bar graphs here
                     //adding strings for the axis labels and titles
                     final.total_data = [];
@@ -352,25 +341,10 @@ function State() {
                     	} if (data.average_occupancy) {
                     		final.total_data.push([final.average_occupancy, "Average area occupancy (in ped/sq ft)", "Total average area occupancy by pedestrian type"])
                     	}
-                    graph.createBarGraph();
-
+                    if (!gui.headless) { graph.createBarGraph(); }
+	            end_simulation(); 
                 }
-                // console.log("current_population: " + current_population)
-                // console.log(total_population_over_time)
-                // console.log("current_num_children: " + current_num_children)
-                // console.log("current_num_adult: " + current_num_adult)
-                // console.log("current_num_backpack: " + current_num_backpack)
-                // console.log("current_num_bike: " + current_num_bike)
             }
-            // else if (thing == Adult) {
-            //            current_num_adult = current_num_adult-1;
-            // }
-            // else if (thing == AdultBackpack) {
-            //            current_num_backpack = current_num_backpack-1;
-            // }
-            // else if (thing == AdultBike) {
-            //            current_num_bike = current_num_bike-1;
-            // }
         }
 
         // NEED THIS. This copies the footprint for drawing
@@ -508,8 +482,8 @@ function State() {
         }
         if(thing.initial_path.length == 0){ //if empty, we want to try to find an initial path to compare
           var path = node.initial_path(); //get the "best" path
+          //console.log("initial path: "+path);
           thing.initial_path = path;
-         // console.log("initial path: "+thing.initial_path);
         }
         // node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
@@ -537,12 +511,11 @@ function State() {
 	          //get length of initial optimal path
 	          var init_path_length = thing.initial_path.length;
 	          //get length of actual path
-	          var actual_path_length = thing.path_i.length+2+thing.waitsteps; //add 2 because a lot of the people don't get to goal exit
-	          //just the first one they touch
+	          var actual_path_length = thing.path_i.length;
 	          //get the difference
 	          var path_difference = actual_path_length - init_path_length;
 	          //divide difference from actual
-	          var percent_diff = path_difference / actual_path_length;
+	          var percent_diff = path_difference / actual_path_length
 	          //push this percent to array of total for that type
 	          var person_type = thing.type;
 	          final.eval_path[person_type].push(percent_diff);
@@ -606,7 +579,19 @@ function State() {
             final.total_visited_ii.push(ii);
             // console.log('path_i: ' + thing.path_i)
             // console.log('path_ii: ' + thing.path_ii)
-	           
+	          //get length of initial optimal path
+	          var init_path_length = thing.initial_path.length;
+	          //console.log("initial: "+init_path_length);
+	          //get length of actual path
+	          var actual_path_length = thing.path_i.length;
+	          //console.log("actual: "+actual_path_length);
+	          //get the difference
+	          var path_difference = actual_path_length - init_path_length;
+	          //divide difference from actual
+	          var percent_diff = path_difference / init_path_length;
+	          //push this percent to array of total for that type
+	          var person_type = thing.type;
+	          final.eval_path[person_type].push(percent_diff);
             // clear old one
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make
@@ -629,70 +614,6 @@ function State() {
 	final.resolution_strategy2.try_to_resolve(thing, state, final.board);
 	final.resolution_strategy3.try_to_resolve(thing, state, final.board);
 	final.resolution_strategy4.try_to_resolve(thing, state, final.board);
-
-/*******
-        //find another exit to go to
-        //if the time waiting is greater than wait time but less than that double the wait time
-        //try to move randomly and then find a path
-        //if the time waiting is more than double the wait time, find another exit
-	if (thing.wait > data.wait_before_random_exit){
-            var ran_exit_index = random.nextInt(data.max['Exit']); //get a random index to choose the exit
-            var new_exit = final.board.exit_locations[ran_exit_index]; //get the exit from the list of exits
-            thing.min_exiti = new_exit.anchor_i; //update the person's exit x value 
-            thing.min_exitii = new_exit.anchor_ii; //update the person's exit y value 
-            thing.endi = new_exit.profile_i[3] + new_exit.anchor_i; //update the person's last exit x cell
-            thing.endii = new_exit.profile_ii[3] + new_exit.anchor_ii; //update the person's last exit y cell
-            var ranx = random.nextInt(4); //get random number 0-3 for the goal cell of the exit x value
-            var rany = random.nextInt(4); //get random number 0-3 for the goal cell of the exit y value
-            thing.goali = new_exit.profile_i[ranx] + new_exit.anchor_i; //update the new goal exit x coordinate
-            thing.goalii = new_exit.profile_ii[rany]+ new_exit.anchor_ii; //update the new goal exit y coordinatee
-            //change the exit and recurrsively call the function
-            thing.wait = 0; //reset the wait time, not totally convinced that this should be here
-            //--i think correct, can only set this to zero when calling placefootprint/remove footprint
-            //but the simulation works better with this here...
-	    return false;
-        }
-
-        //if the numnber of times waited is greater than the time to wait before making a randome move
-        //try to move in any other direction other than the one you are trying to go to
-        //wait_before_random_move can be changed by user input
-        if (thing.wait > data.wait_before_random_move) { 
-            //get random orientation and try to move there
-            var orientation = data.random_orientation(); //random orientation
-            var can_move = true; //initially assume you can move
-            for (var x = 0; x < thing.profile_i.length; x++) { //go through every cell the person is occupying
-                //get next potential coordinates based off of the orientation
-                var new_deltas = data.get_coords_from_orientation_neighbors(thing, x, orientation);
-                var r = new_deltas[0]; //x value of new potential coordinate
-                var c = new_deltas[1]; //y value of new potential coordinate
-                var safe_r = data.get_bounded_index_i(r + thing.anchor_i); //bound the x coordiinate to make not out of bounds
-                var safe_c = data.get_bounded_index_ii(c + thing.anchor_ii); //bound the y coordinate to make not out of bounds
-                if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)){ //if something in the cell trying ti move into
-                    can_move = false; //cannot move here
-                }
-                //if move puts you off the grid you cannot move in this orientation
-                // can't move off the board
-                //do we even need safe_r???
-                else if (safe_r != thing.anchor_i + r) {
-                    can_move = false; //cannot move off grid
-                }
-                else if (safe_c != thing.anchor_ii + c) {
-                    can_move = false; //cannot move off grid
-                }
-            }
-            if (can_move){ //if the person can move
-                //change anchor and call place footprint
-                thing.remove_footprint(this); // remove the person from its current position on grid
-                thing.orientation = orientation; //update the person's orientation
-                next_coords = data.get_coords_from_orientation(thing); //get these new coordinates to move to
-                thing.anchor_i = next_coords[0]; //update the anchor x coordinate to its new position
-                thing.anchor_ii = next_coords[1]; //update the anchor y coordinate to its new position
-                thing.wait = 0; //reset the wait time
-                thing.place_footprint(this); //place the person in the temp grid in its new position
-            }
-        }
-*******/
-
 
         return false; // do not remove
    }
@@ -860,7 +781,7 @@ function end_simulation() {
     	occ_sum = occ_sum + avg_total_occ_list[i];
     }
     final.total_avg_occ_all_time = occ_sum/avg_total_occ_list.length;
-    console.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
+    debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
 
     //the final evaluation metric for comparing different runs and characterizing them as good/bad
     //higher number is bad
@@ -873,7 +794,7 @@ function end_simulation() {
 	  }
 	}
     final.evaluation_metric = (final.overall_exit_time + final.total_collisions - final.total_avg_occ_all_time);
-	console.log('final evaluation metric 1041: ' + final.evaluation_metric);
+	debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
 
     //making list of all the coords visited as (i,ii)
     for(n=0; n<=final.total_visited_i.length-1; n++) {
@@ -914,9 +835,9 @@ function end_simulation() {
     for(const element of exits) {
     	num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
     }
-    console.log('exits: ' + exits)
-	console.log('count of last coords: ' + num_through_exit);
-    console.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
+    debug.log('exits: ' + exits)
+    debug.log('count of last coords: ' + num_through_exit);
+    debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
 
     if(data.heatmap) {
     	graph.heatmap();
@@ -936,7 +857,7 @@ function end_simulation() {
      final.final_occ = sum_occ/on_board_count;
      final.average_occupancy[things[i]] = final.final_occ;
    }
-    console.log('final occ list: ' + final.average_occupancy);
+    debug.log('final occ list: ' + final.average_occupancy);
     
     //data for comparing against ideal path
     //go through each type of person
@@ -947,13 +868,14 @@ function end_simulation() {
       //add up all values in list
       for (j=0; j<this_list.length; j++){
         eval_ratio+=this_list[j];
+       // console.log("individual: "+this_list[j]);
       }
       //divide by length of the list
-      var type_eval_ratio = eval_ratio/(this_list.length+1);
+      eval_ratio = eval_ratio/(this_list.length+1);
       //add to total list
-      final.total_eval_path.push(type_eval_ratio);
+      final.total_eval_path.push(eval_ratio);
       //console log fir now, show on screen in future
-      console.log("eval by type: "+type_eval_ratio);
+      debug.log("eval by type: "+eval_ratio);
     }
     //sum up total list
     var total_eval = 0;
@@ -961,9 +883,9 @@ function end_simulation() {
       total_eval+=final.total_eval_path[i];
     }
     //divide by length of list
-    var total_eval_ratio = total_eval / (final.total_eval_path.length+1);
+    total_eval = total_eval / (final.total_eval_path.length+1);
     //show in screen
-    console.log("total: "+ total_eval);
+    debug.log("total: "+ total_eval);
 }
 
 function clear_simulation() {
@@ -1020,13 +942,13 @@ function start_simulation(max_gen, callback) {
 	    	final.least_dense_index = r;
 	    }
 	}
-	console.log('report: ' + report);
-	console.log('final.vor_exits_i: ' + final.vor_exits_i)
-		console.log('final.vor_exits_ii: ' + final.vor_exits_ii)
+	debug.log('report: ' + report);
+	debug.log('final.vor_exits_i: ' + final.vor_exits_i)
+		debug.log('final.vor_exits_ii: ' + final.vor_exits_ii)
 
-		console.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m);
-		console.log('least dense exit location at start: (' + final.least_dense_exit_i + ', ' + final.least_dense_exit_ii + '), with a density of: ' + final.min);
-		console.log('least dense index: ' + final.least_dense_index);
+		debug.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m);
+		debug.log('least dense exit location at start: (' + final.least_dense_exit_i + ', ' + final.least_dense_exit_ii + '), with a density of: ' + final.min);
+		debug.log('least dense index: ' + final.least_dense_index);
 }
 
 take_snapshot_calls = 0;
@@ -1039,7 +961,7 @@ take_snapshot_calls = 0;
 	    report = report + f + ",";
 	}	
 
-	// console.log("gen:" + number_generations + ", density:" + report);
+	//console.log("gen:" + number_generations + ", density:" + report);
 
 	if (number_generations >= max_generation) {
             end_simulation();

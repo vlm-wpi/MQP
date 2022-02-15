@@ -1,4 +1,8 @@
 // Simple node.js script which uses sharedModule.js
+var argv = process.argv.slice(2)
+var seed = parseInt(argv[0]);   // TODO: simplistic
+
+// https://nodejs.org/en/knowledge/command-line/how-to-parse-command-line-arguments/
 
 // Get module.exports of sharedModule
 const in_data = require('./data');
@@ -14,10 +18,13 @@ global.data.max['Child'] = 0;
 global.gui = {}
 global.gui.headless = true;
 
+const debug = require('./debug');
+global.debug = debug['debug'];
+global.debug.active = false;   // disable debug messages
 
 const random = require('./random');
 global.random = random['random'];
-global.random.create(1234);  // SEED IT NOW
+global.random.create(seed);  // SEED IT NOW
 
 const pop = require('./pop');
 global.pop = pop['pop'];
@@ -56,16 +63,8 @@ const b64 = require('./b64');
 final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
 
 function process_all() {
-   console.log(final.final.get_state().population);
-   console.log("DONE");
-   var things = global.pop.types();
-
-   for (i = 0; i < things.length; i++) {
-     var tpe = things[i];
-     console.log(tpe + ": " + final.final.collisions_total[tpe]);
-   }
+   console.log(seed + "," + final.final.total_exit_time);
 }
 
-// run for 100 steps...
-console.log(final);
-final.final.start_simulation(10, process_all);
+// run until stops....
+final.final.start_simulation(undefined, process_all);
