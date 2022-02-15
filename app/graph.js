@@ -173,7 +173,7 @@
     }
 
     //data.push({Type: "Total",Value: final.total_collisions});
-    console.log(data);
+    // console.log(data);
     //array of keys
     const types = data.map(function(obj){
       return obj.Type;
@@ -182,6 +182,8 @@
     var num = data.map(function(obj){
       return obj.Value;
     });
+          console.log('num: ' + num) //prints correct values only for area occupancy graph
+
     //max value
     var maxValue = d3.max(num);
    
@@ -241,7 +243,7 @@
    
    //data to hover over
    var div = d3.select('body').append("div")
-    .attr("classs", "tooltip")
+    .attr("class", "tooltip")
     .style("opacity", 0)
     .style("color", "white")
     .style("background-color", "black")
@@ -263,8 +265,11 @@
      .attr("width", xScale.bandwidth())
      .attr("height", function(d) { return (height - yScale(d.Value)); })
      .style('fill', function(d){return d.Color;})
-     .on('mouseover', function (d, i) {
-      // div.html(function(d) { return `<strong>${d3.format(',')(d.Value)}</strong> people`; });
+     .on('mouseover', function (d,i) {
+      console.log(d); //looks like we should be able to get value from here
+
+      tooltip.html(function(d) {
+        return `<strong>${d3.format(',')(d.Value)}</strong> people`; });
        // div.show(d,this);
           d3.select(this).transition()
                .duration('50')
@@ -279,9 +284,14 @@
        //   .style("left", (x+ 10) + "px")
       //    .style("top", (y - 15) + "px");
      })
+     // .on("mousemove", function(){
+     //  return tooltip.style("top", (d3.event.pageY-10)+"px").style("left",(d3.event.pageX+10)+"px");})
 
+     // .on('mouseout',function(){
+     //  return tooltip.style('visibility','hidden');
+     // });
      .on('mouseout', function (d, i) {
-       div.hide();
+       // div.hide();
          d3.select(this).transition()
                .duration('50')
                .attr('opacity', '1')
@@ -299,7 +309,7 @@ var margin = {top: 80, right: 25, bottom: 30, left: 40},
   height = 450 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
-var svg = d3.select("#my_dataviz")
+var svg = d3.select("#visualisation5")
 .append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
