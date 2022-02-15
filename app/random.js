@@ -19,16 +19,26 @@
 
     // random number between 0 and 1
     function next() {
-       return random.generator.random()
+       if (typeof random.generator !== 'undefined') {
+         return random.generator.random()
+       }
+       return Math.random();
     }
 
     // random number between 0 (inclusive) and n (exclusive)
     function nextInt(n) {
-       return random.generator.range(n)
+      if (typeof random.generator !== 'undefined') {
+         return random.generator.range(n);
+       }
+       // manually
+       return Math.floor(Math.random() * n);
     }
 
     function nextIntBetween(min, max) {
-       return random.generator.intBetween(min, max)
+      if (typeof random.generator !== 'undefined') {
+        return random.generator.intBetween(min, max)
+     }
+     return Math.floor(Math.random() * (max - min)) + min;
     }
 
     // exported API
