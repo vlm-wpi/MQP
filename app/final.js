@@ -38,7 +38,12 @@ function get_random_int(min, max) {
       final.final_occ[things[i]] = 0;
     }
     final.average_occupancy = {};
-
+    
+    final.eval_path = {}
+    for (i=0; i<population_types.length; i++){
+      final.eval_path[population_types[i]] = [];
+    }
+    final.total_eval_path = [];
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
    // console.log("threshold1:"+data.threshold["threshold1"]);
@@ -504,7 +509,11 @@ function State() {
         if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
            return false;
         }
-
+        if(thing.initial_path.length == 0){ //if empty, we want to try to find an initial path to compare
+          var path = node.initial_path(); //get the "best" path
+          console.log("initial path: "+path);
+          thing.initial_path = path;
+        }
         // node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
         
@@ -528,7 +537,17 @@ function State() {
             //get the last coordinate for each ped and push to a list
             final.last_coords.push([exiti,exitii])
             // console.log('final last coords line 740: ' + final.last_coords)
-	
+	          //get length of initial optimal path
+	          var init_path_length = thing.initial_path.length;
+	          //get length of actual path
+	          var actual_path_length = thing.path_i.length;
+	          //get the difference
+	          var path_difference = actual_path_length - init_path_length;
+	          //divide difference from actual
+	          var percent_diff = path_difference / actual_path_length
+	          //push this percent to array of total for that type
+	          var person_type = thing.type;
+	          final.eval_path[person_type].push(percent_diff);
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
 }
@@ -589,7 +608,19 @@ function State() {
             final.total_visited_ii.push(ii);
             // console.log('path_i: ' + thing.path_i)
             // console.log('path_ii: ' + thing.path_ii)
-
+	          //get length of initial optimal path
+	          var init_path_length = thing.initial_path.length;
+	          //console.log("initial: "+init_path_length);
+	          //get length of actual path
+	          var actual_path_length = thing.path_i.length;
+	          //console.log("actual: "+actual_path_length);
+	          //get the difference
+	          var path_difference = actual_path_length - init_path_length;
+	          //divide difference from actual
+	          var percent_diff = path_difference / init_path_length;
+	          //push this percent to array of total for that type
+	          var person_type = thing.type;
+	          final.eval_path[person_type].push(percent_diff);
             // clear old one
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make
@@ -919,7 +950,35 @@ function end_simulation() {
      final.final_occ = sum_occ/on_board_count;
      final.average_occupancy[things[i]] = final.final_occ;
    }
-    console.log('final occ list: ' + final.average_occupancy)
+    console.log('final occ list: ' + final.average_occupancy);
+    
+    //data for comparing against ideal path
+    //go through each type of person
+    var pop_tpes = pop.types();
+    for(i=0; i<pop_tpes.length; i++){
+       var eval_ratio = 0; //reset each time
+      var this_list = final.eval_path[pop_tpes[i]];
+      //add up all values in list
+      for (j=0; j<this_list.length; j++){
+        eval_ratio+=this_list[j];
+       // console.log("individual: "+this_list[j]);
+      }
+      //divide by length of the list
+      eval_ratio = eval_ratio/(this_list.length+1);
+      //add to total list
+      final.total_eval_path.push(eval_ratio);
+      //console log fir now, show on screen in future
+      console.log("eval by type: "+eval_ratio);
+    }
+    //sum up total list
+    var total_eval = 0;
+    for(i=0; i< final.total_eval_path.length; i++){
+      total_eval+=final.total_eval_path[i];
+    }
+    //divide by length of list
+    total_eval = total_eval / (final.total_eval_path.length+1);
+    //show in screen
+    console.log("total: "+ total_eval);
 }
 
 function clear_simulation() {

@@ -172,8 +172,6 @@
       data.push({Type: tpe,Value: value, Color: obj.color()});
     }
 
-    //data.push({Type: "Total",Value: final.total_collisions});
-    console.log(data);
     //array of keys
     const types = data.map(function(obj){
       return obj.Type;
@@ -286,6 +284,31 @@
                .duration('50')
                .attr('opacity', '1')
      });
+     
+   //add error bars
+ //  svg.append("g")
+ //   .selectAll("g")
+ //   .data(data)
+ //   .join(enter => {
+ //   let g = enter.append("g")
+ //   g.append("path")
+ //     .attr("d", d => {
+  //      let p = d3.path()
+      // Vertical line
+  //    console.log(d.Value);
+  //    p.moveTo(d.Value, (d.avg - d.sde))
+  //    p.lineTo(d.Value, (d.avg + d.sde))
+      // Bottom error bar
+  //    p.moveTo(d.Value - 4, (d.avg - d.sde))
+  //    p.lineTo(d.Value + 4, (d.avg - d.sde))
+      // Top error bar
+  //    p.moveTo(d.Value - 4, (d.avg + d.sde))
+   //   p.lineTo(d.Value + 4, (d.avg + d.sde))
+   //   return p.toString()
+ // })
+//  .attr("stroke", "seagreen")
+//  .attr("stroke-width", 1)
+//  })
      
      
     }

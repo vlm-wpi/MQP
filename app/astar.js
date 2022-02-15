@@ -46,6 +46,22 @@
 	    //return the next step, anchors, profiles, and the direction of the person
             return [n.i, n.ii, n.direction, n.profile_i, n.profile_ii];
 	}
+	
+	this.initial_path = function(){
+	  var path_array = [];
+	  var n = this; //current node
+	  if (this.parent === null) { //if the node does not have a parent
+		  return []; //return empty array
+    } // sanity check
+	   // find node who has no parent, since that node is the origin and then
+    // stop appending to list
+    while (typeof n !== 'undefined') {
+      path_array.push(n.i);
+		  n = n.parent; //update n
+      }
+	    //return the path
+      return path_array;
+	}
     
 	//used to quickly get the anchor values, hashtable
 	//ask about this
