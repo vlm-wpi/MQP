@@ -119,7 +119,8 @@
     .attr('stroke', "black")
     .attr('stroke-width', 2)
     .attr('fill', 'none');
-    
+
+
   var ms_between_updates = 100; //dont think i need
   var value = 20;
   var valueGreen = 20;
@@ -132,7 +133,7 @@
     // console.log("Number of updates:" + num_updates);
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
-      value = data.current[tpe];
+      value = (data.current[tpe]/final.total_peds_at_start)*100; //now a percent for each type of ped
       lineData[i].push({x: value2,y: value});
     }
     totalPopData.push({x: value2,y: final.current_population});
