@@ -680,7 +680,7 @@ function emit_grid() {
     str = "";
     for (var i = 0; i < data.width_i; i++) {
         for (var ii = 0; ii < data.width_ii; ii++) {
-            str += code_for_cell(daa._data[i][ii]);
+            str += code_for_cell(state.temp_grid[i][ii]);
         }
         str += "\n";
     }

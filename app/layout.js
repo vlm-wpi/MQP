@@ -18,6 +18,7 @@
 	this.orientation = data.random_orientation();
 	this.anchor_i = j
 	this.anchor_ii = jj
+	this.code = 'x';
 	this.type = 'Obstacle';
 	
 	this.profile_i = [0];
@@ -41,6 +42,7 @@
 	this.orientation = data.random_orientation();
 	this.anchor_i = j;
 	this.anchor_ii = jj;
+	this.code = '@';
 	this.type = 'Exit';
 
 	//think we need to check anchor instead of orientation

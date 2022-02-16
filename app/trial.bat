@@ -1,12 +1,14 @@
+@echo off
 @REM launch nodeApp for a 100 trials
+@REM  
+@REM appends lines of output to 'output'
 
-echo "Clearing output..."
-del output
+@REM launch for range
+set LO=%1
+set HI=%2
 
-@REM launch for ten runs...
-set M=10
-
-for /L %%a in (1,1,%M%) Do (
+for /L %%a in (%LO%,1,%HI%) Do (
+  echo trial %%a
   node nodeApp.js %%a >> output
 )
 
