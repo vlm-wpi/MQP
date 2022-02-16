@@ -10,14 +10,16 @@
 // which produces:
 //
 // {
-//  _ : [ 'command1', 'command2' ],
-//  language: 'javascript',
+//  _ : [ 'command1', 'command2' ],    // ALL UNBOUND arguments go here...
+//  language: 'javascript',             
 //  ide: 'GFG_IDE',
 //  b: true,
 //  v: true,
 //  '$0': 'yarg.js'
 // }
 //
+// So all desired outputs appear as "module:field", thus the total_exit_time
+// is 'final:total_exit_time'
 
 // Get module.exports of sharedModule
 const in_data = require('./data');
@@ -150,7 +152,22 @@ const b64 = require('./b64');
 final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
 
 function process_all() {
-   console.log("seed=" + seed + ",total_exit_time=" + final.final.total_exit_time);
+   output='seed=' + seed;
+
+   // argv._ is a list of all attributes requested to output, where each one is
+   // of the form "module:attribute".  This code separates left-hand-side from right
+   // side (to determine the module and attribute) then uses the Reflect capability
+   // to dynamically find the actual attribute value.
+   argv._.forEach(elt => {
+      const pairs = elt.split(":");    
+      const lhs = Reflect.get(global, pairs[0]);      // find in global name space
+      if (typeof lhs !== 'undefined') {
+        output += ',' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
+      } else {
+        console.log('*** ' + elt + ' is an invalid input');
+      }
+   });
+   console.log(output);
 }
 
 // If hasn't stopped after 5,000 generations, that is it
