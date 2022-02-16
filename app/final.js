@@ -676,6 +676,17 @@ function draw_grid(input) {
     }
 }
 
+function emit_grid() {
+    str = "";
+    for (var i = 0; i < data.width_i; i++) {
+        for (var ii = 0; ii < data.width_ii; ii++) {
+            str += code_for_cell(daa._data[i][ii]);
+        }
+        str += "\n";
+    }
+    return str;
+}
+
 
 // =====================================================
 // Stateless methods, that do not need state to operate
@@ -688,6 +699,15 @@ var color_for_cell = function(cell) {
     }
 
     return "rgb(250,250,250)";
+}
+
+// single-letter code for each entity
+var code_for_cell = function(cell) {
+    if (cell.has_thing()) {
+        return cell.get_thing().code;
+    }
+
+    return ".";
 }
 
 function Cell(i, ii) {
@@ -907,6 +927,12 @@ function start_simulation(max_gen, callback) {
     }
 
     initialize_simulation();
+
+    console.log(debug.active);
+    if (debug.active) {
+	debug.log(emit_grid());
+    }
+
     interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
     if (!gui.headless) {
       interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
@@ -996,6 +1022,7 @@ take_snapshot_calls = 0;
     final.start_simulation = start_simulation;
     final.end_simulation = end_simulation;
     final.clear_simulation = clear_simulation;
+    final.emit_grid = emit_grid;
 
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
     final.get_state = get_state;

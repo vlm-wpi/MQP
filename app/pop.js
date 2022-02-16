@@ -12,6 +12,7 @@ function Child(j, jj) {
     this.anchor_ii = jj
     this.min_exiti = 0;
     this.min_exitii = 0;
+    this.code = "c";
     this.goali = 0; //initially
     this.goalii = 0; //initially
     this.endi = 0; //initially
@@ -48,6 +49,7 @@ function Adult(j, jj) {
     this.anchor_ii = jj
     this.min_exiti = 0;
     this.min_exitii = 0;
+    this.code = "a";
     this.goali = 0; //initially
     this.goalii = 0; //initially
     this.endi = 0; //initially
@@ -97,6 +99,7 @@ function AdultBackpack(j, jj) {
     this.anchor_ii = jj
     this.min_exiti = 0;
     this.min_exitii = 0;
+    this.code = "P";
     this.goali = 0; //initially
     this.goalii = 0; //initially
     this.endi = 0; //initially
@@ -147,6 +150,7 @@ function AdultBike(j, jj) {
     this.anchor_ii = jj
     this.min_exiti = 0;
     this.min_exitii = 0;
+    this.code = "B";
     this.goali = 0; //initially
     this.goalii = 0; //initially
     this.endi = 0; //initially
