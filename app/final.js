@@ -928,7 +928,6 @@ function start_simulation(max_gen, callback) {
 
     initialize_simulation();
 
-    console.log(debug.active);
     if (debug.active) {
 	debug.log(emit_grid());
     }

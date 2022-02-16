@@ -102,8 +102,6 @@ if (typeof argv.height !== 'undefined') {
 	global.data.width_ii = argv.height
 }
 
-console.log(global.data.max);
-
 // SKIP the GUI!
 global.gui = {}
 global.gui.headless = true;
@@ -152,7 +150,7 @@ const b64 = require('./b64');
 final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
 
 function process_all() {
-   console.log(seed + "," + final.final.total_exit_time);
+   console.log("seed=" + seed + ",total_exit_time=" + final.final.total_exit_time);
 }
 
 // If hasn't stopped after 5,000 generations, that is it
