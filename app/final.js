@@ -416,11 +416,11 @@ function State() {
 		    return false;
 		}
 
-		// ensure stays fully on the board.
+		// ensure stays fully on the board. Be sure to protect for safety's sake
 		var dd = pop.dimension(tpe);
 		//this was changed
-		var j = random.nextIntBetween(dd[0], data.width_i - dd[1]);
-		var jj = random.nextIntBetween(dd[2], data.width_ii - dd[3]);
+		var j = data.get_bounded_index_i(random.nextIntBetween(dd[0], data.width_i - dd[1]));
+		var jj = data.get_bounded_index_ii(random.nextIntBetween(dd[2], data.width_ii - dd[3]));
 		
 		var exit_information = layout.get_exit_information(final.board, j, jj);
 		
