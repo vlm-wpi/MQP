@@ -48,7 +48,7 @@ const argv = yargs
 	   type: 'int'
    })
    .option('bike', {
-	   alias: 'b',
+	   alias: 'ab',
 	   description: '# of initial bikes',
 	   type: 'int'
    })

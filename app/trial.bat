@@ -9,7 +9,7 @@ set HI=%2
 
 for /L %%a in (%LO%,1,%HI%) Do (
   echo trial %%a
-  node nodeApp.js %%a >> output
+  node nodeApp.js --seed=%%a >> output
 )
 
 echo "done"
