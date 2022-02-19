@@ -235,7 +235,6 @@
                     if (exist <= succ) { // already processed this state AND was better than succ
                         continue;
                     }
-                    //   console.log("WOW! Found better.");
                     open.insert(succ);
                     open_hash[succ.key()] = succ;
                 }

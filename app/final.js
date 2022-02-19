@@ -507,7 +507,6 @@ function State() {
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
             //get the last coordinate for each ped and push to a list
             final.last_coords.push([exiti,exitii])
-            // console.log('final last coords line 740: ' + final.last_coords)
 	          //get length of initial optimal path
 	          var init_path_length = thing.initial_path.length;
 	          //get length of actual path
@@ -823,7 +822,6 @@ function end_simulation() {
     	visited_coords = [j,jj];
     	final.all_visited.push(visited_coords);
     } 
-    // console.log('all visited: ' + final.all_visited)
     //counter for num times each location was visited
     const count = [];
     for(const element of final.all_visited) {
@@ -839,7 +837,6 @@ function end_simulation() {
     		max_element = element;
     	}
     }
-    // console.log('final.last_coords: ' + final.last_coords)
     //do a count for the last coord of each ped to get num peds using each exit
     const count_last = [];
     var num_through_exit = [];
