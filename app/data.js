@@ -79,7 +79,7 @@ function calc_distance(i, ii, j, jj) {
     data.current['AdultBike'] = data.max['AdultBike']; 
 
     //number of oobstacles to place on the board, can be changed by user input
-    data.max['Obstacle'] = 50; 
+    data.max['Obstacle'] = 100; 
 
     // number of exits on grid, can be changed by user input
     data.max['Exit'] = 4;

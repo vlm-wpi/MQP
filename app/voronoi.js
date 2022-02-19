@@ -11,10 +11,10 @@
 
   // HF#2 Random hex color
     function randhclr() {
-      return "#" +
-      ("00" + randgp(256).toString(16)).slice(-2) + 
-      ("00" + randgp(256).toString(16)).slice(-2) + 
-      ("00" + randgp(256).toString(16)).slice(-2)
+      return "#" + 'FFFFFF'
+      // ("00" + randgp(256).toString(16)).slice(-2) + 
+      // ("00" + randgp(256).toString(16)).slice(-2) + 
+      // ("00" + randgp(256).toString(16)).slice(-2)
     }
 
     // HF#3 Metrics: Euclidean, Manhattan and Minkovski 3/20/17
@@ -107,7 +107,6 @@
       var ii = pt[1];
       if (state.temp_grid[i][ii].thing != null) { ct++; }
   }
-
   return (ct * 1.0) / size;
     }
 
