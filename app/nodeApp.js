@@ -152,14 +152,21 @@ const b64 = require('./b64');
 final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
 
 function process_all() {
-   output='seed=' + seed;
+   output=''
+
+   for (var elt in argv) {
+      if ((elt != '_') && (elt != '$0')) { 
+         if (output != '') { output += ','; }
+         output += elt + '=' + argv[elt];
+      }
+   }
 
    // argv._ is a list of all attributes requested to output, where each one is
-   // of the form "module:attribute".  This code separates left-hand-side from right
+   // of the form "module.attribute".  This code separates left-hand-side from right
    // side (to determine the module and attribute) then uses the Reflect capability
    // to dynamically find the actual attribute value.
    argv._.forEach(elt => {
-      const pairs = elt.split(":");    
+      const pairs = elt.split(".");    
       const lhs = Reflect.get(global, pairs[0]);      // find in global name space
       if (typeof lhs !== 'undefined') {
         output += ',' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
