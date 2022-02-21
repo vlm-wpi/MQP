@@ -57,6 +57,9 @@ function calc_distance(i, ii, j, jj) {
     // prepare for all attributes...
     data.current = {};
     data.max = {};
+    
+    //number of people initially on board, can be changed by user input
+    data.total_peds_at_start = 0;
 
     //number of children initially on board, can be changed by user input
     //counter for the number of children on the board, updates when a child reaches an exit

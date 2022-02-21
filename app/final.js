@@ -7,9 +7,6 @@
 
 
 //// -----------------------------------------------------
-
-    //variable for the total number of people on the grid, updates when it reads the value from html
-    final.total_peds_at_start = 0;
     
     var things = pop.types(); //each type of a person
     
@@ -86,7 +83,8 @@
     }
    
     //counter for the number of people currently on the board
-    final.current_population = 0;
+    //think could be data.current_population
+    final.current_population = data.total_peds_at_start;
 
     // number of generations, run up to max_generation
     var number_generations = 0;
@@ -94,27 +92,17 @@
 
     // callback hook once done.
     var callback_done = undefined;
+    
+
 
 
 //function that takes care of initializing the grid, placing items, and updating the board
 function State() {
-    var things = pop.types();
-    final.total_peds_at_start = 0;
-    for (i=0; i<things.length; i++){
-      final.total_peds_at_start+=parseInt(data.max[things[i]]);
-    }
-    if (!gui.headless) {
-	document.getElementById("total_peds_at_start").innerHTML = final.total_peds_at_start;
-	for (i = 0; i < things.length; i++) {
-	    var tpe = things[i];
-	    document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
-	}
-	document.getElementById("num_Obstacle_initial").innerHTML = data.max['Obstacle']
-    }
+
     this.grid = []; //data structure for grid, initially empty
     this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
     this.population = []; //population of people on the grid, initially empty
-    total_population_over_time = [final.total_peds_at_start]; //make the total population over time start with everyone on the board
+    total_population_over_time = [data.total_peds_at_start]; //make the total population over time start with everyone on the board
 
     //function thatt initializes the grid, does not need any input
     this.init_grids = function() {
@@ -303,7 +291,7 @@ function State() {
 			}
 		    }
 
-                     final.avg_collisions_total = final.total_collisions/final.total_peds_at_start;
+                     final.avg_collisions_total = final.total_collisions/data.total_peds_at_start;
 
                     if (!gui.headless) { 
                       document.getElementById("avg_collide").innerHTML = final.avg_collisions_total;  // TODO: doesn't change ever?
@@ -311,7 +299,7 @@ function State() {
 		    }
 
                     final.total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG] -- i think right
-                    final.avg_exit_time = (final.sum_of_exit_times) / final.total_peds_at_start; //in board update units
+                    final.avg_exit_time = (final.sum_of_exit_times) / data.total_peds_at_start; //in board update units
 
                     if (!gui.headless) { 
                       document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
@@ -319,7 +307,7 @@ function State() {
                     }
 
                     var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
-                    var avg_wait_steps = final.sum_wait_steps/final.total_peds_at_start; //average amount of waitsteps per person
+                    var avg_wait_steps = final.sum_wait_steps/data.total_peds_at_start; //average amount of waitsteps per person
 
                     if (!gui.headless) {
                       document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
@@ -768,7 +756,7 @@ var interval_id = 0;
 function initialize_simulation() {
     if (interval_id) {
         clearInterval(interval_id);
-        if (!gui.headless) { clearInterval(interval_id2); }
+      //  if (!gui.headless) { clearInterval(interval_id2); }
     }
     
     /**
@@ -802,7 +790,7 @@ function end_simulation() {
 	final.all_visited = [];
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
-    if (!gui.headless) { clearInterval(interval_id2); }
+   // if (!gui.headless) { clearInterval(interval_id2); }
     if (typeof callback_done !== 'undefined') {
        callback_done();
     }
@@ -920,6 +908,21 @@ function clear_simulation() {
 }
 
 function start_simulation(max_gen, callback) {
+  
+          var things = pop.types();
+   // final.total_peds_at_start = 0;
+    for (i=0; i<things.length; i++){
+      data.total_peds_at_start+=parseInt(data.max[things[i]]);
+      console.log(data.total_peds_at_start);
+    }
+    if (!gui.headless) {
+	document.getElementById("total_peds_at_start").innerHTML = data.total_peds_at_start;
+	for (i = 0; i < things.length; i++) {
+	    var tpe = things[i];
+	    document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
+	}
+	document.getElementById("num_Obstacle_initial").innerHTML = data.max['Obstacle']
+    }
 
     data._data = undefined; // clear everything to clean up after 1st run
 
@@ -941,7 +944,7 @@ function start_simulation(max_gen, callback) {
 
     interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
     if (!gui.headless) {
-      interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
+     // interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
     }
       //my attempt at making a call to a voronoi file
       for(i=0; i < final.board.exit_locations.length; i++) {
@@ -1021,6 +1024,10 @@ take_snapshot_calls = 0;
         encoder.finish();
         encoder.download("download.gif","image/gif");
         }
+        if(final.current_population != 0){
+          graph.simulate(); //real time graph
+        }
+        
 
     }
 

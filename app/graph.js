@@ -11,7 +11,7 @@
 	  var value2 = 0; //for x Axis, number of board updates
 	  //empty arrays for each type of person. Make sure the population types never changes order!
 	  var lineData = []; //initial empty data
-	  var totalPopData = [{x: value2,y: final.total_peds_at_start}];
+	  var totalPopData = [];
 	  for (i = 0; i < things.length; i++) {
 	    var tpe = things[i];
 	    lineData[i] = [];
@@ -39,8 +39,9 @@
 	 //     yMax = data.max[tpe];
 	//    }
 	//}
+	
       xRange = d3.scaleLinear().range([margin.left, width - margin.right]).domain([0, 1]), //terms of board updates
-      yRange = d3.scaleLinear().range([height - margin.top, margin.bottom]).domain([0,final.total_peds_at_start]),
+      yRange = d3.scaleLinear().range([height - margin.top, margin.bottom]).domain([0,100]), //100 because a percent
       
     //define the axes
     xAxis = d3.axisBottom()
@@ -115,7 +116,7 @@
   }
   //adding values for the total population
   var total = vis.append('svg:path')
-    .attr('d', lineFunc(totalPopData))
+    //.attr('d', lineFunc(totalPopData))
     .attr('stroke', "black")
     .attr('stroke-width', 2)
     .attr('fill', 'none');
@@ -126,17 +127,17 @@
   var valueGreen = 20;
   var num_updates = 0;
   
-  function simulate () {
-    
+  
+    function simulate () {
     num_updates++;
     value2++; //add one board update
     // console.log("Number of updates:" + num_updates);
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
-      value = (data.current[tpe]/final.total_peds_at_start)*100; //now a percent for each type of ped
+      value = (data.current[tpe]/data.total_peds_at_start)*100; //now a percent for each type of ped
       lineData[i].push({x: value2,y: value});
     }
-    totalPopData.push({x: value2,y: final.current_population});
+    totalPopData.push({x: value2,y: (final.current_population/data.total_peds_at_start)*100});
     //update every line
     for (i = 0; i < updates.length; i++) {
       updates[i].transition()
