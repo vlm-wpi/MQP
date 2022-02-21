@@ -8,6 +8,7 @@
 	//initialization
 	var new_exit_profile_i = [];
 	var new_exit_profile_ii = [];
+	conflict.takeothers = false;
     
     /** End of the chain. */
     function NullConflictStrategy() {
@@ -58,7 +59,7 @@
 		return true;
 	    }
 	    
-	    // didn't do anythin
+	    // didn't do anything
 	    return false; 
 	}
     }
@@ -101,7 +102,7 @@
 		return true;
 	    }
 	    
-	    // didn't do anythin
+	    // didn't do anything
 	    return false; 
 	}
     }
@@ -218,6 +219,35 @@
 	    return false; 
 	}
     }
+    
+    //use the astar function that makes a path, taking others into account
+    function takeOthersIntoAccount(threshold){
+      this.threshold = threshold;
+
+	    this.next = undefined;
+
+	    this.try_to_resolve = function (thing, state, board) {
+	    if (this.resolve(thing, state, board)) {
+	    	return true;
+	    }		
+
+	    // Is there nothing next to try? DONE!
+	    if (typeof this.next === 'undefined') {
+		    return false;
+	    }
+	    
+	    return this.next.try_to_resolve(thing, state, board);
+  	  }
+  	  this.resolve = function (thing, state, board) {
+  	    if (thing.wait > this.threshold) {
+  	      conflict.takeothers = true;
+  	      thing.wait = 0;
+  	      return true;
+  	    }
+  	    return false;
+  	  }
+      
+    }
 
     function factory(tpe, threshold) {
 	if (tpe == 'NullConflictStrategy') {
@@ -230,7 +260,9 @@
 	    return new ChooseRandomMove(threshold);
 	} else if (tpe == 'ChooseDifferentExitDensity') {
 		return new ChooseDifferentExitDensity(threshold);
-	} else {
+	} else if (tpe == 'takeOthersIntoAccount') {
+		return new takeOthersIntoAccount(threshold);
+	}else {
 	    console.log("unknown type:" + tpe);
 	    return None; //does not work to return none, what should i do?
 	}

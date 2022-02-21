@@ -475,7 +475,14 @@ function State() {
 	    heuristic = metrics.diagonald;
 	}
 
+        //the astar with others taken into account needs tp go here, doesn't really go with other conflict resolution strategies
+        //if astar with others checked
+        if (conflict.takeothers){
+          var node = astar.AStar(state, thing, 1, heuristic);
+          conflict.takeothers = false; //reset
+        } else{
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
+        }
         if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
            return false;
         }
