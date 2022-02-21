@@ -234,7 +234,6 @@
 	metrics.diagonal = diagonalCheckbox.checked;
 	if (metrics.diagonal ==  true) { //if the diagonal dostance is checked
             num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
-            console.log("diagonal" + num_checked_h)
             if(num_checked_h > 1) { //if the number of heuristics checked is more than one, someway to change to make more accurate???
 		window.alert("Cannot have more than one heuristic selected.  Please choose one and try again."); //popup window, too many heuristics checked
             }
@@ -251,7 +250,6 @@
 	metrics.manhattan = manhattanCheckbox.checked;
 	if (metrics.manhattan ==  true) { //if the manhattan dostance is checked
             num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
-            console.log("manhattan" + num_checked_h)
             if(num_checked_h > 1) { //if the number of heuristics checked is more than one, someway to change to make more accurate???
 		window.alert("Cannot have more than one heuristic selected.  Please choose one and try again."); //popup window, too many heuristics checked
             }
@@ -269,7 +267,6 @@
 	metrics.euclidean = euclideanCheckbox.checked;
 	if (metrics.euclidean ==  true) { //if the euclidean dostance is checked
             num_checked_h = num_checked_h + 1; //add one to the number of heuristics checked
-            console.log("euclidean" + num_checked_h)
 	    //if the number of heuristics checked is more than one, someway to change to make more accurate???
             if(num_checked_h > 1) { 
 		window.alert("Cannot have more than one heuristic selected.  Please choose one and try again.");
@@ -321,7 +318,6 @@
   var heatmap_Checkbox = document.getElementById("heatmap");
     if (data.heatmap) {
     heatmap_Checkbox.checked = true;
-    console.log('heatmap checked gui')
     }
     heatmap_Checkbox.oninput = function() {
     data.heatmap = heatmap_Checkbox.checked;

@@ -71,6 +71,7 @@
 
     //Exit time counters (in units of board updates)
     final.total_exit_time = 0; //counter for total exit time (taken to be the max exit time; exit time of last ped to leave the board)
+    final.avg_exit_time = 0; //counter for average exit time of all peds
 
     final.sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
     final.sum_wait_steps = 0; //number of times everyone has waited, all added together
@@ -265,7 +266,7 @@ function State() {
                 //add to sum of everyones exit times
                 final.exit_times[object_type] += thing.exittime; //add its exit time to the total person type exit times
                 final.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total person type wait times
-
+           
                 //check if last on the board for that type
                 if(data.current[object_type] == 0) {
                     var total_time = thing.exittime; //in board update units
@@ -310,13 +311,11 @@ function State() {
 		    }
 
                     final.total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG] -- i think right
-
-                    var avg_exit_time = (final.sum_of_exit_times) / final.total_peds_at_start; //in board update units
-
+                    final.avg_exit_time = (final.sum_of_exit_times) / final.total_peds_at_start; //in board update units
 
                     if (!gui.headless) { 
                       document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
-                      document.getElementById("avg_exit_time").innerHTML = avg_exit_time;
+                      document.getElementById("avg_exit_time").innerHTML = final.avg_exit_time;
                     }
 
                     var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
@@ -490,7 +489,6 @@ function State() {
         
         var exiti = thing.min_exiti; //get the first x value of the exit cell, don't think this is needed
         var exitii = thing.min_exitii; //get the first y value of the exit cell, dont think this is needed
-
         // Simplifying assumption: Once any piece of a thing touches the exit, the whole thing is removed.
 	// Future work: Could be resolved by warping the very profile of a thing to become smaller as it
 	// partially leaves, until it has no presence at which point it would be removed.
@@ -507,7 +505,6 @@ function State() {
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
             //get the last coordinate for each ped and push to a list
             final.last_coords.push([exiti,exitii])
-            // console.log('final last coords line 740: ' + final.last_coords)
 	          //get length of initial optimal path
 	          var init_path_length = thing.initial_path.length;
 	          //get length of actual path
@@ -536,7 +533,7 @@ function State() {
         var next = this.temp_grid[j][jj]; //get what is in the spot of the cell trying to move to
         if (typeof next === 'undefined') { return false; } // Sanity check: Leave now if undefined
 
-        var collision = 0; //counter for the number of collisions, a person trying to access a spot that anoother one is in
+        var collision = 0; //counter for the number of collisions, a person trying to access a spot that another one is in
         if (!next.has_other_thing(thing)) { //if there is nothing in the cell trying to move to
             // maybe could have break if collides so doesn't
             // have to keep going through loop. need to check
@@ -553,7 +550,12 @@ function State() {
                 if (this.temp_grid[safe_r][safe_c].has_other_thing(thing)) { //if something already in the cell
                     collision = collision + 1; //add one to collision counter
                     final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
-		    
+                    //add the ped's coordinates to their path so that it still shows when they are stuck
+                    var i = thing.anchor_i; //x coordinate of the person
+            		var ii = thing.anchor_ii; //y coordinate of the person
+                    thing.path_i.push(i);
+            		thing.path_ii.push(ii);
+   
                     //adding collision counter to specific person types
 		    final.collisions_total[thing.type] += 1;
                     break; //since we found a collision on part of the person, break for loop
@@ -571,7 +573,6 @@ function State() {
             // where thing is RIGHT NOW
             var i = thing.anchor_i; //x coordinate of the person
             var ii = thing.anchor_ii; //y coordinate of the person
-
             //add current position to the ped's path
             thing.path_i.push(i);
             thing.path_ii.push(ii);
@@ -596,7 +597,7 @@ function State() {
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make
             thing.anchor_ii = jj; //update the anchor y coordinate for the move to make
-            
+
             // move into new one
             thing.wait = 0; //reset its wait since making a move
             thing.place_footprint(this); //update the person's position on the temp grid
@@ -813,8 +814,8 @@ function end_simulation() {
 	    final.overall_exit_time = final.exit_total[things[i]];
 	  }
 	}
-    final.evaluation_metric = (final.overall_exit_time + final.total_collisions - final.total_avg_occ_all_time);
-	debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
+    final.evaluation_metric = Math.abs((final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time));
+    debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
 
     //making list of all the coords visited as (i,ii)
     for(n=0; n<=final.total_visited_i.length-1; n++) {
@@ -823,7 +824,6 @@ function end_simulation() {
     	visited_coords = [j,jj];
     	final.all_visited.push(visited_coords);
     } 
-    // console.log('all visited: ' + final.all_visited)
     //counter for num times each location was visited
     const count = [];
     for(const element of final.all_visited) {
@@ -839,7 +839,6 @@ function end_simulation() {
     		max_element = element;
     	}
     }
-    // console.log('final.last_coords: ' + final.last_coords)
     //do a count for the last coord of each ped to get num peds using each exit
     const count_last = [];
     var num_through_exit = [];
@@ -984,7 +983,7 @@ take_snapshot_calls = 0;
 	for (r = 0; r < voronoi.regions.length; r++) {
 	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report = report + f + ",";
-	}	
+	}
 
 	//console.log("gen:" + number_generations + ", density:" + report);
 
