@@ -8,7 +8,6 @@
 	//initialization
 	var new_exit_profile_i = [];
 	var new_exit_profile_ii = [];
-	conflict.takeothers = false;
     
     /** End of the chain. */
     function NullConflictStrategy() {
@@ -156,6 +155,7 @@
 		
 		if (can_move){ //if the person can move
                     //change anchor and call place footprint
+                    //do not need to check if exit?? or should we check
                     thing.remove_footprint(state); // remove the person from its current position on grid
                     thing.orientation = orientation; //update the person's orientation
                     next_coords = data.get_coords_from_orientation(thing); //get these new coordinates to move to
@@ -240,7 +240,17 @@
   	  }
   	  this.resolve = function (thing, state, board) {
   	    if (thing.wait > this.threshold) {
-  	      conflict.takeothers = true;
+  	      var node = astar.AStar(state, thing, 1, final.get_heuristic);
+  	     if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
+  	     console.log("no path");
+           return false;
+        }
+  	      var new_coords = node.initial_step(); //get the next move from the minheap
+  	      thing.remove_footprint(state); // remove the person from its current position on grid
+  	      //check if at exit?
+  	      thing.anchor_i = new_coords[0]; //update the anchor x coordinate to its new position
+          thing.anchor_ii = new_coords[1]; //update the anchor y coordinate to its new position
+          thing.place_footprint(state); //place the person in the temp grid in its new position
   	      thing.wait = 0;
   	      return true;
   	    }

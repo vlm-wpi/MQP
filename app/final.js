@@ -474,15 +474,11 @@ function State() {
 	} else if (metrics.diagonal) {
 	    heuristic = metrics.diagonald;
 	}
+	//probably not best logically
+	//but get heuristic to use in conflict
+	final.get_heuristic = heuristic;
 
-        //the astar with others taken into account needs tp go here, doesn't really go with other conflict resolution strategies
-        //if astar with others checked
-        if (conflict.takeothers){
-          var node = astar.AStar(state, thing, 1, heuristic);
-          conflict.takeothers = false; //reset
-        } else{
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
-        }
         if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
            return false;
         }
@@ -747,7 +743,10 @@ function Cell(i, ii) {
         if (this.thing == null) {
             return false;
         }
-        if (this.thing == other) {
+       // if (this.thing == other) { //this line might be the issue
+       //check if the anchor is the same
+       var person = this.thing
+       if ((person.anchor_i == other.anchor_i)&&(person.anchor_ii == other.anchor_ii)){
             return false;
         }
 
