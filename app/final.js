@@ -327,6 +327,7 @@ function State() {
                     }
 
                     //make the bar graphs here
+                    end_simulation(); 
                     //adding strings for the axis labels and titles
                     final.total_data = [];
                     	if (data.total_collide) {
@@ -341,7 +342,8 @@ function State() {
                     		final.total_data.push([final.average_occupancy, "Average area occupancy (in ped/sq ft)", "Total average area occupancy by pedestrian type"])
                     	}
                     if (!gui.headless) { graph.createBarGraph(); }
-	            end_simulation(); 
+                    if (!gui.headless) { graph.makeAvgGraph(); }
+	            
                 }
             }
         }

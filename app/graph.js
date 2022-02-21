@@ -164,6 +164,7 @@
     var svg = d3.select('#visualisation'+k);
     var colors = [];
     var data = [];
+    var value_avg;
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
       var info = final.total_data[k][0];
@@ -433,6 +434,103 @@ svg.append("text")
         .text("A short description of the take-away message of this chart.");
 
   }
+  
+  function makeAvgGraph(){
+    var svg = d3.select('#visualisation6');
+    var colors = [];
+    var data = [];
+    var data_total = [];
+    var value_avg;
+    var value_total;
+    for (i = 0; i < things.length; i++) {
+      var tpe = things[i];
+      var info = final.collisions_average;
+      var info_total = final.collisions_total;
+      value_avg = info[tpe];
+      value_total = info_total[tpe];
+      //create new object to get its color, there might be a better way to do this
+      var obj = pop.factory(tpe,0,0);
+      data.push({Type: tpe,Value: value_avg, Color: obj.color()});
+      data_total.push({Type: tpe,Value: value_total});
+    }
+
+    //array of keys
+    const types = data.map(function(obj){
+      return obj.Type;
+    });
+    //array of values
+    var num = data_total.map(function(obj){ //don't need
+      return obj.Value;
+    });
+    //max value
+    var maxValue = d3.max(num);
+   
+   var xScale = d3.scaleBand()
+    .range([margin.left, width])
+    .padding(0.05)
+    .domain(types)
+    
+    var yScale = d3.scaleLinear()
+      .range([margin.bottom, height])
+      .domain([maxValue, 0]); //try to change to data.max
+
+    //adding x axis
+    svg.append("g")
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,'+ height + ')')
+      .call(d3.axisBottom(xScale));
+      
+   //text for x
+  svg.append("text")
+    .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom+10) + ")")
+    .style("text-anchor", "middle")
+    .text("Type of Person");
+
+    //adding y axis
+    svg.append("g")
+      .attr('class', 'y axis')
+      .attr('transform', 'translate(' + (margin.left) + ',0)')
+      .call(d3.axisLeft(yScale).tickFormat(function(d){
+             return d;
+         }).ticks(10));
+     //text for y
+    svg.append("text")
+      .attr('transform', 'rotate(-90)')
+        .attr("y",margin.left-40)
+        .attr("x",0-(height/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text('Number of Collisions');
+        
+  //title
+  svg.append("text")
+   .attr("x", width/2)
+   .attr("y", margin.top)
+   .attr("text-anchor", "middle")
+   .style("font-size", "16px")
+   .text("Average Number of Collisions");
+
+    //plotting
+    svg.selectAll(".bar")
+     .data(data)
+     .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return xScale(d.Type); })
+      .attr("y", function(d) { return yScale(d.Value); })
+      .attr("width", xScale.bandwidth())
+      .attr("height", function(d) { return (height - yScale(d.Value)); })
+      .style('fill', function(d){return d.Color;});
+      
+    svg.selectAll("myCircles")
+     .data(data_total)
+     .enter().append("circle")
+      .attr("cx", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("cy", function(d) { return yScale(d.Value); })
+      .attr('r', 5);
+    
+  }
+  
+  
   //use this to get the actual data
   //if (!gui.headless) { document.getElementById("total_" + object_type + "_exit").innerHTML = total_time; }
 
@@ -440,6 +538,7 @@ svg.append("text")
     graph.simulate = simulate;
     graph.createBarGraph = createBarGraph;
     graph.heatmap = heatmap;
+    graph.makeAvgGraph = makeAvgGraph;
 //do i need a getter
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
    // graph.get_graph = get_graph;

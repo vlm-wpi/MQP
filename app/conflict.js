@@ -221,6 +221,8 @@
     }
     
     //use the astar function that makes a path, taking others into account
+    //as intuition, this conflict resolution needs to be last resort because if there are still a lot of people
+    //left on the board, and they are near an exit, there will not be a path
     function takeOthersIntoAccount(threshold){
       this.threshold = threshold;
 
