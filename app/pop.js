@@ -29,6 +29,7 @@ function Child(j, jj) {
     this.path_i = [];
     this.path_ii = [];
     this.initial_path = [];
+    this.collision = 0;
 
     this.color = function() {
         return "rgb(255,165,0)";
@@ -67,6 +68,7 @@ function Adult(j, jj) {
     this.path_i = [];
     this.path_ii = [];
     this.initial_path = [];
+    this.collision = 0;
 
     this.color = function() {
         return "rgb(0,0,255)";
@@ -117,6 +119,7 @@ function AdultBackpack(j, jj) {
     this.path_i = [];
     this.path_ii = [];
     this.initial_path = [];
+    this.collision = 0;
 
     this.color = function() {
         return "rgb(0,128,0)";
@@ -162,6 +165,7 @@ function AdultBike(j, jj) {
     this.path_i = [];
     this.path_ii = [];
     this.initial_path = [];
+    this.collision = 0;
     
     // my projection
     this.profile_i = [0, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3];

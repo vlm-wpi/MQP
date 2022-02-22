@@ -38,6 +38,17 @@
       final.eval_path[population_types[i]] = [];
     }
     final.total_eval_path = [];
+    
+     final.exit_times_array = {};
+     for (i=0; i<population_types.length; i++){
+      final.exit_times_array[population_types[i]] = [];
+    }
+     final.exit_times_total_array = [];
+     //collision array used for standard deviation
+     final.collision_list = {};
+     for (i=0; i<population_types.length; i++){
+      final.collision_list[population_types[i]] = [];
+    }
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
    // console.log("threshold1:"+data.threshold["threshold1"]);
@@ -246,6 +257,10 @@ function State() {
                 total_population_over_time.push(final.current_population); //add the current population to the list of all previous populations (each update)
                 final.sum_of_exit_times += thing.exittime; //add its exit time to the total exit times
                 final.sum_wait_steps += thing.waitsteps; //add its total waittime to the total waitime
+                
+                //add to list of exit times for each type and total
+                final.exit_times_array[object_type].push(thing.exittime);
+                final.exit_times_total_array.push(thing.exittime);
 
 		// TODO: THESE CAN BE GREATLY SIMPLIFIED...
                 data.current[object_type] -= 1; //subtract one from type's population
@@ -331,6 +346,7 @@ function State() {
                     	}
                     if (!gui.headless) { graph.createBarGraph(); }
                     if (!gui.headless) { graph.makeAvgGraph(); }
+                    if (!gui.headless) { graph.makeAvgExitGraph(); }
 	            
                 }
             }
@@ -509,6 +525,7 @@ function State() {
 	          //push this percent to array of total for that type
 	          var person_type = thing.type;
 	          final.eval_path[person_type].push(percent_diff);
+	          final.collision_list[person_type].push(thing.collision);
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
 }
@@ -551,6 +568,7 @@ function State() {
    
                     //adding collision counter to specific person types
 		    final.collisions_total[thing.type] += 1;
+		    thing.collision += 1;
                     break; //since we found a collision on part of the person, break for loop
                 }
             }
@@ -559,6 +577,7 @@ function State() {
             final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
             //adding collision counter to specific person types
 	    final.collisions_total[thing.type] += 1;
+	    thing.collision += 1;
         }
 	
         //now check if you can actually move the person
@@ -574,6 +593,9 @@ function State() {
             // console.log('path_i: ' + thing.path_i)
             // console.log('path_ii: ' + thing.path_ii)
 	          //get length of initial optimal path
+	          
+	          
+	          //DONT think this should be here, commented out adding to list
 	          var init_path_length = thing.initial_path.length;
 	          //console.log("initial: "+init_path_length);
 	          //get length of actual path
@@ -585,7 +607,9 @@ function State() {
 	          var percent_diff = path_difference / init_path_length;
 	          //push this percent to array of total for that type
 	          var person_type = thing.type;
-	          final.eval_path[person_type].push(percent_diff);
+	          //final.eval_path[person_type].push(percent_diff);
+	          
+	          
             // clear old one
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make

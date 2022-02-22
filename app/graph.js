@@ -6,6 +6,14 @@
  * //use data from app??
  */
 (function(graph) {
+  
+  //function to get the standard deviation of an array
+  //https://stackoverflow.com/questions/7343890/standard-deviation-javascript
+  function getStandardDeviation (array) {
+    const n = array.length;
+    const mean = array.reduce((a, b) => a + b) / n;
+    return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
+}
 
 	  var things = pop.types(); //each type of a person
 	  var value2 = 0; //for x Axis, number of board updates
@@ -443,16 +451,21 @@ svg.append("text")
     var data_total = [];
     var value_avg;
     var value_total;
+    var data_sd = [];
     for (i = 0; i < things.length; i++) {
       var tpe = things[i];
       var info = final.collisions_average;
       var info_total = final.collisions_total;
       value_avg = info[tpe];
       value_total = info_total[tpe];
+      //get standarrd deviations
+      var sd = getStandardDeviation(final.collision_list[tpe]);
+      var min = d3.min(final.collision_list[tpe]);
       //create new object to get its color, there might be a better way to do this
       var obj = pop.factory(tpe,0,0);
       data.push({Type: tpe,Value: value_avg, Color: obj.color()});
       data_total.push({Type: tpe,Value: value_total});
+      data_sd.push({Type: tpe,Value: sd, Avg: value_avg, Min: min});
     }
 
     //array of keys
@@ -528,6 +541,180 @@ svg.append("text")
       .attr("cx", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
       .attr("cy", function(d) { return yScale(d.Value); })
       .attr('r', 5);
+      
+    svg.selectAll("mySdLines")
+     .data(data_sd)
+     .enter().append('line')
+      .style('stroke', 'black')
+      .style('stroke-width', 3)
+      .attr("x1", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("y1", function(d) { return yScale(d.Avg-d.Value); })
+      .attr("x2", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("y2", function(d) { return yScale(d.Avg+d.Value); });
+      
+    svg.selectAll("myCirclesMin")
+     .data(data_sd)
+     .enter().append("circle")
+      .attr("cx", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("cy", function(d) { return yScale(d.Min); })
+      .attr('r', 5);
+      
+    svg.selectAll("mySdBarLines")
+     .data(data_sd)
+     .enter().append('line')
+      .style('stroke', 'black')
+      .style('stroke-width', 3)
+      .attr("x1", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)-5; })
+      .attr("y1", function(d) { return yScale(d.Avg-d.Value); })
+      .attr("x2", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)+5; })
+      .attr("y2", function(d) { return yScale(d.Avg-d.Value); })
+      
+    svg.selectAll("moreLines")
+     .data(data_sd)
+     .enter().append('line')
+      .style('stroke', 'black')
+      .style('stroke-width', 3)
+      .attr("x1", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)-5; })
+      .attr("y1", function(d) { return yScale(d.Avg+d.Value); })
+      .attr("x2", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)+5; })
+      .attr("y2", function(d) { return yScale(d.Avg+d.Value); });
+    
+  }
+  
+    function makeAvgExitGraph(){
+    var svg = d3.select('#visualisation7');
+    var colors = [];
+    var data = [];
+    var data_total = [];
+    var value_avg;
+    var value_total;
+    var data_sd = [];
+    for (i = 0; i < things.length; i++) {
+      var tpe = things[i];
+      var info = final.exit_average;
+      var info_total = final.exit_total;
+      value_avg = info[tpe];
+      value_total = info_total[tpe];
+      //get standarrd deviations
+      var sd = getStandardDeviation(final.exit_times_array[tpe]);
+      var min = d3.min(final.exit_times_array[tpe]);
+      //create new object to get its color, there might be a better way to do this
+      var obj = pop.factory(tpe,0,0);
+      data.push({Type: tpe,Value: value_avg, Color: obj.color()});
+      data_total.push({Type: tpe,Value: value_total});
+      data_sd.push({Type: tpe,Value: sd, Avg: value_avg, Min: min});
+    }
+
+    //array of keys
+    const types = data.map(function(obj){
+      return obj.Type;
+    });
+    //array of values
+    var num = data_total.map(function(obj){ //don't need
+      return obj.Value;
+    });
+    //max value
+    var maxValue = d3.max(num);
+   
+   var xScale = d3.scaleBand()
+    .range([margin.left, width])
+    .padding(0.05)
+    .domain(types)
+    
+    var yScale = d3.scaleLinear()
+      .range([margin.bottom, height])
+      .domain([maxValue, 0]); //try to change to data.max
+
+    //adding x axis
+    svg.append("g")
+      .attr('class', 'x axis')
+      .attr('transform', 'translate(0,'+ height + ')')
+      .call(d3.axisBottom(xScale));
+      
+   //text for x
+  svg.append("text")
+    .attr("transform", "translate(" + (width / 2) + " ," + (height + margin.bottom+10) + ")")
+    .style("text-anchor", "middle")
+    .text("Type of Person");
+
+    //adding y axis
+    svg.append("g")
+      .attr('class', 'y axis')
+      .attr('transform', 'translate(' + (margin.left) + ',0)')
+      .call(d3.axisLeft(yScale).tickFormat(function(d){
+             return d;
+         }).ticks(10));
+     //text for y
+    svg.append("text")
+      .attr('transform', 'rotate(-90)')
+        .attr("y",margin.left-40)
+        .attr("x",0-(height/2))
+        .attr("dy", "1em")
+        .style("text-anchor", "middle")
+        .text('Time taken to Exit');
+        
+  //title
+  svg.append("text")
+   .attr("x", width/2)
+   .attr("y", margin.top)
+   .attr("text-anchor", "middle")
+   .style("font-size", "16px")
+   .text("Average Exit Time");
+
+    //plotting
+    svg.selectAll(".bar")
+     .data(data)
+     .enter().append("rect")
+      .attr("class", "bar")
+      .attr("x", function(d) { return xScale(d.Type); })
+      .attr("y", function(d) { return yScale(d.Value); })
+      .attr("width", xScale.bandwidth())
+      .attr("height", function(d) { return (height - yScale(d.Value)); })
+      .style('fill', function(d){return d.Color;});
+      
+    svg.selectAll("myCircles")
+     .data(data_total)
+     .enter().append("circle")
+      .attr("cx", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("cy", function(d) { return yScale(d.Value); })
+      .attr('r', 5);
+      
+    svg.selectAll("mySdLines")
+     .data(data_sd)
+     .enter().append('line')
+      .style('stroke', 'black')
+      .style('stroke-width', 3)
+      .attr("x1", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("y1", function(d) { return yScale(d.Avg-d.Value); })
+      .attr("x2", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("y2", function(d) { return yScale(d.Avg+d.Value); });
+      
+    svg.selectAll("myCirclesMin")
+     .data(data_sd)
+     .enter().append("circle")
+      .attr("cx", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2); })
+      .attr("cy", function(d) { return yScale(d.Min); })
+      .attr('r', 5);
+      
+    svg.selectAll("mySdBarLines")
+     .data(data_sd)
+     .enter().append('line')
+      .style('stroke', 'black')
+      .style('stroke-width', 3)
+      .attr("x1", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)-5; })
+      .attr("y1", function(d) { return yScale(d.Avg-d.Value); })
+      .attr("x2", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)+5; })
+      .attr("y2", function(d) { return yScale(d.Avg-d.Value); })
+      
+    svg.selectAll("moreLines")
+     .data(data_sd)
+     .enter().append('line')
+      .style('stroke', 'black')
+      .style('stroke-width', 3)
+      .attr("x1", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)-5; })
+      .attr("y1", function(d) { return yScale(d.Avg+d.Value); })
+      .attr("x2", function(d) { return xScale(d.Type)+(xScale.bandwidth()/2)+5; })
+      .attr("y2", function(d) { return yScale(d.Avg+d.Value); });
     
   }
   
@@ -540,6 +727,7 @@ svg.append("text")
     graph.createBarGraph = createBarGraph;
     graph.heatmap = heatmap;
     graph.makeAvgGraph = makeAvgGraph;
+    graph.makeAvgExitGraph = makeAvgExitGraph;
 //do i need a getter
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
    // graph.get_graph = get_graph;
