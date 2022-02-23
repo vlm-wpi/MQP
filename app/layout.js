@@ -168,6 +168,11 @@
 	this.obstacles = [];
 
 	this.initialize = function(temp_grid) {
+	  var fs = require("fs");
+    var text = fs.readFileSync("LectureHall");
+    var textByLine = text.split("\n");
+    console.log(textByLine);
+	  
             //first quarter of the room
             for (var col = 0; col < 10; col++) { //leaving row space for people
                 for (var row = 0; row < 30; row += 2) { //columns, next to each other

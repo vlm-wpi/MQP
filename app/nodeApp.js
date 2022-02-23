@@ -84,24 +84,24 @@ global.data.max['Child'] = 0;
 
 // populate based on inputs
 if (typeof argv.abp !== 'undefined') {
-	global.data.max['AdultBackpack'] = argv.abp
+	global.data.max['AdultBackpack'] = argv.abp;
 }
 if (typeof argv.a !== 'undefined') {
-	global.data.max['Adult'] = argv.a
+	global.data.max['Adult'] = argv.a;
 }
 if (typeof argv.c !== 'undefined') {
-	global.data.max['Child'] = argv.c
+	global.data.max['Child'] = argv.c;
 }
 if (typeof argv.ab !== 'undefined') {
-	global.data.max['AdultBike'] = argv.ab
+	global.data.max['AdultBike'] = argv.ab;
 }
 
 // change size of simulation (NOTE: not compatible if room layouts are selected!)
 if (typeof argv.width !== 'undefined') {
-	global.data.width_i = argv.width
+	global.data.width_i = argv.width;
 }
 if (typeof argv.height !== 'undefined') {
-	global.data.width_ii = argv.height
+	global.data.width_ii = argv.height;
 }
 
 // SKIP the GUI!
