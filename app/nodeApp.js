@@ -156,7 +156,7 @@ function process_all() {
 
    for (var elt in argv) {
       if ((elt != '_') && (elt != '$0')) { 
-         if (output != '') { output += ','; }
+         if (output != '') { output += ';'; }
          output += elt + '=' + argv[elt];
       }
    }
@@ -169,7 +169,7 @@ function process_all() {
       const pairs = elt.split(".");    
       const lhs = Reflect.get(global, pairs[0]);      // find in global name space
       if (typeof lhs !== 'undefined') {
-        output += ',' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
+        output += ';' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
       } else {
         console.log('*** ' + elt + ' is an invalid input');
       }

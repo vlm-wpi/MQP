@@ -29,6 +29,9 @@
     final.last_coords = [];
     final.final_occ = {};
     final.total_eval = 0;
+    final.all_paths_i_taken = [];
+    final.all_paths_ii_taken = [];
+
     for (i=0; i<things.length; i++){
       final.final_occ[things[i]] = 0;
     }
@@ -50,6 +53,17 @@
      for (i=0; i<population_types.length; i++){
       final.collision_list[population_types[i]] = [];
     }
+
+    //initializing the lists of paths for different types
+    final.path_i_taken = {};
+    for (i=0; i<population_types.length; i++){
+      final.path_i_taken[population_types[i]] = [];
+    }
+    final.path_ii_taken = {};
+    for (i=0; i<population_types.length; i++){
+      final.path_ii_taken[population_types[i]] = [];
+    }
+
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
    // console.log("threshold1:"+data.threshold["threshold1"]);
@@ -64,7 +78,7 @@
     final.board = undefined;
 
     //string to save initial layout
-    final.initial_path_layout = '';
+    final.initial_path_layout = 'not working';
 
     //Collision counters
     final.collisions_total = {};
@@ -530,6 +544,18 @@ function State() {
 	          var person_type = thing.type;
 	          final.eval_path[person_type].push(percent_diff);
 	          final.collision_list[person_type].push(thing.collision);
+
+            //keeps a list of the paths that each ped took
+
+            final.path_i_taken[person_type].push(thing.path_i);
+            final.path_ii_taken[person_type].push(thing.path_ii);
+            final.all_paths_i_taken.push(thing.path_i);
+            final.all_paths_ii_taken.push(thing.path_ii);
+            // debug.log(person_type + 'final path i' + final.path_i_taken[person_type])
+            // debug.log(person_type + 'final path ii' + final.path_ii_taken[person_type])
+            // debug.log('final path i overalllll' + final.all_paths_i_taken)
+            // debug.log('final path ii overalllll' + final.all_paths_ii_taken)
+
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
 }
@@ -709,6 +735,7 @@ function emit_grid() {
     return str;
     final.initial_path_layout = str;
 }
+
 
 
 // =====================================================
@@ -939,7 +966,7 @@ function clear_simulation() {
 }
 
 function start_simulation(max_gen, callback) {
-  
+
           var things = pop.types();
    // final.total_peds_at_start = 0;
     for (i=0; i<things.length; i++){
@@ -971,6 +998,7 @@ function start_simulation(max_gen, callback) {
 
     if (debug.active) {
 	debug.log(emit_grid());
+
     }
 
     interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
