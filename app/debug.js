@@ -9,7 +9,7 @@
 
    function log(msg) {
        if (debug.active) {
-         // console.log(msg)
+         console.log(msg)
        }
    }
 

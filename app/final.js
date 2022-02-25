@@ -28,6 +28,7 @@
     var max_visits = 0;
     final.last_coords = [];
     final.final_occ = {};
+    final.total_eval = 0;
     for (i=0; i<things.length; i++){
       final.final_occ[things[i]] = 0;
     }
@@ -61,6 +62,9 @@
 
     // the selected board to use for layout
     final.board = undefined;
+
+    //string to save initial layout
+    final.initial_path_layout = '';
 
     //Collision counters
     final.collisions_total = {};
@@ -703,6 +707,7 @@ function emit_grid() {
         str += "\n";
     }
     return str;
+    final.initial_path_layout = str;
 }
 
 
@@ -834,7 +839,7 @@ function end_simulation() {
 	    final.overall_exit_time = final.exit_total[things[i]];
 	  }
 	}
-    final.evaluation_metric = Math.abs((final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time));
+    final.evaluation_metric = (final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time);
     debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
 
     //making list of all the coords visited as (i,ii)
@@ -923,6 +928,8 @@ function end_simulation() {
     }
     //divide by length of list
     total_eval = total_eval / (final.total_eval_path.length+1);
+    final.total_eval = total_eval;
+
     //show in screen
     debug.log("total: "+ total_eval);
 }
@@ -937,7 +944,7 @@ function start_simulation(max_gen, callback) {
    // final.total_peds_at_start = 0;
     for (i=0; i<things.length; i++){
       data.total_peds_at_start+=parseInt(data.max[things[i]]);
-      console.log(data.total_peds_at_start);
+      // console.log(data.total_peds_at_start);
     }
     if (!gui.headless) {
 	document.getElementById("total_peds_at_start").innerHTML = data.total_peds_at_start;
@@ -1034,7 +1041,6 @@ take_snapshot_calls = 0;
             return cell;
         });
     }));
-    }
 
     if (data.take_snapshot) {
         var canvas = document.getElementById('grid');
@@ -1054,6 +1060,7 @@ take_snapshot_calls = 0;
         
 
     }
+}
 
     // export JUST what we want to
     final.start_simulation = start_simulation;

@@ -168,7 +168,7 @@
 	this.obstacles = [];
 
 	this.initialize = function(temp_grid) {
-	  var fs = require("fs");
+	  var fs = require('fs');
     var text = fs.readFileSync("LectureHall");
     var textByLine = text.split("\n");
     console.log(textByLine);
