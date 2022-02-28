@@ -11,11 +11,11 @@
 
   // HF#2 Random hex color
     function randhclr() {
-      return "#" + 'FFFFFF'
-      // ("00" + randgp(256).toString(16)).slice(-2) + 
-      // ("00" + randgp(256).toString(16)).slice(-2) + 
-      // ("00" + randgp(256).toString(16)).slice(-2)
+      return ("00" + randgp(256).toString(16)).slice(-2) + 
+      ("00" + randgp(256).toString(16)).slice(-2) + 
+      ("00" + randgp(256).toString(16)).slice(-2)
     }
+    // "#" + 'FFFFFF'
 
     // HF#3 Metrics: Euclidean, Manhattan and Minkovski 3/20/17
     var D = 1;
