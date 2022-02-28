@@ -18,8 +18,8 @@
 //  '$0': 'yarg.js'
 // }
 //
-// So all desired outputs appear as "module:field", thus the total_exit_time
-// is 'final:total_exit_time'
+// So all desired outputs appear as "module.field", thus the total_exit_time
+// is 'final.total_exit_time'
 
 // Get module.exports of sharedModule
 const in_data = require('./data');
@@ -166,13 +166,22 @@ function process_all() {
    // side (to determine the module and attribute) then uses the Reflect capability
    // to dynamically find the actual attribute value.
    argv._.forEach(elt => {
-      const pairs = elt.split(".");    
-      const lhs = Reflect.get(global, pairs[0]);      // find in global name space
-      if (typeof lhs !== 'undefined') {
-        output += ';' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
-      } else {
-        console.log('*** ' + elt + ' is an invalid input');
-      }
+       const pairs = elt.split(".");    
+       const lhs = Reflect.get(global, pairs[0]);      // find in global name space
+       if (typeof lhs === 'undefined') {
+           console.log('*** ' + elt + ' is an invalid input');
+       } else {
+           var chosenValue = Reflect.get(lhs, pairs[1]);
+        
+           if ((typeof chosenValue === 'object') && (!Array.isArray(chosenValue))) {
+               // dictionary
+               for (var key in chosenValue) {
+		   output += ',' + pairs[1] + '[' + key + ']=' + chosenValue[key];
+               }
+           } else {
+               output += ',' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
+           }
+       }
    });
    console.log(output);
 }
