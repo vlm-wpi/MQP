@@ -168,7 +168,9 @@
 	this.obstacles = [];
 
 	this.initialize = function(temp_grid) {
-	  var fs = require("fs");
+	  var reader = new FileReader();
+	   reader.readAsText("LectureHall", "UTF-8");
+	  const fs = require('fs');
     var text = fs.readFileSync("LectureHall");
     var textByLine = text.split("\n");
     console.log(textByLine);
