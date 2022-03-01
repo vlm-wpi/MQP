@@ -10,24 +10,7 @@
 </head>
 <body>
   
-  <input type="file" name="inputfile"
-            id="inputfile">
-    <br>
-    <pre id="output"></pre>
-  
   <script type="text/javascript">
-  //testing file input
-  document.getElementById('inputfile')
-            .addEventListener('change', function() {
-              
-            var fr=new FileReader();
-            fr.onload=function(){
-                document.getElementById('output')
-                        .textContent=fr.result;
-            }
-              
-            fr.readAsText(this.files[0]);
-        })
   
   function start_app() {
     this.final.start_simulation();
@@ -95,8 +78,12 @@
 	      <option value="FullerLower"        >FullerLower</option>
 	       <option value="Classroom"          >Classroom</option>
 	       <option value="LectureHall"        >LectureHall</option>
+	       <option value="myFile"        >myFile</option>
 	       </select>
+	         <input type="file" name="inputfile"
+            id="inputfile"><br>
           </td>
+          
           <td>
           <h2>Choose Heuristic Function</h2>
           <b>Diagonal Distance:</b> <input type="checkbox" id="diagonal"><br>

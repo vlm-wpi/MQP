@@ -444,7 +444,7 @@ function State() {
 		//this was changed
 		var j = data.get_bounded_index_i(random.nextIntBetween(dd[0], data.width_i - dd[1]));
 		var jj = data.get_bounded_index_ii(random.nextIntBetween(dd[2], data.width_ii - dd[3]));
-		
+		console.log("board "+final.board);
 		var exit_information = layout.get_exit_information(final.board, j, jj);
 		
 		// construct the actual thing using the factory in pop
@@ -820,7 +820,8 @@ function initialize_simulation() {
      * 2. Once boundaries are set, create state to use layout for all dimensions
      * 3. Once state is constructed, then can initialize properly using temp_grid
      */
-    final.board = layout.factory(data.layout, data.width_i, data.width_ii)
+    final.board = layout.factory(data.layout, data.width_i, data.width_ii);
+    console.log("final board exits: "+final.board.exit_locations);
     data.width_i = final.board.width_i;
     data.width_ii = final.board.width_ii;
     state = new State();

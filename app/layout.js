@@ -168,12 +168,8 @@
 	this.obstacles = [];
 
 	this.initialize = function(temp_grid) {
-	  var reader = new FileReader();
-	   reader.readAsText("LectureHall", "UTF-8");
-	  var fs = require('fs');
-    var text = fs.readFileSync("LectureHall");
-    var textByLine = text.split("\n");
-    console.log(textByLine);
+	  //var reader = new FileReader();
+	 // reader.readAsText("LectureHall", "UTF-8");
 	  
             //first quarter of the room
             for (var col = 0; col < 10; col++) { //leaving row space for people
@@ -439,6 +435,73 @@
             // console.log(data.exit_locations)
 	}
     }
+    
+    function myFile(){
+      this.width_i = 50; //changed later, need to be here now
+    	this.width_ii = 75; //changed later
+    	this.exit_locations = [];
+    	this.obstacles = [];
+    	var exits = [];
+    	//function used to know what to place based on text file
+    function what_to_place(item, j, jj){
+      if (item == "@"){
+        var obj = new Exit(j, jj);
+        console.log(obj);
+        //cannot use orientation for random exit, need to check j and jj
+         if ((obj.anchor_i == 0) || (obj.anchor_i == this.width_i - 1)) {
+            obj.profile_i = [0, 0, 0, 0];
+            obj.profile_ii = [0, 1, 2, 3]; //vertical exit
+        } else {
+            obj.profile_i = [0, 1, 2, 3];
+            obj.profile_ii = [0, 0, 0, 0]; //horizontal exit
+        }
+        //want to push whole object so that it keeps track of the end
+        exits.push(obj);
+        for (var p = 0; p < obj.profile_i.length; p++) { //placing exits on the grid
+            var dj = obj.profile_i[p];
+            var djj = obj.profile_ii[p];
+            var safej = data.get_bounded_index_i(j + dj);
+            var safejj = data.get_bounded_index_ii(jj + djj);
+
+            temp_grid[safej][safejj].thing = obj;
+        }
+      }
+      else if (item == "x"){
+        var obj = new Obstacle(j, jj);
+        this.obstacles.push(obj);
+            temp_grid[j][jj].thing = obj;
+        }
+        else if (item == "."){
+          //do nothing
+        }
+      }
+  
+    	this.initialize = function(temp_grid) {
+    	  //check if gui not headless?
+    	  var text = document.getElementById('inputfile');
+    	  var file = text.files[0];
+        var fr = new FileReader();
+        fr.readAsText(file);
+        fr.onload = function(){
+          var text_file = fr.result;
+           var col = 0;
+          var row = 0;
+          for(i=0; i<text_file.length; i++){
+            //check if new line
+            if (text_file[i] == "/n"){
+              col = 0; //change column to zero
+              row++; //add one to row
+            } else{
+              what_to_place(text_file[i], col, row); //places items on grid
+              col++; //add one to column
+            }
+          }
+          this.width_i = col;
+          this.width_ii = row;
+            }
+        this.exit_locations = exits;
+    	}
+    }
 
     function layouts() {
 	return [
@@ -446,6 +509,7 @@
 	    'LectureHall',
 	    'FullerLower',
 	    'Classroom',
+	    'myFile',
 
 	    /** Add more here as you need. */
 	];
@@ -460,6 +524,8 @@
 	    return new FullerLower();
 	} else if (tpe == 'Classroom') {
 	    return new Classroom();
+	} else if (tpe == 'myFile') {
+	    return new myFile();
 	} else {
 	    console.log("unknown type:" + tpe);
 	    return None;
@@ -473,6 +539,7 @@
         //randomly getting a specific exit cell goal
         var rand_x = random.nextInt(4);
         var rand_y = random.nextInt(4);
+        console.log("board.exit_locations: "+board.exit_locations)
         for (var exit = 0; exit < board.exit_locations.length; exit++) {
             var exiti = board.exit_locations[exit].anchor_i;
             var exitii = board.exit_locations[exit].anchor_ii;
@@ -509,6 +576,22 @@
 
 	return [ min_exiti, min_exitii, min_endi, min_endii, goali, goalii];
     }
+    
+  function previewFile() {
+    const content = document.querySelector('.content');
+    const [file] = document.querySelector('input[type=file]').files;
+    const reader = new FileReader();
+  
+    reader.addEventListener("load", () => {
+      // this will then display a text file
+      content.innerText = reader.result;
+    }, false);
+  
+    if (file) {
+      reader.readAsText(file);
+    }
+    console.log(file);
+  }
 
 
     // exported API
@@ -516,6 +599,7 @@
     layout.factory = factory;
     layout.get_exit_information = get_exit_information;
     layout.Obstacle = Obstacle;
+    layout.previewFile = previewFile;
 
 })(typeof layout === 'undefined'?
             this['layout']={}: layout);
