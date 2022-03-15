@@ -966,6 +966,16 @@ function clear_simulation() {
     if (!gui.headless) { window.location.reload() }
 }
 
+//we need a function that does not reload the window
+//but instead manually resets the variables and board
+function reset(){
+  //issues
+  //variables for graph need to be reset
+  //when grid size changes, need to reset those variables
+  //i think can reset the canvas, need to find where we call it initially
+  //okay, what I do not really get is how the functions know we are referring to the canvas
+}
+
 function start_simulation(max_gen, callback) {
 
           var things = pop.types();
