@@ -444,7 +444,7 @@ function State() {
 		//this was changed
 		var j = data.get_bounded_index_i(random.nextIntBetween(dd[0], data.width_i - dd[1]));
 		var jj = data.get_bounded_index_ii(random.nextIntBetween(dd[2], data.width_ii - dd[3]));
-		console.log("board "+final.board);
+		// console.log("board "+final.board);
 		var exit_information = layout.get_exit_information(final.board, j, jj);
 		
 		// construct the actual thing using the factory in pop
@@ -547,10 +547,10 @@ function State() {
 
             //keeps a list of the paths that each ped took
 
-            final.path_i_taken[person_type].push(thing.path_i);
-            final.path_ii_taken[person_type].push(thing.path_ii);
-            final.all_paths_i_taken.push(thing.path_i);
-            final.all_paths_ii_taken.push(thing.path_ii);
+            final.path_i_taken[person_type].push('['+thing.path_i+']');
+            final.path_ii_taken[person_type].push('['+thing.path_ii+']');
+            final.all_paths_i_taken.push('['+thing.path_i+']');
+            final.all_paths_ii_taken.push('['+thing.path_ii+']');
             // debug.log(person_type + 'final path i' + final.path_i_taken[person_type])
             // debug.log(person_type + 'final path ii' + final.path_ii_taken[person_type])
             // debug.log('final path i overalllll' + final.all_paths_i_taken)
@@ -821,7 +821,7 @@ function initialize_simulation() {
      * 3. Once state is constructed, then can initialize properly using temp_grid
      */
     final.board = layout.factory(data.layout, data.width_i, data.width_ii);
-    console.log("final board exits: "+final.board.exit_locations);
+    // console.log("final board exits: "+final.board.exit_locations);
     data.width_i = final.board.width_i;
     data.width_ii = final.board.width_ii;
     state = new State();
@@ -862,11 +862,17 @@ function end_simulation() {
 	//get overall total exit time
 	//findinig the max exit time throughout all exit times
 	final.overall_exit_time = 0;
+    console.log('final.overall_exit_time at line 865: ' + final.overall_exit_time);
 	for(i=0; i<things.length; i++){
+        console.log('final.exit_total: ' + final.exit_total[things[i]])
+        console.log('final.overall exit time' + final.overall_exit_time)
 	  if (final.exit_total[things[i]]>final.overall_exit_time){
 	    final.overall_exit_time = final.exit_total[things[i]];
+        console.log('yes line 869');
 	  }
 	}
+    console.log('final.overall_exit_time at line 872: ' + final.overall_exit_time);
+
     final.evaluation_metric = (final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time);
     debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
 

@@ -176,10 +176,10 @@ function process_all() {
            if ((typeof chosenValue === 'object') && (!Array.isArray(chosenValue))) {
                // dictionary
                for (var key in chosenValue) {
-		   output += ',' + pairs[1] + '[' + key + ']=' + chosenValue[key];
+		   output += ';' + pairs[1] + '[' + key + ']=' + chosenValue[key];
                }
            } else {
-               output += ',' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
+               output += ';' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
            }
        }
    });
