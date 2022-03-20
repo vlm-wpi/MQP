@@ -85,15 +85,35 @@ global.data.max['Child'] = 0;
 // populate based on inputs
 if (typeof argv.abp !== 'undefined') {
 	global.data.max['AdultBackpack'] = argv.abp;
+   global.data.current['AdultBackpack'] = argv.abp;
 }
 if (typeof argv.a !== 'undefined') {
 	global.data.max['Adult'] = argv.a;
+   global.data.current['Adult'] = argv.a;
 }
 if (typeof argv.c !== 'undefined') {
 	global.data.max['Child'] = argv.c;
+   global.data.current['Child'] = argv.c;
 }
 if (typeof argv.ab !== 'undefined') {
 	global.data.max['AdultBike'] = argv.ab;
+   global.data.current['AdultBike'] = argv.ab;
+}
+if (typeof argv.abp == 'undefined') {
+   global.data.max['AdultBackpack'] = 0;
+   global.data.current['AdultBackpack'] = 0;
+}
+if (typeof argv.a == 'undefined') {
+   global.data.max['Adult'] = 0;
+   global.data.current['Adult'] = 0;
+}
+if (typeof argv.c == 'undefined') {
+   global.data.max['Child'] = 0;
+   global.data.current['Child'] = 0;
+}
+if (typeof argv.ab == 'undefined') {
+   global.data.max['AdultBike'] = 0;
+   global.data.current['AdultBike'] = 0;
 }
 
 // change size of simulation (NOTE: not compatible if room layouts are selected!)
@@ -188,3 +208,4 @@ function process_all() {
 
 // If hasn't stopped after 5,000 generations, that is it
 final.final.start_simulation(5000, process_all);
+// final.final.end_simulation();

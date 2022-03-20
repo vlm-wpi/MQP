@@ -3,11 +3,11 @@
  *
  * Refactor out the alorithm used for each individual entity.
  */
-(function(final) {
+ (function(final) {
 
 
 //// -----------------------------------------------------
-    
+
     var things = pop.types(); //each type of a person
     
     //initializations for average area occupancy lists
@@ -15,54 +15,57 @@
     var population_types = pop.types();
     for (i=0; i<population_types.length; i++){
       avg_occ_list[population_types[i]] = [];
-    }
-    var avg_total_occ_list = [];
-    final.total_avg_occ_all_time = 0;
-    var occ_sum = 0;
-    var vor_count = 0;
-    final.vor_exits_i = [];
-    final.vor_exits_ii = [];
-    final.evaluation_metric = 0;
-    final.total_visited_i = [];
-    final.total_visited_ii = [];
-    var max_visits = 0;
-    final.last_coords = [];
-    final.final_occ = {};
-    final.total_eval = 0;
-    final.all_paths_i_taken = [];
-    final.all_paths_ii_taken = [];
+  }
+  final.all_visited = [];
+  final.avg_total_occ_list = [];
+  final.total_avg_occ_all_time = 0;
+  final.occ_sum = 0;
+  var vor_count = 0;
+  final.vor_exits_i = [];
+  final.vor_exits_ii = [];
+  final.evaluation_metric = 0;
+  final.total_visited_i = [];
+  final.total_visited_ii = [];
+  var max_visits = 0;
+  final.last_coords = [];
+  final.final_occ = {};
+  final.total_eval = 0;
+  final.all_paths_i_taken = [];
+  final.all_paths_ii_taken = [];
+  final.overall_exit_time = 0;
 
-    for (i=0; i<things.length; i++){
+
+  for (i=0; i<things.length; i++){
       final.final_occ[things[i]] = 0;
-    }
-    final.average_occupancy = {};
-    
-    final.eval_path = {}
-    for (i=0; i<population_types.length; i++){
+  }
+  final.average_occupancy = {};
+
+  final.eval_path = {}
+  for (i=0; i<population_types.length; i++){
       final.eval_path[population_types[i]] = [];
-    }
-    final.total_eval_path = [];
-    
-     final.exit_times_array = {};
-     for (i=0; i<population_types.length; i++){
+  }
+  final.total_eval_path = [];
+
+  final.exit_times_array = {};
+  for (i=0; i<population_types.length; i++){
       final.exit_times_array[population_types[i]] = [];
-    }
-     final.exit_times_total_array = [];
+  }
+  final.exit_times_total_array = [];
      //collision array used for standard deviation
      final.collision_list = {};
      for (i=0; i<population_types.length; i++){
       final.collision_list[population_types[i]] = [];
-    }
+  }
 
     //initializing the lists of paths for different types
     final.path_i_taken = {};
     for (i=0; i<population_types.length; i++){
       final.path_i_taken[population_types[i]] = [];
-    }
-    final.path_ii_taken = {};
-    for (i=0; i<population_types.length; i++){
+  }
+  final.path_ii_taken = {};
+  for (i=0; i<population_types.length; i++){
       final.path_ii_taken[population_types[i]] = [];
-    }
+  }
 
     // TODO: this can be driven by GUI considerations BUT ALSO in nodeApp
     // conflict resolution strategy
@@ -85,9 +88,9 @@
     //initialize each value to zero
     for (i=0; i<things.length; i++){
       final.collisions_total[things[i]] = 0;
-    }
-    final.collisions_average = {};
-    
+  }
+  final.collisions_average = {};
+
     //exit counters, not sure if have to initialize
     final.exit_total = {};
     final.exit_average = {};
@@ -105,12 +108,12 @@
     final.exit_times = {};
     for (i=0; i<things.length; i++){
       final.exit_times[things[i]] = 0;
-    }
-    final.wait_steps = {};
-    for (i=0; i<things.length; i++){
+  }
+  final.wait_steps = {};
+  for (i=0; i<things.length; i++){
       final.wait_steps[things[i]] = 0;
-    }
-   
+  }
+
     //counter for the number of people currently on the board
     //think could be data.current_population
     final.current_population = data.total_peds_at_start;
@@ -151,10 +154,10 @@ function State() {
     	var occ = {};
     	var things = pop.types(); //each type of a person
     	for(i=0; i<things.length; i++){
-    	  occ[things[i]] = 0;
-    	}
-    	var avg_occ = {};
-    	var avg_total_occ = 0;
+         occ[things[i]] = 0;
+     }
+     var avg_occ = {};
+     var avg_total_occ = 0;
         //adding in calculation of average area occupancy
         //loop through the population and get the coordinates of each pedestrian
         //I think this can be condensed
@@ -167,9 +170,9 @@ function State() {
             for (i=0; i<things.length; i++){
               var tpe = things[i];
               type_counter[tpe] = 0; //initializing so we can add to them
-            }
-            var num_to_divide_by = 0;
-            var location = data.get_coords_from_orientation(thing);
+          }
+          var num_to_divide_by = 0;
+          var location = data.get_coords_from_orientation(thing);
             // console.log('location: ' + location)
             //find out the orienation of each pedestrian and set their box based on that
             var orientation = thing.orientation;
@@ -177,35 +180,35 @@ function State() {
                 box_profile_i = [-3,-2,-1,0,1,2,3];
                 box_profile_ii = [0,1,2,3,4,5,6];
             } else if (orientation == data.DOWN) {
-            	  box_profile_i = [-3,-2,-1,0,1,2,3];
-                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
-            } else if (orientation == data.LEFT) {
-            	  box_profile_i = [0,-1,-2,-3,-4,-5,-6];
-                box_profile_ii = [-3,-2,-1,0,1,2,3];
-            } else if (orientation == data.RIGHT) {
-            	  box_profile_i = [0,1,2,3,4,5,6];
-                box_profile_ii = [-3,-2,-1,0,1,2,3];
-            } else if (orientation == data.diagDownRight) {
-                box_profile_i = [0,1,2,3,4,5,6];
-                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
-            } else if (orientation == data.diagUpRight) {
-                box_profile_i = [0,1,2,3,4,5,6];
-                box_profile_ii = [0,1,2,3,4,5,6];
-            } else if (orientation == data.diagDownLeft) {
-                box_profile_i = [0,-1,-2,-3,-4,-5,-6];
-                box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
-            } else {
-                box_profile_i = [0,-1,-2,-3,-4,-5,-6];
-                box_profile_ii = [0,1,2,3,4,5,6];
-            }
-                for (var i = 0; i <= box_profile_i.length - 1; i++) {
-                    box_position_i = location[0] + box_profile_i[i];
-                    for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
-                        box_position_ii = location[1] + box_profile_ii[ii];
-                        var safei = data.get_bounded_index_i(box_position_i);
-                        var safeii = data.get_bounded_index_ii(box_position_ii);
+             box_profile_i = [-3,-2,-1,0,1,2,3];
+             box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
+         } else if (orientation == data.LEFT) {
+             box_profile_i = [0,-1,-2,-3,-4,-5,-6];
+             box_profile_ii = [-3,-2,-1,0,1,2,3];
+         } else if (orientation == data.RIGHT) {
+             box_profile_i = [0,1,2,3,4,5,6];
+             box_profile_ii = [-3,-2,-1,0,1,2,3];
+         } else if (orientation == data.diagDownRight) {
+            box_profile_i = [0,1,2,3,4,5,6];
+            box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
+        } else if (orientation == data.diagUpRight) {
+            box_profile_i = [0,1,2,3,4,5,6];
+            box_profile_ii = [0,1,2,3,4,5,6];
+        } else if (orientation == data.diagDownLeft) {
+            box_profile_i = [0,-1,-2,-3,-4,-5,-6];
+            box_profile_ii = [0,-1,-2,-3,-4,-5,-6];
+        } else {
+            box_profile_i = [0,-1,-2,-3,-4,-5,-6];
+            box_profile_ii = [0,1,2,3,4,5,6];
+        }
+        for (var i = 0; i <= box_profile_i.length - 1; i++) {
+            box_position_i = location[0] + box_profile_i[i];
+            for (var ii = 0; ii <= box_profile_ii.length - 1; ii++) {
+                box_position_ii = location[1] + box_profile_ii[ii];
+                var safei = data.get_bounded_index_i(box_position_i);
+                var safeii = data.get_bounded_index_ii(box_position_ii);
                         //count the number of open cells in their box
-                        	if(this.temp_grid[safei][safeii].thing != null) {
+                        if(this.temp_grid[safei][safeii].thing != null) {
                             open_cells--;
                             thing_type = this.temp_grid[safei][safeii].thing;
                             //get a count for how many cells are taken up by peds of each type
@@ -216,12 +219,12 @@ function State() {
                             for(k=0; k<types.length; k++){
                               if (type == types[k]){
                                 type_counter[type]+=1; //add one to the counter for the type of person
-                              }
                             }
-                            
-                            }
+                        }
+
                     }
                 }
+            }
                 //sets the number to divide by by adding on a pedestrian for the pedestrian of interest
                 var num_to_divide_by = 0;
                 for (i=0; i<things.length; i++){
@@ -229,7 +232,7 @@ function State() {
                   var profile = person.profile_i;
                   var weight_by_type = type_counter[things[i]]/profile.length;
                   num_to_divide_by+=weight_by_type;
-                }
+              }
                 num_to_divide_by += 1; //add one after everything has been calculated
                 //calculate the average area occupancy by dividing the number of open cells by the number of pedestrians
                 local_occ = (open_cells)/num_to_divide_by;
@@ -242,24 +245,24 @@ function State() {
         //calculates the average area occupancy across each ped type at a given time step
         for (i=0; i<things.length; i++){
           if(data.current[things[i]] != 0){
-          avg_occ[things[i]] = occ[things[i]]/data.current[things[i]];
+              avg_occ[things[i]] = occ[things[i]]/data.current[things[i]];
           avg_occ_list[things[i]].push(avg_occ[things[i]]); //pushing to a specific list in a list?
-          }
-        }
+      }
+  }
         //got through every type in the total occupancy list and add to together
         var total_occ = 0
         for (i=0; i<things.length; i++){
           var to_add = occ[things[i]];
           total_occ+=to_add;
-        }
-        //go through data.current tyoes and add all together
+      }
+        //go through data.current types and add all together
         var total_current = 0;
         for (i=0; i<things.length; i++){
           var to_add = parseInt(data.current[things[i]]);
           total_current+=to_add;
-        }
-        avg_total_occ = total_occ/total_current;
-        avg_total_occ_list.push(avg_total_occ);
+      }
+      avg_total_occ = total_occ/total_current;
+      final.avg_total_occ_list.push(avg_total_occ);
 
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
@@ -287,7 +290,7 @@ function State() {
                 //add to sum of everyones exit times
                 final.exit_times[object_type] += thing.exittime; //add its exit time to the total person type exit times
                 final.wait_steps[object_type] += thing.waitsteps; //add its wait time to the total person type wait times
-           
+
                 //check if last on the board for that type
                 if(data.current[object_type] == 0) {
                     var total_time = thing.exittime; //in board update units
@@ -299,37 +302,37 @@ function State() {
 
                 if (final.current_population == 0) { //if no people left on the grid
                 //not sure if we need to set these to zero, should all be zero???
-      		    var things = pop.types();
+                var things = pop.types();
 
 		    //end_simulation(); 
 
 		    for (i = 0; i < things.length; i++) {
-			var tpe = things[i];
+             var tpe = things[i];
 			data.current[tpe] = 0; //set everyone's population to zero
 			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
-			    document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
-			    document.getElementById("avg_" + tpe + "_collide").innerHTML = final.collisions_average[tpe];
-			}
+             document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
+             document.getElementById("avg_" + tpe + "_collide").innerHTML = final.collisions_average[tpe];
+         }
 
 			var avg_exit = final.exit_times[tpe] / data.max[tpe]; //in board update units
 			final.exit_average[tpe] = avg_exit;
 			if (!gui.headless) {
-			    document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
-			}
+             document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
+         }
 
 			var avg_wait_steps = final.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
 			if (!gui.headless) {
-			    document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
-			}
-		    }
+             document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
+         }
+     }
 
-                     final.avg_collisions_total = final.total_collisions/data.total_peds_at_start;
+     final.avg_collisions_total = final.total_collisions/data.total_peds_at_start;
 
-                    if (!gui.headless) { 
+     if (!gui.headless) { 
                       document.getElementById("avg_collide").innerHTML = final.avg_collisions_total;  // TODO: doesn't change ever?
                       document.getElementById("collide").innerHTML = final.total_collisions;
-		    }
+                  }
 
                     final.total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG] -- i think right
                     final.avg_exit_time = (final.sum_of_exit_times) / data.total_peds_at_start; //in board update units
@@ -337,7 +340,7 @@ function State() {
                     if (!gui.headless) { 
                       document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
                       document.getElementById("avg_exit_time").innerHTML = final.avg_exit_time;
-                    }
+                  }
 
                     var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
                     var avg_wait_steps = final.sum_wait_steps/data.total_peds_at_start; //average amount of waitsteps per person
@@ -345,30 +348,139 @@ function State() {
                     if (!gui.headless) {
                       document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
                       document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
+                  }
+
+
+                  if (gui.headless) {
+                    for (i = 0; i <= final.avg_total_occ_list.length - 1; i++) {
+                        final.occ_sum = final.occ_sum + final.avg_total_occ_list[i];
                     }
+                    final.total_avg_occ_all_time = final.occ_sum/final.avg_total_occ_list.length;
+                    debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
+
+                    //the final evaluation metric for comparing different runs and characterizing them as good/bad
+                    //higher number is bad
+                    //get overall total exit time
+                    //findinig the max exit time throughout all exit times
+                    for(i=0; i<things.length; i++){
+                        if (final.exit_total[things[i]]>final.overall_exit_time){
+                            final.overall_exit_time = final.exit_total[things[i]];
+                        }
+                    }
+
+                    final.evaluation_metric = (final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time);
+                    debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
+
+                    //making list of all the coords visited as (i,ii)
+                    for(n=0; n<=final.total_visited_i.length-1; n++) {
+                        j = final.total_visited_i[n];
+                        jj = final.total_visited_ii[n];
+                        visited_coords = [j,jj];
+                        final.all_visited.push(visited_coords);
+                    } 
+                    //counter for num times each location was visited
+                    const count = [];
+                    for(const element of final.all_visited) {
+                        if(count[element]) {
+                            count[element] += 1;
+                        } else {
+                            count[element] = 1;
+                        }
+                    }
+                    for(const element of final.all_visited) {
+                        if(count[element]>max_visits) {
+                            max_visits = count[element];
+                            max_element = element;
+                        }
+                    }
+                    //do a count for the last coord of each ped to get num peds using each exit
+                    const count_last = [];
+                    var num_through_exit = [];
+                    var exits = []
+                    for(const element of final.last_coords) {
+                        if(count_last[element]) {
+                            count_last[element] += 1;
+                        } else {
+                            count_last[element] = 1;
+                            exits.push(element);
+                        }
+                    }
+                    for(const element of exits) {
+                        num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
+                    }
+                    debug.log('exits: ' + exits)
+                    debug.log('count of last coords: ' + num_through_exit);
+                    debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
+
+                    //calculating the final average occupancy for each ped type
+                    for(i=0; i<things.length; i++){
+                       var sum_occ = 0;
+                       var on_board_count = 0;
+                       var list_index = avg_occ_list[things[i]];
+                       for(j=0; j<list_index.length; j++){
+                         if(list_index[j]>=0){
+                           on_board_count++;
+                           sum_occ += list_index[j];
+                       }
+                   }
+                   final.final_occ = sum_occ/on_board_count;
+                   final.average_occupancy[things[i]] = final.final_occ;
+                }
+                debug.log('final occ list: ' + final.average_occupancy);
+
+                    //data for comparing against ideal path
+                    //go through each type of person
+                    var pop_tpes = pop.types();
+                    for(i=0; i<pop_tpes.length; i++){
+                       var eval_ratio = 0; //reset each time
+                       var this_list = final.eval_path[pop_tpes[i]];
+                      //add up all values in list
+                      for (j=0; j<this_list.length; j++){
+                        eval_ratio+=this_list[j];
+                       // console.log("individual: "+this_list[j]);
+                   }
+                      //divide by length of the list
+                      eval_ratio = eval_ratio/(this_list.length+1);
+                      //add to total list
+                      final.total_eval_path.push(eval_ratio);
+                      //console log fir now, show on screen in future
+                      debug.log("eval by type: "+eval_ratio);
+                  }
+                    //sum up total list
+                    var total_eval = 0;
+                    for(i=0; i< final.total_eval_path.length; i++){
+                      total_eval+=final.total_eval_path[i];
+                  }
+                    //divide by length of list
+                    total_eval = total_eval / (final.total_eval_path.length+1);
+                    final.total_eval = total_eval;
+
+                    //show in screen
+                    debug.log("total: "+ total_eval);
+                }
 
                     //make the bar graphs here
                     end_simulation(); 
                     //adding strings for the axis labels and titles
                     final.total_data = [];
-                    	if (data.total_collide) {
-                    	    final.total_data.push([final.collisions_total, "Number of Collisions", "Total Number of collisions by Type of Person"]);
-                    	} if (data.average_collide) {
-                    	   final.total_data.push([final.collisions_average, "Number of Collisions", "Average Number of Collisions by Type of Person"]);
-                    	}if (data.total_exit) {
-                    	    final.total_data.push([final.exit_total, "Time taken to exit (in board updates)", "Time taken for each type of person to leave the board"]);
-                    	}if (data.average_exit) {
-                    	    final.total_data.push([final.exit_average, "Time taken to exit (in board updates)", "Average Time taken for each type of Person to Exit the board"]);
-                    	} if (data.average_occupancy) {
-                    		final.total_data.push([final.average_occupancy, "Average area occupancy (in ped/sq ft)", "Total average area occupancy by pedestrian type"])
-                    	}
-                    if (!gui.headless) { graph.createBarGraph(); }
-                    if (!gui.headless) { graph.makeAvgGraph(); }
-                    if (!gui.headless) { graph.makeAvgExitGraph(); }
-	            
-                }
-            }
-        }
+                    if (data.total_collide) {
+                       final.total_data.push([final.collisions_total, "Number of Collisions", "Total Number of collisions by Type of Person"]);
+                   } if (data.average_collide) {
+                    final.total_data.push([final.collisions_average, "Number of Collisions", "Average Number of Collisions by Type of Person"]);
+                }if (data.total_exit) {
+                   final.total_data.push([final.exit_total, "Time taken to exit (in board updates)", "Time taken for each type of person to leave the board"]);
+               }if (data.average_exit) {
+                   final.total_data.push([final.exit_average, "Time taken to exit (in board updates)", "Average Time taken for each type of Person to Exit the board"]);
+               } if (data.average_occupancy) {
+                  final.total_data.push([final.average_occupancy, "Average area occupancy (in ped/sq ft)", "Total average area occupancy by pedestrian type"])
+              }
+              if (!gui.headless) { graph.createBarGraph(); }
+              if (!gui.headless) { graph.makeAvgGraph(); }
+              if (!gui.headless) { graph.makeAvgExitGraph(); }
+
+          }
+      }
+  }
 
         // NEED THIS. This copies the footprint for drawing
         //got through every cell on the grid
@@ -411,7 +523,7 @@ function State() {
         } else if (data.classroom == true) {
 	    // classroom
 	}
-        else {
+    else {
             // INSERT SQUARE
             // -------------
             //            for (var n = 10; n <= 50; n++) {
@@ -423,21 +535,21 @@ function State() {
             //            }
 
         }
-	
+
 	// all exits have been generated
 	// iterate over ALL types and see how many are needed of each type
 	var things = pop.types();
 	for (i = 0; i < things.length; i++) {
-	    var tpe = things[i];
+       var tpe = things[i];
 
-	    var num_thing = 0;
-            var times_not_placed = 0;
-            while (num_thing < data.max[tpe]) {
+       var num_thing = 0;
+       var times_not_placed = 0;
+       while (num_thing < data.max[tpe]) {
 		// not sure what is a good number, have it at 1000 right now, changed to area
 		if (times_not_placed > (data.width_i*data.width_ii)) {
-		    window.alert("Cannot place this many " + tpe + " on the grid, please reset and choose another number");
-		    return false;
-		}
+          window.alert("Cannot place this many " + tpe + " on the grid, please reset and choose another number");
+          return false;
+      }
 
 		// ensure stays fully on the board. Be sure to protect for safety's sake
 		var dd = pop.dimension(tpe);
@@ -459,58 +571,58 @@ function State() {
 		
 		var obstacle = 0;
 		for (var p = 0; p < obj.profile_i.length; p++) { //
-                    var dj = obj.profile_i[p];
-                    var djj = obj.profile_ii[p];
-                    var safej = data.get_bounded_index_i(j + dj);
-                    var safejj = data.get_bounded_index_ii(jj + djj);
+            var dj = obj.profile_i[p];
+            var djj = obj.profile_ii[p];
+            var safej = data.get_bounded_index_i(j + dj);
+            var safejj = data.get_bounded_index_ii(jj + djj);
                     if (this.temp_grid[safej][safejj].has_other_thing(obj)) { //should be somewhere
 			obstacle++;                       //do not place
-                    }
-		}
+        }
+    }
 		if (obstacle == 0) {//if can place
                     for (var p = 0; p < obj.profile_i.length; p++) { //
-			var dj = obj.profile_i[p];
-			var djj = obj.profile_ii[p];
-			var safej = data.get_bounded_index_i(j + dj);
-			var safejj = data.get_bounded_index_ii(jj + djj);
-			this.temp_grid[safej][safejj].thing = obj;
-                    }
-		    
-                    this.population.push([obj, tpe]);
-                    num_thing++;
-                    times_not_placed = 0;
-		}
-		else{
-		    times_not_placed++;
-		}
-	    }
-	}
+                     var dj = obj.profile_i[p];
+                     var djj = obj.profile_ii[p];
+                     var safej = data.get_bounded_index_i(j + dj);
+                     var safejj = data.get_bounded_index_ii(jj + djj);
+                     this.temp_grid[safej][safejj].thing = obj;
+                 }
 
-	return true;
-    }
+                 this.population.push([obj, tpe]);
+                 num_thing++;
+                 times_not_placed = 0;
+             }
+             else{
+              times_not_placed++;
+          }
+      }
+  }
+
+  return true;
+}
 
     // function takes in a person, updates the temp grid. Be sure to remove TRUE if you 
     // are removing from the simulation
     this.move_thing = function(thing) { //returns true if person is at exit, false otherwise
 	var heuristic = metrics.manhattand;  // default to manhattan
 	if (metrics.euclidean) {
-	    heuristic = metrics.euclideand;
-	} else if (metrics.diagonal) {
-	    heuristic = metrics.diagonald;
-	}
+       heuristic = metrics.euclideand;
+   } else if (metrics.diagonal) {
+       heuristic = metrics.diagonald;
+   }
 	//probably not best logically
 	//but get heuristic to use in conflict
 	final.get_heuristic = heuristic;
 
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
         if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
-           return false;
-        }
+         return false;
+ }
         if(thing.initial_path.length == 0){ //if empty, we want to try to find an initial path to compare
           var path = node.initial_path(); //get the "best" path
           //console.log("initial path: "+path);
           thing.initial_path = path;
-        }
+      }
         // node is the initial step
         var new_coords = node.initial_step(); //get the next move from the minheap
         
@@ -526,8 +638,8 @@ function State() {
             if ((new_coords[0] + node.profile_i[index]) >= node.exiti && (new_coords[0] + node.profile_i[index]) <= node.endi &&
                 (new_coords[1] + node.profile_ii[index]) >= node.exitii && (new_coords[1] + node.profile_ii[index]) <= node.endii) {
                 count++; //if at exit, add one to the count
-                }
         }
+    }
 
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
             //get the last coordinate for each ped and push to a list
@@ -558,13 +670,13 @@ function State() {
 
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             return true; // remove, return true
-}
+        }
 
         // Now make sure that you can move to the place you want to
         var j = new_coords[0];           // x value of the move you want to make
         var jj = new_coords[1];          // y value of the move you want to make
         var orientation = new_coords[2]; // direction to aim
-            
+
         //collision handling
         // handles collisions by doing NOTHING. If spot that you are
         // trying to move to DOESN'T HAVE a thing then you are free to
@@ -594,11 +706,11 @@ function State() {
                     var i = thing.anchor_i; //x coordinate of the person
             		var ii = thing.anchor_ii; //y coordinate of the person
                     thing.path_i.push(i);
-            		thing.path_ii.push(ii);
-   
+                    thing.path_ii.push(ii);
+
                     //adding collision counter to specific person types
-		    final.collisions_total[thing.type] += 1;
-		    thing.collision += 1;
+                    final.collisions_total[thing.type] += 1;
+                    thing.collision += 1;
                     break; //since we found a collision on part of the person, break for loop
                 }
             }
@@ -606,10 +718,10 @@ function State() {
             collision = 1;
             final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
             //adding collision counter to specific person types
-	    final.collisions_total[thing.type] += 1;
-	    thing.collision += 1;
+            final.collisions_total[thing.type] += 1;
+            thing.collision += 1;
         }
-	
+
         //now check if you can actually move the person
         if (collision == 0) { //if no collision for any cells then can move whole piece
             // where thing is RIGHT NOW
@@ -648,23 +760,23 @@ function State() {
             // move into new one
             thing.wait = 0; //reset its wait since making a move
             thing.place_footprint(this); //update the person's position on the temp grid
-	    return false;
+            return false;
         }
 
 	// now there is a collision to handle..
         thing.wait++; //add one to its wait
         thing.waitsteps++; //add one to its total waits
-  final.resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1);
-  final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
-  final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
-  final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
-	final.resolution_strategy1.try_to_resolve(thing, state, final.board);
-	final.resolution_strategy2.try_to_resolve(thing, state, final.board);
-	final.resolution_strategy3.try_to_resolve(thing, state, final.board);
-	final.resolution_strategy4.try_to_resolve(thing, state, final.board);
+        final.resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1);
+        final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
+        final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
+        final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
+        final.resolution_strategy1.try_to_resolve(thing, state, final.board);
+        final.resolution_strategy2.try_to_resolve(thing, state, final.board);
+        final.resolution_strategy3.try_to_resolve(thing, state, final.board);
+        final.resolution_strategy4.try_to_resolve(thing, state, final.board);
 
         return false; // do not remove
-   }
+    }
 }
 
 var state = new State();
@@ -776,25 +888,25 @@ function Cell(i, ii) {
 
     //this is the issue!! -- fixed
     this.has_obstacle = function() {
-	if (this.thing == null) { return false; }
+       if (this.thing == null) { return false; }
 
-        if (this.thing instanceof layout.Obstacle) {
-            return true;
-        } else {
-            return false;
-        }
+       if (this.thing instanceof layout.Obstacle) {
+        return true;
+    } else {
+        return false;
     }
+}
 
-    this.has_other_thing = function(other) {
-        if (this.thing == null) {
-            return false;
-        }
+this.has_other_thing = function(other) {
+    if (this.thing == null) {
+        return false;
+    }
        // if (this.thing == other) { //this line might be the issue
        //check if the anchor is the same
        var person = this.thing
        if ((person.anchor_i == other.anchor_i)&&(person.anchor_ii == other.anchor_ii)){
-            return false;
-        }
+        return false;
+    }
 
         // has SOME other thing...
         return true;
@@ -813,14 +925,14 @@ function initialize_simulation() {
     if (interval_id) {
         clearInterval(interval_id);
       //  if (!gui.headless) { clearInterval(interval_id2); }
-    }
-    
+  }
+
     /**
      * 1. Construct layout first to determine boundaries
      * 2. Once boundaries are set, create state to use layout for all dimensions
      * 3. Once state is constructed, then can initialize properly using temp_grid
      */
-    final.board = layout.factory(data.layout, data.width_i, data.width_ii);
+     final.board = layout.factory(data.layout, data.width_i, data.width_ii);
     // console.log("final board exits: "+final.board.exit_locations);
     data.width_i = final.board.width_i;
     data.width_ii = final.board.width_ii;
@@ -839,42 +951,37 @@ function initialize_simulation() {
         return row.map(function(cell) {
             return cell;
         });
-      }));
-    }
+    }));
+  }
 }
 var end_sim_counter = 0;
 function end_simulation() {
-	final.all_visited = [];
     end_sim_counter = end_sim_counter + 1;
     clearInterval(interval_id);
    // if (!gui.headless) { clearInterval(interval_id2); }
-    if (typeof callback_done !== 'undefined') {
-       callback_done();
-    }
-    for (i = 0; i <= avg_total_occ_list.length - 1; i++) {
-    	occ_sum = occ_sum + avg_total_occ_list[i];
-    }
-    final.total_avg_occ_all_time = occ_sum/avg_total_occ_list.length;
-    debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
+   if (typeof callback_done !== 'undefined') {
+     callback_done();
+ }
+ if (!gui.headless) {
+    for (i = 0; i <= final.avg_total_occ_list.length - 1; i++) {
+        final.occ_sum = final.occ_sum + final.avg_total_occ_list[i];
+}
+final.total_avg_occ_all_time = final.occ_sum/final.avg_total_occ_list.length;
+debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
 
     //the final evaluation metric for comparing different runs and characterizing them as good/bad
     //higher number is bad
 	//get overall total exit time
 	//findinig the max exit time throughout all exit times
 	final.overall_exit_time = 0;
-    console.log('final.overall_exit_time at line 865: ' + final.overall_exit_time);
-	for(i=0; i<things.length; i++){
-        console.log('final.exit_total: ' + final.exit_total[things[i]])
-        console.log('final.overall exit time' + final.overall_exit_time)
-	  if (final.exit_total[things[i]]>final.overall_exit_time){
-	    final.overall_exit_time = final.exit_total[things[i]];
-        console.log('yes line 869');
-	  }
-	}
-    console.log('final.overall_exit_time at line 872: ' + final.overall_exit_time);
+    for(i=0; i<things.length; i++){
+        if (final.exit_total[things[i]]>final.overall_exit_time){
+           final.overall_exit_time = final.exit_total[things[i]];
+       }
+   }
 
-    final.evaluation_metric = (final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time);
-    debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
+   final.evaluation_metric = (final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time);
+   debug.log('final evaluation metric 992: ' + final.evaluation_metric);
 
     //making list of all the coords visited as (i,ii)
     for(n=0; n<=final.total_visited_i.length-1; n++) {
@@ -922,50 +1029,51 @@ function end_simulation() {
     }
 
     //calculating the final average occupancy for each ped type
-   for(i=0; i<things.length; i++){
-     var sum_occ = 0;
-     var on_board_count = 0;
-     var list_index = avg_occ_list[things[i]];
-     for(j=0; j<list_index.length; j++){
-       if(list_index[j]>=0){
-         on_board_count++;
-         sum_occ += list_index[j];
+    for(i=0; i<things.length; i++){
+       var sum_occ = 0;
+       var on_board_count = 0;
+       var list_index = avg_occ_list[things[i]];
+       for(j=0; j<list_index.length; j++){
+         if(list_index[j]>=0){
+           on_board_count++;
+           sum_occ += list_index[j];
        }
-     }
-     final.final_occ = sum_occ/on_board_count;
-     final.average_occupancy[things[i]] = final.final_occ;
    }
-    debug.log('final occ list: ' + final.average_occupancy);
-    
+   final.final_occ = sum_occ/on_board_count;
+   final.average_occupancy[things[i]] = final.final_occ;
+}
+debug.log('final occ list: ' + final.average_occupancy);
+
     //data for comparing against ideal path
     //go through each type of person
     var pop_tpes = pop.types();
     for(i=0; i<pop_tpes.length; i++){
        var eval_ratio = 0; //reset each time
-      var this_list = final.eval_path[pop_tpes[i]];
+       var this_list = final.eval_path[pop_tpes[i]];
       //add up all values in list
       for (j=0; j<this_list.length; j++){
         eval_ratio+=this_list[j];
        // console.log("individual: "+this_list[j]);
-      }
+   }
       //divide by length of the list
       eval_ratio = eval_ratio/(this_list.length+1);
       //add to total list
       final.total_eval_path.push(eval_ratio);
       //console log fir now, show on screen in future
       debug.log("eval by type: "+eval_ratio);
-    }
+  }
     //sum up total list
     var total_eval = 0;
     for(i=0; i< final.total_eval_path.length; i++){
       total_eval+=final.total_eval_path[i];
-    }
+  }
     //divide by length of list
     total_eval = total_eval / (final.total_eval_path.length+1);
     final.total_eval = total_eval;
 
     //show in screen
     debug.log("total: "+ total_eval);
+}
 }
 
 function clear_simulation() {
@@ -984,53 +1092,53 @@ function reset(){
 
 function start_simulation(max_gen, callback) {
 
-          var things = pop.types();
+  var things = pop.types();
    // final.total_peds_at_start = 0;
-    for (i=0; i<things.length; i++){
+   for (i=0; i<things.length; i++){
       data.total_peds_at_start+=parseInt(data.max[things[i]]);
       // console.log(data.total_peds_at_start);
-    }
-    if (!gui.headless) {
-	document.getElementById("total_peds_at_start").innerHTML = data.total_peds_at_start;
-	for (i = 0; i < things.length; i++) {
-	    var tpe = things[i];
-	    document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
-	}
-	document.getElementById("num_Obstacle_initial").innerHTML = data.max['Obstacle']
-    }
+  }
+  if (!gui.headless) {
+   document.getElementById("total_peds_at_start").innerHTML = data.total_peds_at_start;
+   for (i = 0; i < things.length; i++) {
+       var tpe = things[i];
+       document.getElementById("num_" + tpe + "_initial").innerHTML = data.max[tpe];
+   }
+   document.getElementById("num_Obstacle_initial").innerHTML = data.max['Obstacle']
+}
 
     data._data = undefined; // clear everything to clean up after 1st run
 
     if (typeof max_gen === 'undefined') {
       max_generation = Number.MAX_SAFE_INTEGER;
-    } else {
+  } else {
       max_generation = max_gen;
-    }
+  }
 
-    if (typeof callback !== 'undefined') {
+  if (typeof callback !== 'undefined') {
       callback_done = callback;
-    }
+  }
 
-    initialize_simulation();
+  initialize_simulation();
 
-    if (debug.active) {
-	debug.log(emit_grid());
+  if (debug.active) {
+   debug.log(emit_grid());
 
-    }
+}
 
-    interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
-    if (!gui.headless) {
+interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
+if (!gui.headless) {
      // interval_id2 = setInterval(graph.simulate, data.ms_between_updates); //think these two values should be the same
-    }
+ }
       //my attempt at making a call to a voronoi file
       for(i=0; i < final.board.exit_locations.length; i++) {
-    	final.vor_exits_i.push(final.board.exit_locations[i].anchor_i);
-    	final.vor_exits_ii.push(final.board.exit_locations[i].anchor_ii);
-      }
-    if (!gui.headless) { voronoi.pVoronoiD(final.board); }
-      var report = "";
-      final.m = 0;
-      for (var r = 0; r < voronoi.regions.length; r++) {
+       final.vor_exits_i.push(final.board.exit_locations[i].anchor_i);
+       final.vor_exits_ii.push(final.board.exit_locations[i].anchor_ii);
+   }
+   if (!gui.headless) { voronoi.pVoronoiD(final.board); }
+   var report = "";
+   final.m = 0;
+   for (var r = 0; r < voronoi.regions.length; r++) {
 	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report = report + f + ",";
 	    if(f>final.m) {
@@ -1038,12 +1146,12 @@ function start_simulation(max_gen, callback) {
 	    	final.most_dense_exit_i = final.vor_exits_i[r];
 	    	final.most_dense_exit_ii = final.vor_exits_ii[r];
 	    }
-      }
+  }
       //finding min density region and saving the index
       final.least_dense_index = 0;
       report2 = "";
       final.min = 10000; //initialization to find min density region (slightly sketchy but I don't think it'll cause problems)
-	for (var r = 0; r < voronoi.regions.length; r++) {
+      for (var r = 0; r < voronoi.regions.length; r++) {
 	    var f = voronoi.density(r, state); //voronoi.count(r, state);
 	    report2 = report2 + f + ",";
 	    if(f<final.min) {
@@ -1055,15 +1163,15 @@ function start_simulation(max_gen, callback) {
 	}
 	debug.log('report: ' + report);
 	debug.log('final.vor_exits_i: ' + final.vor_exits_i)
-		debug.log('final.vor_exits_ii: ' + final.vor_exits_ii)
+  debug.log('final.vor_exits_ii: ' + final.vor_exits_ii)
 
-		debug.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m);
-		debug.log('least dense exit location at start: (' + final.least_dense_exit_i + ', ' + final.least_dense_exit_ii + '), with a density of: ' + final.min);
-		debug.log('least dense index: ' + final.least_dense_index);
+  debug.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m);
+  debug.log('least dense exit location at start: (' + final.least_dense_exit_i + ', ' + final.least_dense_exit_ii + '), with a density of: ' + final.min);
+  debug.log('least dense index: ' + final.least_dense_index);
 }
 
 take_snapshot_calls = 0;
-    function simulate_and_visualize() {
+function simulate_and_visualize() {
 	number_generations += 1;
 
 	var report = "";
@@ -1075,10 +1183,10 @@ take_snapshot_calls = 0;
 	//console.log("gen:" + number_generations + ", density:" + report);
 
 	if (number_generations >= max_generation) {
-            end_simulation();
+        end_simulation();
 
-            return;
-	}
+        return;
+    }
 
     state.move_things();
     if (!gui.headless) { draw_grid(state.grid.map(function(row) {
@@ -1087,10 +1195,10 @@ take_snapshot_calls = 0;
         });
     }));
 
-    if (data.take_snapshot) {
-        var canvas = document.getElementById('grid');
-        var context = canvas.getContext('2d');
-        var encoder = new GIFEncoder();
+        if (data.take_snapshot) {
+            var canvas = document.getElementById('grid');
+            var context = canvas.getContext('2d');
+            var encoder = new GIFEncoder();
         encoder.setRepeat(0); //0  -> loop forever
                         //1+ -> loop n times then stop
         encoder.setDelay(1); //go to next frame every n milliseconds
@@ -1098,13 +1206,13 @@ take_snapshot_calls = 0;
         encoder.addFrame(context)
         encoder.finish();
         encoder.download("download.gif","image/gif");
-        }
-        if(final.current_population != 0){
-          graph.simulate(); //real time graph
-        }
-        
-
     }
+    if(final.current_population != 0){
+          graph.simulate(); //real time graph
+      }
+
+
+  }
 }
 
     // export JUST what we want to
@@ -1117,5 +1225,5 @@ take_snapshot_calls = 0;
     final.get_state = get_state;
 
 })(typeof final === 'undefined'?
-            this['final']={}: final);
+this['final']={}: final);
 
