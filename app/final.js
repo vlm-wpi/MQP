@@ -842,7 +842,7 @@ function emit_grid() {
         for (var ii = 0; ii < data.width_ii; ii++) {
             str += code_for_cell(state.temp_grid[i][ii]);
         }
-        str += "\n";
+        str += ",";
     }
     return str;
     final.initial_path_layout = str;
@@ -1123,8 +1123,12 @@ function start_simulation(max_gen, callback) {
 
   if (debug.active) {
    debug.log(emit_grid());
-
 }
+if (gui.headless) {
+    emit_grid();
+    final.initial_path_layout = emit_grid();
+}
+
 
 interval_id = setInterval(simulate_and_visualize, data.ms_between_updates);
 if (!gui.headless) {
