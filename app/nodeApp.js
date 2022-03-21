@@ -77,10 +77,10 @@ if (typeof argv.seed !== 'undefined') {
 }
 
 // Default configuration
-global.data.max['AdultBackpack'] = 0;
-global.data.max['AdultBike'] = 0;
-global.data.max['Adult'] = 500;
-global.data.max['Child'] = 0;
+// global.data.max['AdultBackpack'] = 0;
+// global.data.max['AdultBike'] = 0;
+// global.data.max['Adult'] = 0;
+// global.data.max['Child'] = 0;
 
 // populate based on inputs
 if (typeof argv.abp !== 'undefined') {
@@ -115,6 +115,7 @@ if (typeof argv.ab == 'undefined') {
    global.data.max['AdultBike'] = 0;
    global.data.current['AdultBike'] = 0;
 }
+
 
 // change size of simulation (NOTE: not compatible if room layouts are selected!)
 if (typeof argv.width !== 'undefined') {
@@ -208,4 +209,3 @@ function process_all() {
 
 // If hasn't stopped after 5,000 generations, that is it
 final.final.start_simulation(5000, process_all);
-// final.final.end_simulation();

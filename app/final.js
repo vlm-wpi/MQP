@@ -604,7 +604,7 @@ function State() {
     // function takes in a person, updates the temp grid. Be sure to remove TRUE if you 
     // are removing from the simulation
     this.move_thing = function(thing) { //returns true if person is at exit, false otherwise
-	var heuristic = metrics.manhattand;  // default to manhattan
+    var heuristic = metrics.manhattand;  // default to manhattan
 	if (metrics.euclidean) {
        heuristic = metrics.euclideand;
    } else if (metrics.diagonal) {
