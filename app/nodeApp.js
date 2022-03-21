@@ -54,6 +54,16 @@ const argv = yargs
 	   description: '# of initial bikes',
 	   type: 'int'
    })
+   .option('obstacles', {
+      alias: 'o',
+      description: '# of obstacles',
+      type: 'int'
+   })
+   .option('exits', {
+      alias: 'e',
+      description: '# of exits',
+      type: 'int'
+   })
    .option('debug', {
 	   description: 'whether to show debug messages',
 	   type: 'boolean'
@@ -123,6 +133,16 @@ if (typeof argv.width !== 'undefined') {
 }
 if (typeof argv.height !== 'undefined') {
 	global.data.width_ii = argv.height;
+}
+
+// change the number of obstacles and exits
+if (typeof argv.o !== 'undefined') {
+   global.data.max['Obstacle'] = argv.o;
+   global.data.current['Obstacle'] = argv.o;
+}
+if (typeof argv.e !== 'undefined') {
+   global.data.max['Exit'] = argv.e;
+   global.data.current['Exit'] = argv.e;
 }
 
 // SKIP the GUI!
