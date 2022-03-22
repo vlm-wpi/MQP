@@ -977,8 +977,12 @@ function reset(){
 }
 
 function start_simulation(max_gen, callback) {
-
-          var things = pop.types();
+  //clear canvas before starting
+  let canvas = document.getElementById('grid');
+  const context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  
+  var things = pop.types();
    // final.total_peds_at_start = 0;
     for (i=0; i<things.length; i++){
       data.total_peds_at_start+=parseInt(data.max[things[i]]);
