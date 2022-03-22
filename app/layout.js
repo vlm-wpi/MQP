@@ -539,7 +539,7 @@
         //randomly getting a specific exit cell goal
         var rand_x = random.nextInt(4);
         var rand_y = random.nextInt(4);
-        console.log("board.exit_locations: "+board.exit_locations)
+        // console.log("board.exit_locations: "+board.exit_locations)
         for (var exit = 0; exit < board.exit_locations.length; exit++) {
             var exiti = board.exit_locations[exit].anchor_i;
             var exitii = board.exit_locations[exit].anchor_ii;

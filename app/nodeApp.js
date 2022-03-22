@@ -54,6 +54,16 @@ const argv = yargs
 	   description: '# of initial bikes',
 	   type: 'int'
    })
+   .option('obstacles', {
+      alias: 'o',
+      description: '# of obstacles',
+      type: 'int'
+   })
+   .option('exits', {
+      alias: 'e',
+      description: '# of exits',
+      type: 'int'
+   })
    .option('debug', {
 	   description: 'whether to show debug messages',
 	   type: 'boolean'
@@ -77,24 +87,45 @@ if (typeof argv.seed !== 'undefined') {
 }
 
 // Default configuration
-global.data.max['AdultBackpack'] = 0;
-global.data.max['AdultBike'] = 0;
-global.data.max['Adult'] = 500;
-global.data.max['Child'] = 0;
+// global.data.max['AdultBackpack'] = 0;
+// global.data.max['AdultBike'] = 0;
+// global.data.max['Adult'] = 0;
+// global.data.max['Child'] = 0;
 
 // populate based on inputs
 if (typeof argv.abp !== 'undefined') {
 	global.data.max['AdultBackpack'] = argv.abp;
+   global.data.current['AdultBackpack'] = argv.abp;
 }
 if (typeof argv.a !== 'undefined') {
 	global.data.max['Adult'] = argv.a;
+   global.data.current['Adult'] = argv.a;
 }
 if (typeof argv.c !== 'undefined') {
 	global.data.max['Child'] = argv.c;
+   global.data.current['Child'] = argv.c;
 }
 if (typeof argv.ab !== 'undefined') {
 	global.data.max['AdultBike'] = argv.ab;
+   global.data.current['AdultBike'] = argv.ab;
 }
+if (typeof argv.abp == 'undefined') {
+   global.data.max['AdultBackpack'] = 0;
+   global.data.current['AdultBackpack'] = 0;
+}
+if (typeof argv.a == 'undefined') {
+   global.data.max['Adult'] = 0;
+   global.data.current['Adult'] = 0;
+}
+if (typeof argv.c == 'undefined') {
+   global.data.max['Child'] = 0;
+   global.data.current['Child'] = 0;
+}
+if (typeof argv.ab == 'undefined') {
+   global.data.max['AdultBike'] = 0;
+   global.data.current['AdultBike'] = 0;
+}
+
 
 // change size of simulation (NOTE: not compatible if room layouts are selected!)
 if (typeof argv.width !== 'undefined') {
@@ -102,6 +133,16 @@ if (typeof argv.width !== 'undefined') {
 }
 if (typeof argv.height !== 'undefined') {
 	global.data.width_ii = argv.height;
+}
+
+// change the number of obstacles and exits
+if (typeof argv.o !== 'undefined') {
+   global.data.max['Obstacle'] = argv.o;
+   global.data.current['Obstacle'] = argv.o;
+}
+if (typeof argv.e !== 'undefined') {
+   global.data.max['Exit'] = argv.e;
+   global.data.current['Exit'] = argv.e;
 }
 
 // SKIP the GUI!
@@ -176,10 +217,10 @@ function process_all() {
            if ((typeof chosenValue === 'object') && (!Array.isArray(chosenValue))) {
                // dictionary
                for (var key in chosenValue) {
-		   output += ',' + pairs[1] + '[' + key + ']=' + chosenValue[key];
+		   output += ';' + pairs[1] + '[' + key + ']=' + chosenValue[key];
                }
            } else {
-               output += ',' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
+               output += ';' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
            }
        }
    });
