@@ -133,7 +133,22 @@
   var ms_between_updates = 100; //dont think i need
   var value = 20;
   var valueGreen = 20;
-  var num_updates = 0;
+  var num_updates = 0; //dont think necessary
+  
+  function reset_graph(){
+    //remove lines
+    d3.selectAll("path.line").remove();
+    
+    var things = pop.types(); //each type of a person
+	  var value2 = 0; //for x Axis, number of board updates
+	  //empty arrays for each type of person. Make sure the population types never changes order!
+	  var lineData = []; //initial empty data
+	  var totalPopData = [];
+	  for (i = 0; i < things.length; i++) {
+	    var tpe = things[i];
+	    lineData[i] = [];
+	}
+  }
   
   
     function simulate () {
@@ -728,6 +743,7 @@ svg.append("text")
     graph.heatmap = heatmap;
     graph.makeAvgGraph = makeAvgGraph;
     graph.makeAvgExitGraph = makeAvgExitGraph;
+    graph.reset_graph = reset_graph;
 //do i need a getter
     // make sure we keep reference so it can be retrieved AFTER simulation is over.
    // graph.get_graph = get_graph;

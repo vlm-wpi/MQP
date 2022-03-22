@@ -34,7 +34,6 @@
   final.all_paths_ii_taken = [];
   final.overall_exit_time = 0;
 
-
   for (i=0; i<things.length; i++){
       final.final_occ[things[i]] = 0;
   }
@@ -1083,22 +1082,124 @@ function clear_simulation() {
 //we need a function that does not reload the window
 //but instead manually resets the variables and board
 function reset(){
-  //issues
+
+   //clear canvas before starting
+  let canvas = document.getElementById('grid');
+  const context = canvas.getContext('2d');
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  
   //variables for graph need to be reset
-  //when grid size changes, need to reset those variables
-  //i think can reset the canvas, need to find where we call it initially
-  //okay, what I do not really get is how the functions know we are referring to the canvas
+  //repeat of initalizations
+  data.total_peds_at_start = 0;
+   var things = pop.types(); //each type of a person
+  //initializations for average area occupancy lists
+    var avg_occ_list = {};
+    var population_types = pop.types();
+    for (i=0; i<population_types.length; i++){
+      avg_occ_list[population_types[i]] = [];
+  }
+  final.all_visited = [];
+  final.avg_total_occ_list = [];
+  final.total_avg_occ_all_time = 0;
+  final.occ_sum = 0;
+  var vor_count = 0;
+  final.vor_exits_i = [];
+  final.vor_exits_ii = [];
+  final.evaluation_metric = 0;
+  final.total_visited_i = [];
+  final.total_visited_ii = [];
+  var max_visits = 0;
+  final.last_coords = [];
+  final.final_occ = {};
+  final.total_eval = 0;
+  final.all_paths_i_taken = [];
+  final.all_paths_ii_taken = [];
+  final.overall_exit_time = 0;
+
+  for (i=0; i<things.length; i++){
+      final.final_occ[things[i]] = 0;
+  }
+  final.average_occupancy = {};
+
+  final.eval_path = {}
+  for (i=0; i<population_types.length; i++){
+      final.eval_path[population_types[i]] = [];
+  }
+  final.total_eval_path = [];
+
+  final.exit_times_array = {};
+  for (i=0; i<population_types.length; i++){
+      final.exit_times_array[population_types[i]] = [];
+  }
+  final.exit_times_total_array = [];
+     //collision array used for standard deviation
+     final.collision_list = {};
+     for (i=0; i<population_types.length; i++){
+      final.collision_list[population_types[i]] = [];
+  }
+
+    //initializing the lists of paths for different types
+    final.path_i_taken = {};
+    for (i=0; i<population_types.length; i++){
+      final.path_i_taken[population_types[i]] = [];
+  }
+  final.path_ii_taken = {};
+  for (i=0; i<population_types.length; i++){
+      final.path_ii_taken[population_types[i]] = [];
+  }
+  
+   //Collision counters
+    final.collisions_total = {};
+    //initialize each value to zero
+    for (i=0; i<things.length; i++){
+      final.collisions_total[things[i]] = 0;
+  }
+  final.collisions_average = {};
+
+    //exit counters, not sure if have to initialize
+    final.exit_total = {};
+    final.exit_average = {};
+
+    final.total_collisions = 0; //counter for the number of collisions for people, in total
+    final.avg_collisions_total = 0; //counter for the number of collisions for people, as an average
+
+    //Exit time counters (in units of board updates)
+    final.total_exit_time = 0; //counter for total exit time (taken to be the max exit time; exit time of last ped to leave the board)
+    final.avg_exit_time = 0; //counter for average exit time of all peds
+
+    final.sum_of_exit_times = 0; //counter for the exit times of everyone, added together 
+    final.sum_wait_steps = 0; //number of times everyone has waited, all added together
+
+    final.exit_times = {};
+    for (i=0; i<things.length; i++){
+      final.exit_times[things[i]] = 0;
+  }
+  final.wait_steps = {};
+  for (i=0; i<things.length; i++){
+      final.wait_steps[things[i]] = 0;
+  }
+
+    //counter for the number of people currently on the board
+    //think could be data.current_population
+    final.current_population = data.total_peds_at_start;
+
+    // number of generations, run up to max_generation
+    var number_generations = 0;
+    state.population = [];
+    for (i=0; i<things.length; i++){
+      data.current[things[i]] = data.max[things[i]];
+  }
+    //reset graph
+    graph.reset_graph();
 }
 
 function start_simulation(max_gen, callback) {
 
-  //clear canvas before starting
-  let canvas = document.getElementById('grid');
-  const context = canvas.getContext('2d');
-  context.clearRect(0, 0, canvas.width, canvas.height);
+ if (!gui.headless) {
+  reset(); //used to clear the board in GUI
+ }
 
   var things = pop.types();
-   // final.total_peds_at_start = 0;
    for (i=0; i<things.length; i++){
       data.total_peds_at_start+=parseInt(data.max[things[i]]);
       // console.log(data.total_peds_at_start);
