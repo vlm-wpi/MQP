@@ -262,26 +262,38 @@
     }
 
     function factory(tpe, threshold) {
-	if (tpe == 'NullConflictStrategy') {
-	    return new NullConflictStrategy();
-	} else if (tpe == 'ChooseDifferentExit') {
-	    return new ChooseDifferentExit(threshold);
-	} else if (tpe == 'ChooseDifferentExitAndReset') {
-	    return new ChooseDifferentExitAndReset(threshold);
-	} else if (tpe == 'ChooseRandomMove') {
-	    return new ChooseRandomMove(threshold);
-	} else if (tpe == 'ChooseDifferentExitDensity') {
-		return new ChooseDifferentExitDensity(threshold);
-	} else if (tpe == 'takeOthersIntoAccount') {
-		return new takeOthersIntoAccount(threshold);
-	}else {
-	    console.log("unknown type:" + tpe);
-	    return None; //does not work to return none, what should i do?
-	}
+		if (tpe == 'NullConflictStrategy') {
+			return new NullConflictStrategy();
+		} else if (tpe == 'ChooseDifferentExit') {
+			return new ChooseDifferentExit(threshold);
+		} else if (tpe == 'ChooseDifferentExitAndReset') {
+			return new ChooseDifferentExitAndReset(threshold);
+		} else if (tpe == 'ChooseRandomMove') {
+			return new ChooseRandomMove(threshold);
+		} else if (tpe == 'ChooseDifferentExitDensity') {
+			return new ChooseDifferentExitDensity(threshold);
+		} else if (tpe == 'takeOthersIntoAccount') {
+			return new takeOthersIntoAccount(threshold);
+		}else {
+			console.log("unknown type:" + tpe);
+			return None; //does not work to return none, what should i do?
+		}
     }
+	
+	function knownStrategies() {
+		return [
+			'NullConflictStrategy', 
+			'ChooseDifferentExit', 
+			'ChooseDifferentExitAndReset', 
+			'ChooseRandomMove', 
+			'ChooseDifferentExitDensity', 
+			'takeOthersIntoAccount'
+		];
+	}
 
     // exported API
     conflict.factory = factory;
+	conflict.knownStrategies = knownStrategies;
 
 })(typeof conflict === 'undefined'?
             this['conflict']={}: conflict);

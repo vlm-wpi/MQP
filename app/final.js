@@ -603,14 +603,15 @@ function State() {
     // function takes in a person, updates the temp grid. Be sure to remove TRUE if you 
     // are removing from the simulation
     this.move_thing = function(thing) { //returns true if person is at exit, false otherwise
-    var heuristic = metrics.manhattand;  // default to manhattan
-	if (metrics.euclidean) {
-       heuristic = metrics.euclideand;
-   } else if (metrics.diagonal) {
-       heuristic = metrics.diagonald;
-   }
+		var heuristic = metrics.manhattand;  // default to manhattan
+		if (metrics.euclidean) {
+		   heuristic = metrics.euclideand;
+	   } else if (metrics.diagonal) {
+		   heuristic = metrics.diagonald;
+	   }
+	   
 	//probably not best logically
-	//but get heuristic to use in conflict
+	// Be sure to set the heuristic here, so it can be used in conflict resolution strategies...
 	final.get_heuristic = heuristic;
 
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
@@ -765,14 +766,16 @@ function State() {
 	// now there is a collision to handle..
         thing.wait++; //add one to its wait
         thing.waitsteps++; //add one to its total waits
-        final.resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1);
-        final.resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
-        final.resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
-        final.resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
-        final.resolution_strategy1.try_to_resolve(thing, state, final.board);
-        final.resolution_strategy2.try_to_resolve(thing, state, final.board);
-        final.resolution_strategy3.try_to_resolve(thing, state, final.board);
-        final.resolution_strategy4.try_to_resolve(thing, state, final.board);
+		
+		var resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1);
+        var resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
+        var resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
+        var resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
+        
+		resolution_strategy1.try_to_resolve(thing, state, final.board);
+        resolution_strategy2.try_to_resolve(thing, state, final.board);
+        resolution_strategy3.try_to_resolve(thing, state, final.board);
+        resolution_strategy4.try_to_resolve(thing, state, final.board);
 
         return false; // do not remove
     }
