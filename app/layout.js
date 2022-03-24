@@ -504,32 +504,32 @@
     }
 
     function layouts() {
-	return [
-	    'Randomized',
-	    'LectureHall',
-	    'FullerLower',
-	    'Classroom',
-	    'myFile',
+		return [
+			'Randomized',
+			'LectureHall',
+			'FullerLower',
+			'Classroom',
+			'myFile',
 
-	    /** Add more here as you need. */
-	];
+			/** Add more here as you need. */
+		];
     }
 
     function factory(tpe, widthi, widthii) {
-	if (tpe == 'Randomized') {
-	    return new Randomized(widthi, widthii);
-	} else if (tpe == 'LectureHall') {
-	    return new LectureHall(); 
-	} else if (tpe == 'FullerLower') {
-	    return new FullerLower();
-	} else if (tpe == 'Classroom') {
-	    return new Classroom();
-	} else if (tpe == 'myFile') {
-	    return new myFile();
-	} else {
-	    console.log("unknown type:" + tpe);
-	    return None;
-	}
+		if (tpe == 'Randomized') {
+			return new Randomized(widthi, widthii);
+		} else if (tpe == 'LectureHall') {
+			return new LectureHall(); 
+		} else if (tpe == 'FullerLower') {
+			return new FullerLower();
+		} else if (tpe == 'Classroom') {
+			return new Classroom();
+		} else if (tpe == 'myFile') {
+			return new myFile();
+		} else {
+			console.log("unknown type:" + tpe);
+			return None;
+		}
     }
 
     /** Assumes data.exit_locations is already set. */

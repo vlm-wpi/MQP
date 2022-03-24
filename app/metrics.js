@@ -7,8 +7,8 @@
 
     //heuristic options
     metrics.diagonal = false;   // initialize heuristic using diagonal distance
-    metrics.manhattan = false; // boolean to use manhattan distance in heuristic, user can change this
-    metrics.euclidean = true; // boolean to use euclidean distance in heuristic, user can change this
+    metrics.manhattan = false; 	// boolean to use manhattan distance in heuristic, user can change this
+    metrics.euclidean = true; 	// boolean to use euclidean distance in heuristic, user can change this
 
     //global variables for the diaginal distance
     var D = 1; //distance of one edge of the square

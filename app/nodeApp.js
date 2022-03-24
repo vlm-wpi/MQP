@@ -28,31 +28,31 @@ global.data = in_data['data'];
 const yargs = require('yargs');
 const argv = yargs
    .command('nodeApp.js', 'Launch a single execution of the simulation', {
-	   
+      
    })
    .option('seed', {
-		description: 'Set the seed to use',
-		type: 'int'
+      description: 'Set the seed to use',
+      type: 'int'
    })
    .option('adultBackpack', {
-	   alias: 'abp',
-	   description: '# of initial adult backpacks',
-	   type: 'int'
+      alias: 'abp',
+      description: '# of initial adult backpacks',
+      type: 'int'
    })
    .option('adult', {
-	   alias: 'a',
-	   description: '# of initial adult',
-	   type: 'int'
+      alias: 'a',
+      description: '# of initial adult',
+      type: 'int'
    })
    .option('child', {
-	   alias: 'c',
-	   description: '# of initial child',
-	   type: 'int'
+      alias: 'c',
+      description: '# of initial child',
+      type: 'int'
    })
    .option('bike', {
-	   alias: 'ab',
-	   description: '# of initial bikes',
-	   type: 'int'
+      alias: 'ab',
+      description: '# of initial bikes',
+      type: 'int'
    })
    .option('obstacles', {
       alias: 'o',
@@ -65,17 +65,43 @@ const argv = yargs
       type: 'int'
    })
    .option('debug', {
-	   description: 'whether to show debug messages',
-	   type: 'boolean'
+      description: 'whether to show debug messages',
+      type: 'boolean'
    })
    .option('width', {
-	   description: 'width of the simulation (at least 25)',
-	   type: 'int'
+      description: 'width of the simulation (at least 25)',
+      type: 'int'
    })
    .option('height', {
-	   description: 'height of the simulation (at least 25)',
-	   type: 'int'
+      description: 'height of the simulation (at least 25)',
+      type: 'int'
    })
+   .option('conflict1', {
+      // "ChooseDifferentExit-17"
+      description: 'Conflict Strategy #1 (see knownStrategies. Add Threshold after dash)',
+      type: 'string'
+   })
+   .option('conflict2', {
+      description: 'Conflict Strategy #2 (see knownStrategies. Add Threshold after dash)',
+      type: 'string'
+   })
+   .option('conflict3', {
+      description: 'Conflict Strategy #3 (see knownStrategies. Add Threshold after dash)',
+      type: 'string'
+   })
+   .option('conflict4', {
+      description: 'Conflict Strategy #4 (see knownStrategies. Add Threshold after dash)',
+      type: 'string'
+   })
+   .option('layout', {
+      description: 'Layout to use (see layout. Cannot Choose MyFile for now)',
+      type: 'string'
+   })
+   .option('heuristic', {
+      description: 'manhattan, euclidean, diagonal)  => make them boolean',
+      type: 'string'
+   })
+   
    .help()
    .alias('help', 'h').argv;
 
@@ -83,7 +109,7 @@ const argv = yargs
 // -------------------------------------------
 seed = 0
 if (typeof argv.seed !== 'undefined') {
-	seed = argv.seed
+   seed = argv.seed
 }
 
 // Default configuration
@@ -94,45 +120,49 @@ if (typeof argv.seed !== 'undefined') {
 
 // populate based on inputs
 if (typeof argv.abp !== 'undefined') {
-	global.data.max['AdultBackpack'] = argv.abp;
+   global.data.max['AdultBackpack'] = argv.abp;
    global.data.current['AdultBackpack'] = argv.abp;
 }
 if (typeof argv.a !== 'undefined') {
-	global.data.max['Adult'] = argv.a;
+   global.data.max['Adult'] = argv.a;
    global.data.current['Adult'] = argv.a;
 }
 if (typeof argv.c !== 'undefined') {
-	global.data.max['Child'] = argv.c;
+   global.data.max['Child'] = argv.c;
    global.data.current['Child'] = argv.c;
 }
 if (typeof argv.ab !== 'undefined') {
-	global.data.max['AdultBike'] = argv.ab;
+   global.data.max['AdultBike'] = argv.ab;
    global.data.current['AdultBike'] = argv.ab;
 }
-if (typeof argv.abp == 'undefined') {
+if (typeof argv.abp !== 'undefined') {
    global.data.max['AdultBackpack'] = 0;
    global.data.current['AdultBackpack'] = 0;
 }
-if (typeof argv.a == 'undefined') {
+if (typeof argv.a !== 'undefined') {
    global.data.max['Adult'] = 0;
    global.data.current['Adult'] = 0;
 }
-if (typeof argv.c == 'undefined') {
+if (typeof argv.c !== 'undefined') {
    global.data.max['Child'] = 0;
    global.data.current['Child'] = 0;
 }
-if (typeof argv.ab == 'undefined') {
+if (typeof argv.ab !== 'undefined') {
    global.data.max['AdultBike'] = 0;
    global.data.current['AdultBike'] = 0;
 }
 
+// set layout....
+if (typeof argv.layout !== 'undefined') {
+   global.data.layout = argv.layout
+}
 
 // change size of simulation (NOTE: not compatible if room layouts are selected!)
 if (typeof argv.width !== 'undefined') {
-	global.data.width_i = argv.width;
+   global.data.width_i = argv.width;
 }
 if (typeof argv.height !== 'undefined') {
-	global.data.width_ii = argv.height;
+   global.data.width_ii = argv.height;
 }
 
 // change the number of obstacles and exits
@@ -153,7 +183,7 @@ const debug = require('./debug');
 global.debug = debug['debug'];
 global.debug.active = false;   // disable debug messages
 if (typeof argv.debug !== 'undefined') {
-	global.debug.active = argv.debug
+   global.debug.active = argv.debug
 }
 
 const random = require('./random');
@@ -178,6 +208,23 @@ global.layout = layout['layout'];
 const metrics = require('./metrics');
 global.metrics = metrics['metrics'];
 
+// deal with heuristics
+if (typeof argv.heuristic !== 'undefined') {
+   // three choices: euclidean, diagonal, manhattan
+   metrics.euclidean = false;
+   metrics.diagonal = false;
+   metrics.manhattan = false;
+   if (argv.heuristic == 'euclidean') {
+      metrics.euclidean = true;
+   } else if (argv.heuristic == 'diagonal') {
+      metrics.diagonal = true;
+   } else if (argv.heuristic == 'manhattan') {
+      metrics.manhtattan = true;
+   } else {
+      throw arg.heuristic + ' is not a valid heuristic!';
+   }
+}
+
 const voronoi = require('./voronoi');
 global.voronoi = voronoi['voronoi'];
 
@@ -190,9 +237,36 @@ const nq = require('./NeuQuant');
 const gife = require('./GIFEncoder');
 const b64 = require('./b64');
 
-final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
-// final.final.resolution_strategy = global.conflict.factory('ChooseRandomMove', 8);
-//try changing this value
+///final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
+
+global.data.resolve1 = 'NullConflictStrategy';
+global.data.resolve2 = 'NullConflictStrategy';
+global.data.resolve3 = 'NullConflictStrategy';
+global.data.resolve4 = 'NullConflictStrategy';
+
+if (typeof argv.conflict1 !== 'undefined') {
+   entries = argv.conflict1.split("-");
+   global.data.resolve1 = entries[0];
+   global.data.threshold1 = parseInt(entries[1]);
+}
+
+if (typeof argv.conflict2 !== 'undefined') {
+   entries = argv.conflict2.split("-");
+   global.data.resolve2 = entries[0];
+   global.data.threshold2 = parseInt(entries[1]);
+}
+
+if (typeof argv.conflict3 !== 'undefined') {
+   entries = argv.conflict3.split("-");
+   global.data.resolve3 = entries[0];
+   global.data.threshold3 = parseInt(entries[1]);
+}
+
+if (typeof argv.conflict4 !== 'undefined') {
+   entries = argv.conflict4.split("-");
+   global.data.resolve4 = entries[0];
+   global.data.threshold4 = parseInt(entries[1]);
+}
 
 function process_all() {
    output=''
@@ -219,7 +293,7 @@ function process_all() {
            if ((typeof chosenValue === 'object') && (!Array.isArray(chosenValue))) {
                // dictionary
                for (var key in chosenValue) {
-		   output += ';' + pairs[1] + '[' + key + ']=' + chosenValue[key];
+         output += ';' + pairs[1] + '[' + key + ']=' + chosenValue[key];
                }
            } else {
                output += ';' + pairs[1] + '=' + Reflect.get(lhs, pairs[1]);  // the attribute
@@ -230,4 +304,4 @@ function process_all() {
 }
 
 // If hasn't stopped after 5,000 generations, that is it
-final.final.start_simulation(1000, process_all);
+final.final.start_simulation(5000, process_all);
