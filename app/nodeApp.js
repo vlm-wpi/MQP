@@ -191,6 +191,8 @@ const gife = require('./GIFEncoder');
 const b64 = require('./b64');
 
 final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
+// final.final.resolution_strategy = global.conflict.factory('ChooseRandomMove', 8);
+//try changing this value
 
 function process_all() {
    output=''
@@ -228,4 +230,4 @@ function process_all() {
 }
 
 // If hasn't stopped after 5,000 generations, that is it
-final.final.start_simulation(5000, process_all);
+final.final.start_simulation(1000, process_all);
