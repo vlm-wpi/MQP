@@ -135,19 +135,19 @@ if (typeof argv.ab !== 'undefined') {
    global.data.max['AdultBike'] = argv.ab;
    global.data.current['AdultBike'] = argv.ab;
 }
-if (typeof argv.abp !== 'undefined') {
+if (typeof argv.abp == 'undefined') {
    global.data.max['AdultBackpack'] = 0;
    global.data.current['AdultBackpack'] = 0;
 }
-if (typeof argv.a !== 'undefined') {
+if (typeof argv.a == 'undefined') {
    global.data.max['Adult'] = 0;
    global.data.current['Adult'] = 0;
 }
-if (typeof argv.c !== 'undefined') {
+if (typeof argv.c == 'undefined') {
    global.data.max['Child'] = 0;
    global.data.current['Child'] = 0;
 }
-if (typeof argv.ab !== 'undefined') {
+if (typeof argv.ab == 'undefined') {
    global.data.max['AdultBike'] = 0;
    global.data.current['AdultBike'] = 0;
 }
