@@ -9,6 +9,9 @@
 //// -----------------------------------------------------
 
     var things = pop.types(); //each type of a person
+    final.didAnythingChange; //true if people moved during a board update, false if not
+    var stuckCount = 0;
+    MAXCOUNT = 100; //change
     //initializations for average area occupancy lists
     var avg_occ_list = {};
     var population_types = pop.types();
@@ -270,6 +273,7 @@ function State() {
             var object_type = this.population[p][1]; //get what type of person (child, adult...)
             thing.exittime++; //always add one to exit time
             //call move thing function, moves things on the temp grid
+            final.didAnythingChange = false; //reset
             if (this.move_thing(thing)) { //returns true if at an exit, false if not, temp grid is updated
                 this.population.splice(p, 1);
                 final.current_population = this.population.length; //number of people in the grid
@@ -640,7 +644,7 @@ function State() {
         var count = 0; //counter used to check if at an exit
         for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
            //need to check all exits just in case the goal exit changes
-            for(b=0; data.exit_locations.length; b++){
+            for(var b=0; b < data.exit_locations.length; b++){
               console.log(typeof data.exit_locations[b].anchor_i);
               var start_exiti = data.exit_locations[b].anchor_i;
               var start_exitii = data.exit_locations[b].anchor_ii;
@@ -686,6 +690,7 @@ function State() {
             // debug.log('final path ii overalllll' + final.all_paths_ii_taken)
 
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
+            final.didAnythingChange = true;
             // console.log('i have removed the footprint of the: ' + person_type)
             // console.log(thing)
             return true; // remove, return true
@@ -779,6 +784,7 @@ function State() {
             // move into new one
             thing.wait = 0; //reset its wait since making a move
             thing.place_footprint(this); //update the person's position on the temp grid
+            final.didAnythingChange = true;
             return false;
         }
 
@@ -1321,6 +1327,16 @@ function simulate_and_visualize() {
     }
 
     state.move_things();
+    if (!final.didAnythingChange){
+      stuckCount++;
+      if (stuckCount > MAXCOUNT){
+        end_simulation();
+      }
+    }
+    else{
+        stuckCount = 0;
+      }
+    
     if (!gui.headless) { draw_grid(state.grid.map(function(row) {
         return row.map(function(cell) {
             return cell;
