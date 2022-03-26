@@ -266,6 +266,7 @@ function State() {
         // move everyone at TOP level of abstraction
         // assume: population knows loc AND temp_grid is properly set.
         for (var p = this.population.length - 1; p >= 0; p--) { //go through everyone in the population
+            // console.log('line 269 this population: ' + this.population)
             var thing = this.population[p][0]; //set thing to the person
             var object_type = this.population[p][1]; //get what type of person (child, adult...)
             thing.exittime++; //always add one to exit time
@@ -308,6 +309,11 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
              var tpe = things[i];
 			data.current[tpe] = 0; //set everyone's population to zero
+            console.log(tpe + ' : ' + data.max[tpe])
+
+
+            //ally this next line is the one you added in (closed it at 331)
+            if (data.max[tpe] > 0) {
 			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
 			if (!gui.headless) { 
              document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
@@ -325,6 +331,7 @@ function State() {
              document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
          }
      }
+ }
 
      final.avg_collisions_total = final.total_collisions/data.total_peds_at_start;
 
@@ -459,7 +466,7 @@ function State() {
                 }
 
                     //make the bar graphs here
-                    end_simulation(); 
+                    // end_simulation(); 
                     //adding strings for the axis labels and titles
                     final.total_data = [];
                     if (data.total_collide) {
@@ -638,11 +645,13 @@ function State() {
             if ((new_coords[0] + node.profile_i[index]) >= node.exiti && (new_coords[0] + node.profile_i[index]) <= node.endi &&
                 (new_coords[1] + node.profile_ii[index]) >= node.exitii && (new_coords[1] + node.profile_ii[index]) <= node.endii) {
                 count++; //if at exit, add one to the count
+            // console.log(count)
         }
     }
 
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
             //get the last coordinate for each ped and push to a list
+            // console.log(thing.type)
             final.last_coords.push([exiti,exitii])
 	          //get length of initial optimal path
 	          var init_path_length = thing.initial_path.length;
@@ -669,6 +678,8 @@ function State() {
             // debug.log('final path ii overalllll' + final.all_paths_ii_taken)
 
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
+            // console.log('i have removed the footprint of the: ' + person_type)
+            // console.log(thing)
             return true; // remove, return true
         }
 
