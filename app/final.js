@@ -10,6 +10,7 @@
 
     var things = pop.types(); //each type of a person
     final.didAnythingChange; //true if people moved during a board update, false if not
+    final.deadlock;
     var stuckCount = 0;
     MAXCOUNT = 100; //change
     //initializations for average area occupancy lists
@@ -1330,7 +1331,9 @@ function simulate_and_visualize() {
     if (!final.didAnythingChange){
       stuckCount++;
       if (stuckCount > MAXCOUNT){
+        final.deadlock = true;
         end_simulation();
+        return;
       }
     }
     else{
