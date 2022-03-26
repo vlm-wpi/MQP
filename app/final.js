@@ -914,10 +914,10 @@ this.has_other_thing = function(other) {
     if (this.thing == null) {
         return false;
     }
-       // if (this.thing == other) { //this line might be the issue
+        if (this.thing == other) { //this line might be the issue
        //check if the anchor is the same
-       var person = this.thing
-       if ((person.anchor_i == other.anchor_i)&&(person.anchor_ii == other.anchor_ii)){
+      // var person = this.thing
+      // if ((person.anchor_i == other.anchor_i)&&(person.anchor_ii == other.anchor_ii)){
         return false;
     }
 
