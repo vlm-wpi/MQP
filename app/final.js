@@ -9,7 +9,6 @@
 //// -----------------------------------------------------
 
     var things = pop.types(); //each type of a person
-    
     //initializations for average area occupancy lists
     var avg_occ_list = {};
     var population_types = pop.types();
@@ -640,13 +639,22 @@ function State() {
 	// partially leaves, until it has no presence at which point it would be removed.
         var count = 0; //counter used to check if at an exit
         for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
-            //check if at exit
-            //checking by making sure the next move is between or touching the exit
-            if ((new_coords[0] + node.profile_i[index]) >= node.exiti && (new_coords[0] + node.profile_i[index]) <= node.endi &&
-                (new_coords[1] + node.profile_ii[index]) >= node.exitii && (new_coords[1] + node.profile_ii[index]) <= node.endii) {
+           //need to check all exits just in case the goal exit changes
+            for(b=0; data.exit_locations.length; b++){
+              console.log(typeof data.exit_locations[b].anchor_i);
+              var start_exiti = data.exit_locations[b].anchor_i;
+              var start_exitii = data.exit_locations[b].anchor_ii;
+              var end_endi = data.exit_locations[b].profile_i[3] + data.exit_locations[b].anchor_i;
+              var end_endii = data.exit_locations[b].profile_ii[3] + data.exit_locations[b].anchor_ii;
+              //check if at exit
+              //checking by making sure the next move is between or touching the exit
+              if ((new_coords[0] + node.profile_i[index]) >= start_exiti && (new_coords[0] + node.profile_i[index]) <= end_endi &&
+                (new_coords[1] + node.profile_ii[index]) >= start_exitii && (new_coords[1] + node.profile_ii[index]) <= end_endii) {
                 count++; //if at exit, add one to the count
             // console.log(count)
         }
+            }
+        
     }
 
         if (count > 0) { //if the count is greater that zero, some part is touching the exit

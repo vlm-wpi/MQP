@@ -108,6 +108,7 @@
                 }
                 //want to push whole object so that it keeps track of the end
                 this.exit_locations.push(obj);
+                data.exit_locations.push(obj);
                 for (var p = 0; p < obj.profile_i.length; p++) { //placing exits on the grid
                     var dj = obj.profile_i[p];
                     var djj = obj.profile_ii[p];
@@ -148,8 +149,9 @@
                 }
             }
 
-            var obj01 = new Exit(0, 0)
-            this.exit_locations.push(obj01)
+            var obj01 = new Exit(0, 0);
+            this.exit_locations.push(obj01);
+            data.exit_locations.push(obj01);
             for (var p = 0; p < obj01.profile_i.length; p++) {
                 var dj = obj01.profile_i[p];
                 var djj = obj01.profile_ii[p];
@@ -202,6 +204,7 @@
 
             var obj1 = new Exit(0, 0, false); //should probably make coordinates variables
             this.exit_locations.push(obj1);
+            data.exit_locations.push(obj1);
             for (var p = 0; p < obj1.profile_i.length; p++) { //placing exits on the grid
                 var dj = obj1.profile_i[p];
                 var djj = obj1.profile_ii[p];
@@ -214,6 +217,7 @@
             var obj2 = new Exit(data.width_i - 4, 0, false);
             // console.log(obj2)
             this.exit_locations.push(obj2);
+            data.exit_locations.push(oobj2);
             for (var p = 0; p < obj2.profile_i.length; p++) { //placing exits on the grid
                 var dj = obj2.profile_i[p];
                 var djj = obj2.profile_ii[p];
@@ -225,6 +229,7 @@
 
             var obj3 = new Exit(1, data.width_ii - 1, true);
             this.exit_locations.push(obj3);
+            data.exit_locations.push(obj3);
             for (var p = 0; p < obj3.profile_i.length; p++) { //placing exits on the grid
                 var dj = obj3.profile_i[p];
                 var djj = obj3.profile_ii[p];
@@ -235,6 +240,7 @@
             }
             var obj4 = new Exit(data.width_i - 4, data.width_ii - 1);
             this.exit_locations.push(obj4);
+            data.exit_locations.push(obj4);
             for (var p = 0; p < obj4.profile_i.length; p++) { //placing exits on the grid
                 var dj = obj4.profile_i[p];
                 var djj = obj4.profile_ii[p];
@@ -391,6 +397,7 @@
             //first exit in the top left
             var obj01 = new Exit(1, 0, false);
             this.exit_locations.push(obj01);
+            data.exit_locations.push(obj01);
             for (var p = 0; p < obj01.profile_i.length; p++) {
 		var dj = obj01.profile_i[p];
 		var djj = obj01.profile_ii[p];
@@ -402,6 +409,7 @@
             //second exit in the top right
             var obj02 = new Exit(data.width_i - 4, 0, false);
             this.exit_locations.push(obj02);
+            data.exit_locations.push(obj02);
             for (var p = 0; p < obj02.profile_i.length; p++) {
 		var dj = obj02.profile_i[p];
 		var djj = obj02.profile_ii[p];
@@ -413,6 +421,7 @@
             //third exit bottom left
             var obj03 = new Exit(0, data.width_ii - 9, true);
             this.exit_locations.push(obj03);
+            data.exit_locations.push(obj03);
             for (var p = 0; p < obj03.profile_i.length; p++) {
 		var dj = obj03.profile_i[p];
 		var djj = obj03.profile_ii[p];
@@ -424,6 +433,7 @@
             //fourth exit bottom left
             var obj04 = new Exit(0, data.width_ii - 5, true);
             this.exit_locations.push(obj04);
+            data.exit_locations.push(obj04);
             for (var p = 0; p < obj04.profile_i.length; p++) {
 		var dj = obj04.profile_i[p];
 		var djj = obj04.profile_ii[p];
@@ -500,6 +510,7 @@
           this.width_ii = row;
             }
         this.exit_locations = exits;
+        data.exit_locations.push(exits); //this line might not work
     	}
     }
 
