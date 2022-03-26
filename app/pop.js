@@ -189,7 +189,7 @@ function AdultBike(j, jj) {
         }
     }
 
-    this.remove_footprint = function(state) {
+    this.remove_footprint = function(state) {        
         for (var p = 0; p < this.profile_i.length; p++) { //
             var dj = this.profile_i[p];
             var djj = this.profile_ii[p];
