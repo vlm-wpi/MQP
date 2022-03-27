@@ -9,10 +9,10 @@
 //// -----------------------------------------------------
 
     var things = pop.types(); //each type of a person
-    final.didAnythingChange; //true if people moved during a board update, false if not
-    final.deadlock;
+    final.didAnythingChange = false; //true if people moved during a board update, false if not
+    final.deadlock = false;
     var stuckCount = 0;
-    MAXCOUNT = 100; //change
+    MAXCOUNT = 10; //change
     //initializations for average area occupancy lists
     var avg_occ_list = {};
     var population_types = pop.types();
@@ -313,7 +313,7 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
              var tpe = things[i];
 			data.current[tpe] = 0; //set everyone's population to zero
-            console.log(tpe + ' : ' + data.max[tpe])
+            // console.log(tpe + ' : ' + data.max[tpe])
 
 
             //ally this next line is the one you added in (closed it at 331)
@@ -487,6 +487,19 @@ function State() {
               if (!gui.headless) { graph.createBarGraph(); }
               if (!gui.headless) { graph.makeAvgGraph(); }
               if (!gui.headless) { graph.makeAvgExitGraph(); }
+              if (!final.didAnythingChange){
+                  stuckCount++;
+                  if (stuckCount > MAXCOUNT){
+                    final.deadlock = true;
+                    end_simulation();
+                    return;
+                  }
+                }
+                else{
+                    final.deadlock = false;
+                    stuckCount = 0;
+                  }
+    
 
           }
       }
@@ -646,7 +659,7 @@ function State() {
         for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
            //need to check all exits just in case the goal exit changes
             for(var b=0; b < data.exit_locations.length; b++){
-              console.log(typeof data.exit_locations[b].anchor_i);
+              // console.log(typeof data.exit_locations[b].anchor_i);
               var start_exiti = data.exit_locations[b].anchor_i;
               var start_exitii = data.exit_locations[b].anchor_ii;
               var end_endi = data.exit_locations[b].profile_i[3] + data.exit_locations[b].anchor_i;
@@ -1328,17 +1341,17 @@ function simulate_and_visualize() {
     }
 
     state.move_things();
-    if (!final.didAnythingChange){
-      stuckCount++;
-      if (stuckCount > MAXCOUNT){
-        final.deadlock = true;
-        end_simulation();
-        return;
-      }
-    }
-    else{
-        stuckCount = 0;
-      }
+    // if (!final.didAnythingChange){
+    //   stuckCount++;
+    //   if (stuckCount > MAXCOUNT){
+    //     final.deadlock = true;
+    //     end_simulation();
+    //     return;
+    //   }
+    // }
+    // else{
+    //     stuckCount = 0;
+    //   }
     
     if (!gui.headless) { draw_grid(state.grid.map(function(row) {
         return row.map(function(cell) {
