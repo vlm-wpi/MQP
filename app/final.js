@@ -9,7 +9,10 @@
 //// -----------------------------------------------------
 
     var things = pop.types(); //each type of a person
-    
+    final.didAnythingChange; //true if people moved during a board update, false if not
+    final.deadlock;
+    var stuckCount = 0;
+    MAXCOUNT = 100; //change
     //initializations for average area occupancy lists
     var avg_occ_list = {};
     var population_types = pop.types();
@@ -271,6 +274,7 @@ function State() {
             var object_type = this.population[p][1]; //get what type of person (child, adult...)
             thing.exittime++; //always add one to exit time
             //call move thing function, moves things on the temp grid
+            final.didAnythingChange = false; //reset
             if (this.move_thing(thing)) { //returns true if at an exit, false if not, temp grid is updated
                 this.population.splice(p, 1);
                 final.current_population = this.population.length; //number of people in the grid
@@ -640,13 +644,22 @@ function State() {
 	// partially leaves, until it has no presence at which point it would be removed.
         var count = 0; //counter used to check if at an exit
         for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
-            //check if at exit
-            //checking by making sure the next move is between or touching the exit
-            if ((new_coords[0] + node.profile_i[index]) >= node.exiti && (new_coords[0] + node.profile_i[index]) <= node.endi &&
-                (new_coords[1] + node.profile_ii[index]) >= node.exitii && (new_coords[1] + node.profile_ii[index]) <= node.endii) {
+           //need to check all exits just in case the goal exit changes
+            for(var b=0; b < data.exit_locations.length; b++){
+              console.log(typeof data.exit_locations[b].anchor_i);
+              var start_exiti = data.exit_locations[b].anchor_i;
+              var start_exitii = data.exit_locations[b].anchor_ii;
+              var end_endi = data.exit_locations[b].profile_i[3] + data.exit_locations[b].anchor_i;
+              var end_endii = data.exit_locations[b].profile_ii[3] + data.exit_locations[b].anchor_ii;
+              //check if at exit
+              //checking by making sure the next move is between or touching the exit
+              if ((new_coords[0] + node.profile_i[index]) >= start_exiti && (new_coords[0] + node.profile_i[index]) <= end_endi &&
+                (new_coords[1] + node.profile_ii[index]) >= start_exitii && (new_coords[1] + node.profile_ii[index]) <= end_endii) {
                 count++; //if at exit, add one to the count
             // console.log(count)
         }
+            }
+        
     }
 
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
@@ -678,6 +691,7 @@ function State() {
             // debug.log('final path ii overalllll' + final.all_paths_ii_taken)
 
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
+            final.didAnythingChange = true;
             // console.log('i have removed the footprint of the: ' + person_type)
             // console.log(thing)
             return true; // remove, return true
@@ -771,6 +785,7 @@ function State() {
             // move into new one
             thing.wait = 0; //reset its wait since making a move
             thing.place_footprint(this); //update the person's position on the temp grid
+            final.didAnythingChange = true;
             return false;
         }
 
@@ -1313,6 +1328,18 @@ function simulate_and_visualize() {
     }
 
     state.move_things();
+    if (!final.didAnythingChange){
+      stuckCount++;
+      if (stuckCount > MAXCOUNT){
+        final.deadlock = true;
+        end_simulation();
+        return;
+      }
+    }
+    else{
+        stuckCount = 0;
+      }
+    
     if (!gui.headless) { draw_grid(state.grid.map(function(row) {
         return row.map(function(cell) {
             return cell;

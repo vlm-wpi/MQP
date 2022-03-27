@@ -163,6 +163,7 @@
                     thing.anchor_ii = next_coords[1]; //update the anchor y coordinate to its new position
                     thing.wait = 0; //reset the wait time
                     thing.place_footprint(state); //place the person in the temp grid in its new position
+                    final.didAnythingChange = true; //something moved on the board
 		    return true;
 		}
             }
@@ -254,6 +255,7 @@
           thing.anchor_ii = new_coords[1]; //update the anchor y coordinate to its new position
           thing.place_footprint(state); //place the person in the temp grid in its new position
   	      thing.wait = 0;
+  	      final.didAnythingChange = true; //something moved on the board
   	      return true;
   	    }
   	    return false;
