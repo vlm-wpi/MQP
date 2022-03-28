@@ -9,10 +9,10 @@
 //// -----------------------------------------------------
 
     var things = pop.types(); //each type of a person
-    final.didAnythingChange; //true if people moved during a board update, false if not
-    final.deadlock;
+    final.didAnythingChange = false; //true if people moved during a board update, false if not
+    final.deadlock = false;
     var stuckCount = 0;
-    MAXCOUNT = 100; //change
+    MAXCOUNT = 10; //change
     //initializations for average area occupancy lists
     var avg_occ_list = {};
     var population_types = pop.types();
@@ -274,7 +274,7 @@ function State() {
             var object_type = this.population[p][1]; //get what type of person (child, adult...)
             thing.exittime++; //always add one to exit time
             //call move thing function, moves things on the temp grid
-            final.didAnythingChange = false; //reset
+            
             if (this.move_thing(thing)) { //returns true if at an exit, false if not, temp grid is updated
                 this.population.splice(p, 1);
                 final.current_population = this.population.length; //number of people in the grid
@@ -313,7 +313,7 @@ function State() {
 		    for (i = 0; i < things.length; i++) {
              var tpe = things[i];
 			data.current[tpe] = 0; //set everyone's population to zero
-            console.log(tpe + ' : ' + data.max[tpe])
+            // console.log(tpe + ' : ' + data.max[tpe])
 
 
             //ally this next line is the one you added in (closed it at 331)
@@ -487,7 +487,8 @@ function State() {
               if (!gui.headless) { graph.createBarGraph(); }
               if (!gui.headless) { graph.makeAvgGraph(); }
               if (!gui.headless) { graph.makeAvgExitGraph(); }
-              end_simulation();
+              
+              end_simulation(); //end, because no one else is ono the grid
 
           }
       }
@@ -647,7 +648,7 @@ function State() {
         for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
            //need to check all exits just in case the goal exit changes
             for(var b=0; b < data.exit_locations.length; b++){
-              console.log(typeof data.exit_locations[b].anchor_i);
+              // console.log(typeof data.exit_locations[b].anchor_i);
               var start_exiti = data.exit_locations[b].anchor_i;
               var start_exitii = data.exit_locations[b].anchor_ii;
               var end_endi = data.exit_locations[b].profile_i[3] + data.exit_locations[b].anchor_i;
@@ -1249,6 +1250,7 @@ function start_simulation(max_gen, callback) {
       max_generation = Number.MAX_SAFE_INTEGER;
   } else {
       max_generation = max_gen;
+      console.log('max generation is: ' + max_generation)
   }
 
   if (typeof callback !== 'undefined') {
@@ -1328,18 +1330,19 @@ function simulate_and_visualize() {
         return;
     }
 
+    final.didAnythingChange = false; //reset each board update
     state.move_things();
-    if (!final.didAnythingChange){
-      stuckCount++;
-      if (stuckCount > MAXCOUNT){
-        final.deadlock = true;
-        end_simulation();
-        return;
-      }
-    }
-    else{
-        stuckCount = 0;
-      }
+     if (!final.didAnythingChange){
+       stuckCount++;
+       if (stuckCount > MAXCOUNT){
+         final.deadlock = true;
+         end_simulation();
+         return;
+       }
+     }
+     else{
+         stuckCount = 0;
+       }
     
     if (!gui.headless) { draw_grid(state.grid.map(function(row) {
         return row.map(function(cell) {
