@@ -308,7 +308,7 @@ function State() {
                 //not sure if we need to set these to zero, should all be zero???
                 var things = pop.types();
 
-		    //end_simulation(); 
+		     
 
 		    for (i = 0; i < things.length; i++) {
              var tpe = things[i];
@@ -487,6 +487,7 @@ function State() {
               if (!gui.headless) { graph.createBarGraph(); }
               if (!gui.headless) { graph.makeAvgGraph(); }
               if (!gui.headless) { graph.makeAvgExitGraph(); }
+              end_simulation();
 
           }
       }
