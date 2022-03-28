@@ -1261,6 +1261,7 @@ function start_simulation(max_gen, callback) {
       max_generation = Number.MAX_SAFE_INTEGER;
   } else {
       max_generation = max_gen;
+      console.log('max generation is: ' + max_generation)
   }
 
   if (typeof callback !== 'undefined') {
