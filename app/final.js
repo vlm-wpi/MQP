@@ -13,6 +13,8 @@
     final.deadlock = false;
     var stuckCount = 0;
     MAXCOUNT = 10; //change
+    stuck_threshold = 3; //can change
+    final.stuck = false;
     //initializations for average area occupancy lists
     var avg_occ_list = {};
     var population_types = pop.types();
@@ -629,8 +631,18 @@ function State() {
 
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
         if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
-         return false;
- }
+          thing.stuck++; //add one to their stuck
+          return false;
+        }
+        else {
+          thing.stuck = 0; //not stuck if there is a path
+        }
+        //now check if has been stuck for too long
+        if(thing.stuck > stuck_threshold){
+          final.stuck = true;
+          end_simulation();
+        }
+      
         if(thing.initial_path.length == 0){ //if empty, we want to try to find an initial path to compare
           var path = node.initial_path(); //get the "best" path
           //console.log("initial path: "+path);

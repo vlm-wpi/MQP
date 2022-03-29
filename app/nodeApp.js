@@ -304,4 +304,4 @@ function process_all() {
 }
 
 // If hasn't stopped after 5,000 generations, that is it
-final.final.start_simulation(5000, process_all);
+final.final.start_simulation(1000, process_all);

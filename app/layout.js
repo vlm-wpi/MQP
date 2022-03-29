@@ -217,7 +217,7 @@
             var obj2 = new Exit(data.width_i - 4, 0, false);
             // console.log(obj2)
             this.exit_locations.push(obj2);
-            data.exit_locations.push(oobj2);
+            data.exit_locations.push(obj2);
             for (var p = 0; p < obj2.profile_i.length; p++) { //placing exits on the grid
                 var dj = obj2.profile_i[p];
                 var djj = obj2.profile_ii[p];
