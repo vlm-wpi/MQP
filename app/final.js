@@ -117,6 +117,7 @@
   for (i=0; i<things.length; i++){
       final.wait_steps[things[i]] = 0;
   }
+  var total_wait_steps;
 
     //counter for the number of people currently on the board
     //think could be data.current_population
@@ -302,196 +303,14 @@ function State() {
                     var total_time = thing.exittime; //in board update units
                     final.exit_total[object_type] = total_time;
                     if (!gui.headless) { document.getElementById("total_" + object_type + "_exit").innerHTML = total_time; }
-                    var total_wait_steps = thing.waitsteps; //set the total amount of wait steps for each type of person
+                    total_wait_steps = thing.waitsteps; //set the total amount of wait steps for each type of person
                     if (!gui.headless) { document.getElementById("total_" + object_type + "_wait").innerHTML = total_wait_steps; }
                 }
 
                 if (final.current_population == 0) { //if no people left on the grid
-                //not sure if we need to set these to zero, should all be zero???
-                var things = pop.types();
-
-		     
-
-		    for (i = 0; i < things.length; i++) {
-             var tpe = things[i];
-			data.current[tpe] = 0; //set everyone's population to zero
-            // console.log(tpe + ' : ' + data.max[tpe])
-
-
-            //ally this next line is the one you added in (closed it at 331)
-            if (data.max[tpe] > 0) {
-			final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
-			if (!gui.headless) { 
-             document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
-             document.getElementById("avg_" + tpe + "_collide").innerHTML = final.collisions_average[tpe];
-         }
-
-			var avg_exit = final.exit_times[tpe] / data.max[tpe]; //in board update units
-			final.exit_average[tpe] = avg_exit;
-			if (!gui.headless) {
-             document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
-         }
-
-			var avg_wait_steps = final.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
-			if (!gui.headless) {
-             document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
-         }
-     }
- }
-
-     final.avg_collisions_total = final.total_collisions/data.total_peds_at_start;
-
-     if (!gui.headless) { 
-                      document.getElementById("avg_collide").innerHTML = final.avg_collisions_total;  // TODO: doesn't change ever?
-                      document.getElementById("collide").innerHTML = final.total_collisions;
-                  }
-
-                    final.total_exit_time = thing.exittime; //total exit time in board updates [ CHECK THIS SEEMS WRONG] -- i think right
-                    final.avg_exit_time = (final.sum_of_exit_times) / data.total_peds_at_start; //in board update units
-
-                    if (!gui.headless) { 
-                      document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
-                      document.getElementById("avg_exit_time").innerHTML = final.avg_exit_time;
-                  }
-
-                    var total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
-                    var avg_wait_steps = final.sum_wait_steps/data.total_peds_at_start; //average amount of waitsteps per person
-
-                    if (!gui.headless) {
-                      document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
-                      document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
-                  }
-
-
-                  if (gui.headless) {
-                    for (i = 0; i <= final.avg_total_occ_list.length - 1; i++) {
-                        final.occ_sum = final.occ_sum + final.avg_total_occ_list[i];
-                    }
-                    final.total_avg_occ_all_time = final.occ_sum/final.avg_total_occ_list.length;
-                    debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
-
-                    //the final evaluation metric for comparing different runs and characterizing them as good/bad
-                    //higher number is bad
-                    //get overall total exit time
-                    //findinig the max exit time throughout all exit times
-                    for(i=0; i<things.length; i++){
-                        if (final.exit_total[things[i]]>final.overall_exit_time){
-                            final.overall_exit_time = final.exit_total[things[i]];
-                        }
-                    }
-
-                    final.evaluation_metric = (final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time);
-                    debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
-
-                    //making list of all the coords visited as (i,ii)
-                    for(n=0; n<=final.total_visited_i.length-1; n++) {
-                        j = final.total_visited_i[n];
-                        jj = final.total_visited_ii[n];
-                        visited_coords = [j,jj];
-                        final.all_visited.push(visited_coords);
-                    } 
-                    //counter for num times each location was visited
-                    const count = [];
-                    for(const element of final.all_visited) {
-                        if(count[element]) {
-                            count[element] += 1;
-                        } else {
-                            count[element] = 1;
-                        }
-                    }
-                    for(const element of final.all_visited) {
-                        if(count[element]>max_visits) {
-                            max_visits = count[element];
-                            max_element = element;
-                        }
-                    }
-                    //do a count for the last coord of each ped to get num peds using each exit
-                    const count_last = [];
-                    var num_through_exit = [];
-                    var exits = []
-                    for(const element of final.last_coords) {
-                        if(count_last[element]) {
-                            count_last[element] += 1;
-                        } else {
-                            count_last[element] = 1;
-                            exits.push(element);
-                        }
-                    }
-                    for(const element of exits) {
-                        num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
-                    }
-                    debug.log('exits: ' + exits)
-                    debug.log('count of last coords: ' + num_through_exit);
-                    debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
-
-                    //calculating the final average occupancy for each ped type
-                    for(i=0; i<things.length; i++){
-                       var sum_occ = 0;
-                       var on_board_count = 0;
-                       var list_index = avg_occ_list[things[i]];
-                       for(j=0; j<list_index.length; j++){
-                         if(list_index[j]>=0){
-                           on_board_count++;
-                           sum_occ += list_index[j];
-                       }
-                   }
-                   final.final_occ = sum_occ/on_board_count;
-                   final.average_occupancy[things[i]] = final.final_occ;
-                }
-                debug.log('final occ list: ' + final.average_occupancy);
-
-                    //data for comparing against ideal path
-                    //go through each type of person
-                    var pop_tpes = pop.types();
-                    for(i=0; i<pop_tpes.length; i++){
-                       var eval_ratio = 0; //reset each time
-                       var this_list = final.eval_path[pop_tpes[i]];
-                      //add up all values in list
-                      for (j=0; j<this_list.length; j++){
-                        eval_ratio+=this_list[j];
-                       // console.log("individual: "+this_list[j]);
-                   }
-                      //divide by length of the list
-                      eval_ratio = eval_ratio/(this_list.length+1);
-                      //add to total list
-                      final.total_eval_path.push(eval_ratio);
-                      //console log fir now, show on screen in future
-                      debug.log("eval by type: "+eval_ratio);
-                  }
-                    //sum up total list
-                    var total_eval = 0;
-                    for(i=0; i< final.total_eval_path.length; i++){
-                      total_eval+=final.total_eval_path[i];
-                  }
-                    //divide by length of list
-                    total_eval = total_eval / (final.total_eval_path.length+1);
-                    final.total_eval = total_eval;
-
-                    //show in screen
-                    debug.log("total: "+ total_eval);
-                }
-
-                    //make the bar graphs here
-                    // end_simulation(); 
-                    //adding strings for the axis labels and titles
-                    final.total_data = [];
-                    if (data.total_collide) {
-                       final.total_data.push([final.collisions_total, "Number of Collisions", "Total Number of collisions by Type of Person"]);
-                   } if (data.average_collide) {
-                    final.total_data.push([final.collisions_average, "Number of Collisions", "Average Number of Collisions by Type of Person"]);
-                }if (data.total_exit) {
-                   final.total_data.push([final.exit_total, "Time taken to exit (in board updates)", "Time taken for each type of person to leave the board"]);
-               }if (data.average_exit) {
-                   final.total_data.push([final.exit_average, "Time taken to exit (in board updates)", "Average Time taken for each type of Person to Exit the board"]);
-               } if (data.average_occupancy) {
-                  final.total_data.push([final.average_occupancy, "Average area occupancy (in ped/sq ft)", "Total average area occupancy by pedestrian type"])
-              }
-              if (!gui.headless) { graph.createBarGraph(); }
-              if (!gui.headless) { graph.makeAvgGraph(); }
-              if (!gui.headless) { graph.makeAvgExitGraph(); }
-              
-              end_simulation(); //end, because no one else is ono the grid
-
+                  total_wait_steps = thing.waitsteps; //set the total number of waitsteps for everyoone
+                  end_data(thing.exittime);
+                  end_simulation(); //end, because no one else is ono the grid
           }
       }
   }
@@ -640,6 +459,7 @@ function State() {
         //now check if has been stuck for too long
         if(thing.stuck > stuck_threshold){
           final.stuck = true;
+          end_data(thing.exittime);
           end_simulation();
         }
       
@@ -996,6 +816,184 @@ function initialize_simulation() {
     }));
   }
 }
+this.end_data = function(last_exit_time){
+       var things = pop.types();
+                
+		    for (i = 0; i < things.length; i++) {
+		      var tpe = things[i];
+			    data.current[tpe] = 0; //set everyone's population to zero
+          // console.log(tpe + ' : ' + data.max[tpe])
+
+          //ally this next line is the one you added in (closed it at 331)
+          if (data.max[tpe] > 0) {
+			      final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
+			    if (!gui.headless) { 
+             document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
+             document.getElementById("avg_" + tpe + "_collide").innerHTML = final.collisions_average[tpe];
+           }
+
+			    var avg_exit = final.exit_times[tpe] / data.max[tpe]; //in board update units
+			    final.exit_average[tpe] = avg_exit;
+			    if (!gui.headless) {
+             document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
+         }
+
+			    var avg_wait_steps = final.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
+			    if (!gui.headless) {
+             document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
+         }
+       }
+      }
+
+      final.avg_collisions_total = final.total_collisions/data.total_peds_at_start;
+      if (!gui.headless) { 
+        document.getElementById("avg_collide").innerHTML = final.avg_collisions_total;  // TODO: doesn't change ever?
+        document.getElementById("collide").innerHTML = final.total_collisions;
+      }
+
+      final.total_exit_time = last_exit_time; //total exit time in board updates [ CHECK THIS SEEMS WRONG] -- i think right
+      final.avg_exit_time = (final.sum_of_exit_times) / data.total_peds_at_start; //in board update units
+
+      if (!gui.headless) { 
+        document.getElementById("total_exit_time").innerHTML = final.total_exit_time;
+        document.getElementById("avg_exit_time").innerHTML = final.avg_exit_time;
+      }
+
+     var avg_wait_steps = final.sum_wait_steps/data.total_peds_at_start; //average amount of waitsteps per person
+
+     if (!gui.headless) {
+      document.getElementById("total_wait_steps").innerHTML = total_wait_steps;
+      document.getElementById("avg_wait_steps").innerHTML = avg_wait_steps;
+      }
+
+      if (gui.headless) {
+        for (i = 0; i <= final.avg_total_occ_list.length - 1; i++) {
+          final.occ_sum = final.occ_sum + final.avg_total_occ_list[i];
+        }
+        final.total_avg_occ_all_time = final.occ_sum/final.avg_total_occ_list.length;
+        debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all_time);
+
+        //the final evaluation metric for comparing different runs and characterizing them as good/bad
+        //higher number is bad
+        //get overall total exit time
+        //findinig the max exit time throughout all exit times
+        for(i=0; i<things.length; i++){
+            if (final.exit_total[things[i]]>final.overall_exit_time){
+                final.overall_exit_time = final.exit_total[things[i]];
+            }
+        }
+
+        final.evaluation_metric = (final.avg_exit_time + final.avg_collisions_total - final.total_avg_occ_all_time);
+        debug.log('final evaluation metric 1041: ' + final.evaluation_metric);
+
+        //making list of all the coords visited as (i,ii)
+        for(n=0; n<=final.total_visited_i.length-1; n++) {
+            j = final.total_visited_i[n];
+            jj = final.total_visited_ii[n];
+            visited_coords = [j,jj];
+            final.all_visited.push(visited_coords);
+        } 
+        //counter for num times each location was visited
+        const count = [];
+        for(const element of final.all_visited) {
+            if(count[element]) {
+                count[element] += 1;
+            } else {
+                count[element] = 1;
+            }
+        }
+        for(const element of final.all_visited) {
+            if(count[element]>max_visits) {
+                max_visits = count[element];
+                max_element = element;
+            }
+        }
+        //do a count for the last coord of each ped to get num peds using each exit
+        const count_last = [];
+        var num_through_exit = [];
+        var exits = []
+        for(const element of final.last_coords) {
+            if(count_last[element]) {
+                count_last[element] += 1;
+            } else {
+                count_last[element] = 1;
+                exits.push(element);
+            }
+        }
+        for(const element of exits) {
+            num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
+        }
+        debug.log('exits: ' + exits)
+        debug.log('count of last coords: ' + num_through_exit);
+        debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
+
+        //calculating the final average occupancy for each ped type
+        for(i=0; i<things.length; i++){
+           var sum_occ = 0;
+           var on_board_count = 0;
+           var list_index = avg_occ_list[things[i]];
+           for(j=0; j<list_index.length; j++){
+             if(list_index[j]>=0){
+               on_board_count++;
+               sum_occ += list_index[j];
+           }
+       }
+       final.final_occ = sum_occ/on_board_count;
+       final.average_occupancy[things[i]] = final.final_occ;
+    }
+    debug.log('final occ list: ' + final.average_occupancy);
+
+    //data for comparing against ideal path
+    //go through each type of person
+    var pop_tpes = pop.types();
+    for(i=0; i<pop_tpes.length; i++){
+       var eval_ratio = 0; //reset each time
+       var this_list = final.eval_path[pop_tpes[i]];
+      //add up all values in list
+      for (j=0; j<this_list.length; j++){
+        eval_ratio+=this_list[j];
+       // console.log("individual: "+this_list[j]);
+      }
+      //divide by length of the list
+      eval_ratio = eval_ratio/(this_list.length+1);
+      //add to total list
+      final.total_eval_path.push(eval_ratio);
+      //console log fir now, show on screen in future
+      debug.log("eval by type: "+eval_ratio);
+    }
+    //sum up total list
+    var total_eval = 0;
+    for(i=0; i< final.total_eval_path.length; i++){
+      total_eval+=final.total_eval_path[i];
+    }
+    //divide by length of list
+    total_eval = total_eval / (final.total_eval_path.length+1);
+    final.total_eval = total_eval;
+
+    //show in screen
+    debug.log("total: "+ total_eval);
+  }
+
+  //make the bar graphs here
+  // end_simulation(); 
+  //adding strings for the axis labels and titles
+  final.total_data = [];
+  if (data.total_collide) {
+     final.total_data.push([final.collisions_total, "Number of Collisions", "Total Number of collisions by Type of Person"]);
+  } if (data.average_collide) {
+    final.total_data.push([final.collisions_average, "Number of Collisions", "Average Number of Collisions by Type of Person"]);
+  }if (data.total_exit) {
+    final.total_data.push([final.exit_total, "Time taken to exit (in board updates)", "Time taken for each type of person to leave the board"]);
+  }if (data.average_exit) {
+    final.total_data.push([final.exit_average, "Time taken to exit (in board updates)", "Average Time taken for each type of Person to Exit the board"]);
+  } if (data.average_occupancy) {
+    final.total_data.push([final.average_occupancy, "Average area occupancy (in ped/sq ft)", "Total average area occupancy by pedestrian type"])
+  }
+  if (!gui.headless) { graph.createBarGraph(); }
+  if (!gui.headless) { graph.makeAvgGraph(); }
+  if (!gui.headless) { graph.makeAvgExitGraph(); }
+  }
+
 var end_sim_counter = 0;
 function end_simulation() {
     end_sim_counter = end_sim_counter + 1;
@@ -1337,7 +1335,8 @@ function simulate_and_visualize() {
 	//console.log("gen:" + number_generations + ", density:" + report);
 
 	if (number_generations >= max_generation) {
-        end_simulation();
+	  end_data(number_generations);
+    end_simulation();
 
         return;
     }
@@ -1348,6 +1347,7 @@ function simulate_and_visualize() {
        stuckCount++;
        if (stuckCount > MAXCOUNT){
          final.deadlock = true;
+         end_data(number_generations);
          end_simulation();
          return;
        }
