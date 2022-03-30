@@ -68,6 +68,10 @@ const argv = yargs
       description: 'whether to show debug messages',
       type: 'boolean'
    })
+   .option('save_path', {
+      description: 'whether to save the path for each pedestrian',
+      type: 'boolean'
+   })
    .option('width', {
       description: 'width of the simulation (at least 25)',
       type: 'int'
@@ -173,6 +177,12 @@ if (typeof argv.o !== 'undefined') {
 if (typeof argv.e !== 'undefined') {
    global.data.max['Exit'] = argv.e;
    global.data.current['Exit'] = argv.e;
+}
+if (typeof argv.save_path !== 'undefined') {
+   global.data.save_path = argv.save_path;
+}
+if (typeof argv.save_path == 'undefined') {
+   global.data.save_path = false;
 }
 
 // SKIP the GUI!

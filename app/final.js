@@ -155,10 +155,10 @@ function State() {
     
     //function to move people on the board, does not require any input
     this.move_things = function() {
-    	//initializations for later
-    	var occ = {};
-    	var things = pop.types(); //each type of a person
-    	for(i=0; i<things.length; i++){
+        //initializations for later
+        var occ = {};
+        var things = pop.types(); //each type of a person
+        for(i=0; i<things.length; i++){
          occ[things[i]] = 0;
      }
      var avg_occ = {};
@@ -290,7 +290,7 @@ function State() {
                 final.exit_times_array[object_type].push(thing.exittime);
                 final.exit_times_total_array.push(thing.exittime);
 
-		// TODO: THESE CAN BE GREATLY SIMPLIFIED...
+        // TODO: THESE CAN BE GREATLY SIMPLIFIED...
                 data.current[object_type] -= 1; //subtract one from type's population
                 if (!gui.headless) { document.getElementById("current_" + object_type).innerHTML = data.current[object_type]; }
 
@@ -354,8 +354,8 @@ function State() {
         else if (data.fuller_lower == true) {
             // console.log(data.exit_locations)
         } else if (data.classroom == true) {
-	    // classroom
-	}
+        // classroom
+    }
     else {
             // INSERT SQUARE
             // -------------
@@ -369,50 +369,50 @@ function State() {
 
         }
 
-	// all exits have been generated
-	// iterate over ALL types and see how many are needed of each type
-	var things = pop.types();
-	for (i = 0; i < things.length; i++) {
+    // all exits have been generated
+    // iterate over ALL types and see how many are needed of each type
+    var things = pop.types();
+    for (i = 0; i < things.length; i++) {
        var tpe = things[i];
 
        var num_thing = 0;
        var times_not_placed = 0;
        while (num_thing < data.max[tpe]) {
-		// not sure what is a good number, have it at 1000 right now, changed to area
-		if (times_not_placed > (data.width_i*data.width_ii)) {
+        // not sure what is a good number, have it at 1000 right now, changed to area
+        if (times_not_placed > (data.width_i*data.width_ii)) {
           window.alert("Cannot place this many " + tpe + " on the grid, please reset and choose another number");
           return false;
       }
 
-		// ensure stays fully on the board. Be sure to protect for safety's sake
-		var dd = pop.dimension(tpe);
-		//this was changed
-		var j = data.get_bounded_index_i(random.nextIntBetween(dd[0], data.width_i - dd[1]));
-		var jj = data.get_bounded_index_ii(random.nextIntBetween(dd[2], data.width_ii - dd[3]));
-		// console.log("board "+final.board);
-		var exit_information = layout.get_exit_information(final.board, j, jj);
-		
-		// construct the actual thing using the factory in pop
-		var obj = pop.factory(tpe, j, jj);
-		
-		obj.min_exiti  = exit_information[0];
-		obj.min_exitii = exit_information[1];
-		obj.endi       = exit_information[2];
-		obj.endii      = exit_information[3];
-		obj.goali      = exit_information[4];
-		obj.goalii     = exit_information[5];
-		
-		var obstacle = 0;
-		for (var p = 0; p < obj.profile_i.length; p++) { //
+        // ensure stays fully on the board. Be sure to protect for safety's sake
+        var dd = pop.dimension(tpe);
+        //this was changed
+        var j = data.get_bounded_index_i(random.nextIntBetween(dd[0], data.width_i - dd[1]));
+        var jj = data.get_bounded_index_ii(random.nextIntBetween(dd[2], data.width_ii - dd[3]));
+        // console.log("board "+final.board);
+        var exit_information = layout.get_exit_information(final.board, j, jj);
+        
+        // construct the actual thing using the factory in pop
+        var obj = pop.factory(tpe, j, jj);
+        
+        obj.min_exiti  = exit_information[0];
+        obj.min_exitii = exit_information[1];
+        obj.endi       = exit_information[2];
+        obj.endii      = exit_information[3];
+        obj.goali      = exit_information[4];
+        obj.goalii     = exit_information[5];
+        
+        var obstacle = 0;
+        for (var p = 0; p < obj.profile_i.length; p++) { //
             var dj = obj.profile_i[p];
             var djj = obj.profile_ii[p];
             var safej = data.get_bounded_index_i(j + dj);
             var safejj = data.get_bounded_index_ii(jj + djj);
                     if (this.temp_grid[safej][safejj].has_other_thing(obj)) { //should be somewhere
-			obstacle++;                       //do not place
+            obstacle++;                       //do not place
         }
     }
-		if (obstacle == 0) {//if can place
+        if (obstacle == 0) {//if can place
                     for (var p = 0; p < obj.profile_i.length; p++) { //
                      var dj = obj.profile_i[p];
                      var djj = obj.profile_ii[p];
@@ -437,16 +437,16 @@ function State() {
     // function takes in a person, updates the temp grid. Be sure to remove TRUE if you 
     // are removing from the simulation
     this.move_thing = function(thing) { //returns true if person is at exit, false otherwise
-		var heuristic = metrics.manhattand;  // default to manhattan
-		if (metrics.euclidean) {
-		   heuristic = metrics.euclideand;
-	   } else if (metrics.diagonal) {
-		   heuristic = metrics.diagonald;
-	   }
-	   
-	//probably not best logically
-	// Be sure to set the heuristic here, so it can be used in conflict resolution strategies...
-	final.get_heuristic = heuristic;
+        var heuristic = metrics.manhattand;  // default to manhattan
+        if (metrics.euclidean) {
+           heuristic = metrics.euclideand;
+       } else if (metrics.diagonal) {
+           heuristic = metrics.diagonald;
+       }
+       
+    //probably not best logically
+    // Be sure to set the heuristic here, so it can be used in conflict resolution strategies...
+    final.get_heuristic = heuristic;
 
         var node = astar.AStar(state, thing, 0, heuristic); //using AStar algorithm to get the best move
         if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
@@ -474,8 +474,8 @@ function State() {
         var exiti = thing.min_exiti; //get the first x value of the exit cell, don't think this is needed
         var exitii = thing.min_exitii; //get the first y value of the exit cell, dont think this is needed
         // Simplifying assumption: Once any piece of a thing touches the exit, the whole thing is removed.
-	// Future work: Could be resolved by warping the very profile of a thing to become smaller as it
-	// partially leaves, until it has no presence at which point it would be removed.
+    // Future work: Could be resolved by warping the very profile of a thing to become smaller as it
+    // partially leaves, until it has no presence at which point it would be removed.
         var count = 0; //counter used to check if at an exit
         for (index = 0; index < node.profile_i.length; index++) { //go through every cell of the person
            //need to check all exits just in case the goal exit changes
@@ -499,19 +499,20 @@ function State() {
         if (count > 0) { //if the count is greater that zero, some part is touching the exit
             //get the last coordinate for each ped and push to a list
             // console.log(thing.type)
-            final.last_coords.push([exiti,exitii])
-	          //get length of initial optimal path
-	          var init_path_length = thing.initial_path.length;
-	          //get length of actual path
-	          var actual_path_length = thing.path_i.length;
-	          //get the difference
-	          var path_difference = actual_path_length - init_path_length;
-	          //divide difference from actual
-	          var percent_diff = path_difference / actual_path_length
-	          //push this percent to array of total for that type
-	          var person_type = thing.type;
-	          final.eval_path[person_type].push(percent_diff);
-	          final.collision_list[person_type].push(thing.collision);
+            if (data.save_path) {
+                final.last_coords.push([exiti,exitii])
+              //get length of initial optimal path
+              var init_path_length = thing.initial_path.length;
+              //get length of actual path
+              var actual_path_length = thing.path_i.length;
+              //get the difference
+              var path_difference = actual_path_length - init_path_length;
+              //divide difference from actual
+              var percent_diff = path_difference / actual_path_length
+              //push this percent to array of total for that type
+              var person_type = thing.type;
+              final.eval_path[person_type].push(percent_diff);
+              final.collision_list[person_type].push(thing.collision);
 
             //keeps a list of the paths that each ped took
 
@@ -523,6 +524,7 @@ function State() {
             // debug.log(person_type + 'final path ii' + final.path_ii_taken[person_type])
             // debug.log('final path i overalllll' + final.all_paths_i_taken)
             // debug.log('final path ii overalllll' + final.all_paths_ii_taken)
+            }
 
             thing.remove_footprint(this); //remove object if any part of the object is touching the exit
             final.didAnythingChange = true;
@@ -563,9 +565,11 @@ function State() {
                     final.total_collisions = final.total_collisions + 1; //add one to the global collision counter
                     //add the ped's coordinates to their path so that it still shows when they are stuck
                     var i = thing.anchor_i; //x coordinate of the person
-            		var ii = thing.anchor_ii; //y coordinate of the person
-                    thing.path_i.push(i);
-                    thing.path_ii.push(ii);
+                    var ii = thing.anchor_ii; //y coordinate of the person
+                    if (data.save_path) {
+                        thing.path_i.push(i);
+                        thing.path_ii.push(ii);
+                    }
 
                     //adding collision counter to specific person types
                     final.collisions_total[thing.type] += 1;
@@ -587,30 +591,33 @@ function State() {
             var i = thing.anchor_i; //x coordinate of the person
             var ii = thing.anchor_ii; //y coordinate of the person
             //add current position to the ped's path
-            thing.path_i.push(i);
-            thing.path_ii.push(ii);
+            if (data.save_path) {
+                thing.path_i.push(i);
+                thing.path_ii.push(ii);
+            }
             final.total_visited_i.push(i);
             final.total_visited_ii.push(ii);
             // console.log('path_i: ' + thing.path_i)
             // console.log('path_ii: ' + thing.path_ii)
-	          //get length of initial optimal path
-	          
-	          
-	          //DONT think this should be here, commented out adding to list
-	          var init_path_length = thing.initial_path.length;
-	          //console.log("initial: "+init_path_length);
-	          //get length of actual path
-	          var actual_path_length = thing.path_i.length;
-	          //console.log("actual: "+actual_path_length);
-	          //get the difference
-	          var path_difference = actual_path_length - init_path_length;
-	          //divide difference from actual
-	          var percent_diff = path_difference / init_path_length;
-	          //push this percent to array of total for that type
-	          var person_type = thing.type;
-	          //final.eval_path[person_type].push(percent_diff);
-	          
-	          
+              //get length of initial optimal path
+              
+              if (data.save_path) {
+                  //DONT think this should be here, commented out adding to list
+                  var init_path_length = thing.initial_path.length;
+                  //console.log("initial: "+init_path_length);
+                  //get length of actual path
+                  var actual_path_length = thing.path_i.length;
+                  //console.log("actual: "+actual_path_length);
+                  //get the difference
+                  var path_difference = actual_path_length - init_path_length;
+                  //divide difference from actual
+                  var percent_diff = path_difference / init_path_length;
+              }
+              //push this percent to array of total for that type
+              var person_type = thing.type;
+              //final.eval_path[person_type].push(percent_diff);
+              
+              
             // clear old one
             thing.remove_footprint(this); //remove the person from its current position
             thing.anchor_i = j; //update the anchor x coordinate for the move to make
@@ -623,16 +630,16 @@ function State() {
             return false;
         }
 
-	// now there is a collision to handle..
+    // now there is a collision to handle..
         thing.wait++; //add one to its wait
         thing.waitsteps++; //add one to its total waits
-		
-		var resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1);
+        
+        var resolution_strategy1 = conflict.factory(data.resolve1, data.threshold1);
         var resolution_strategy2 = conflict.factory(data.resolve2, data.threshold2);
         var resolution_strategy3 = conflict.factory(data.resolve3, data.threshold3);
         var resolution_strategy4 = conflict.factory(data.resolve4, data.threshold4);
         
-		resolution_strategy1.try_to_resolve(thing, state, final.board);
+        resolution_strategy1.try_to_resolve(thing, state, final.board);
         resolution_strategy2.try_to_resolve(thing, state, final.board);
         resolution_strategy3.try_to_resolve(thing, state, final.board);
         resolution_strategy4.try_to_resolve(thing, state, final.board);
@@ -819,27 +826,27 @@ function initialize_simulation() {
 this.end_data = function(last_exit_time){
        var things = pop.types();
                 
-		    for (i = 0; i < things.length; i++) {
-		      var tpe = things[i];
-			    data.current[tpe] = 0; //set everyone's population to zero
+            for (i = 0; i < things.length; i++) {
+              var tpe = things[i];
+                data.current[tpe] = 0; //set everyone's population to zero
           // console.log(tpe + ' : ' + data.max[tpe])
 
           //ally this next line is the one you added in (closed it at 331)
           if (data.max[tpe] > 0) {
-			      final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
-			    if (!gui.headless) { 
+                  final.collisions_average[tpe] = final.collisions_total[tpe]/data.max[tpe];
+                if (!gui.headless) { 
              document.getElementById("total_" + tpe + "_collide").innerHTML = final.collisions_total[tpe];
              document.getElementById("avg_" + tpe + "_collide").innerHTML = final.collisions_average[tpe];
            }
 
-			    var avg_exit = final.exit_times[tpe] / data.max[tpe]; //in board update units
-			    final.exit_average[tpe] = avg_exit;
-			    if (!gui.headless) {
+                var avg_exit = final.exit_times[tpe] / data.max[tpe]; //in board update units
+                final.exit_average[tpe] = avg_exit;
+                if (!gui.headless) {
              document.getElementById("avg_exit_" + tpe).innerHTML = avg_exit;
          }
 
-			    var avg_wait_steps = final.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
-			    if (!gui.headless) {
+                var avg_wait_steps = final.wait_steps[tpe] / data.max[tpe]; //average wait time for ped
+                if (!gui.headless) {
              document.getElementById("avg_wait_steps_" + tpe).innerHTML = avg_wait_steps;
          }
        }
@@ -1011,9 +1018,9 @@ debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all
 
     //the final evaluation metric for comparing different runs and characterizing them as good/bad
     //higher number is bad
-	//get overall total exit time
-	//findinig the max exit time throughout all exit times
-	final.overall_exit_time = 0;
+    //get overall total exit time
+    //findinig the max exit time throughout all exit times
+    final.overall_exit_time = 0;
     for(i=0; i<things.length; i++){
         if (final.exit_total[things[i]]>final.overall_exit_time){
            final.overall_exit_time = final.exit_total[things[i]];
@@ -1025,47 +1032,47 @@ debug.log('total average area occupancy of all time: ' + final.total_avg_occ_all
 
     //making list of all the coords visited as (i,ii)
     for(n=0; n<=final.total_visited_i.length-1; n++) {
-    	j = final.total_visited_i[n];
-    	jj = final.total_visited_ii[n];
-    	visited_coords = [j,jj];
-    	final.all_visited.push(visited_coords);
+        j = final.total_visited_i[n];
+        jj = final.total_visited_ii[n];
+        visited_coords = [j,jj];
+        final.all_visited.push(visited_coords);
     } 
     //counter for num times each location was visited
     const count = [];
     for(const element of final.all_visited) {
-    	if(count[element]) {
-    		count[element] += 1;
-    	} else {
-    		count[element] = 1;
-    	}
+        if(count[element]) {
+            count[element] += 1;
+        } else {
+            count[element] = 1;
+        }
     }
     for(const element of final.all_visited) {
-    	if(count[element]>max_visits) {
-    		max_visits = count[element];
-    		max_element = element;
-    	}
+        if(count[element]>max_visits) {
+            max_visits = count[element];
+            max_element = element;
+        }
     }
     //do a count for the last coord of each ped to get num peds using each exit
     const count_last = [];
     var num_through_exit = [];
     var exits = []
     for(const element of final.last_coords) {
-    	if(count_last[element]) {
-    		count_last[element] += 1;
-    	} else {
-    		count_last[element] = 1;
-    		exits.push(element);
-    	}
+        if(count_last[element]) {
+            count_last[element] += 1;
+        } else {
+            count_last[element] = 1;
+            exits.push(element);
+        }
     }
     for(const element of exits) {
-    	num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
+        num_through_exit.push(count_last[element]); //make list for count of num of peds using each exit
     }
     debug.log('exits: ' + exits)
     debug.log('count of last coords: ' + num_through_exit);
     debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
 
     if(data.heatmap) {
-    	graph.heatmap();
+        graph.heatmap();
     }
 
     //calculating the final average occupancy for each ped type
@@ -1291,30 +1298,30 @@ if (!gui.headless) {
    var report = "";
    final.m = 0;
    for (var r = 0; r < voronoi.regions.length; r++) {
-	    var f = voronoi.density(r, state); //voronoi.count(r, state);
-	    report = report + f + ",";
-	    if(f>final.m) {
-	    	final.m=f;
-	    	final.most_dense_exit_i = final.vor_exits_i[r];
-	    	final.most_dense_exit_ii = final.vor_exits_ii[r];
-	    }
+        var f = voronoi.density(r, state); //voronoi.count(r, state);
+        report = report + f + ",";
+        if(f>final.m) {
+            final.m=f;
+            final.most_dense_exit_i = final.vor_exits_i[r];
+            final.most_dense_exit_ii = final.vor_exits_ii[r];
+        }
   }
       //finding min density region and saving the index
       final.least_dense_index = 0;
       report2 = "";
       final.min = 10000; //initialization to find min density region (slightly sketchy but I don't think it'll cause problems)
       for (var r = 0; r < voronoi.regions.length; r++) {
-	    var f = voronoi.density(r, state); //voronoi.count(r, state);
-	    report2 = report2 + f + ",";
-	    if(f<final.min) {
-	    	final.min=f;
-	    	final.least_dense_exit_i = final.vor_exits_i[r];
-	    	final.least_dense_exit_ii = final.vor_exits_ii[r];
-	    	final.least_dense_index = r;
-	    }
-	}
-	debug.log('report: ' + report);
-	debug.log('final.vor_exits_i: ' + final.vor_exits_i)
+        var f = voronoi.density(r, state); //voronoi.count(r, state);
+        report2 = report2 + f + ",";
+        if(f<final.min) {
+            final.min=f;
+            final.least_dense_exit_i = final.vor_exits_i[r];
+            final.least_dense_exit_ii = final.vor_exits_ii[r];
+            final.least_dense_index = r;
+        }
+    }
+    debug.log('report: ' + report);
+    debug.log('final.vor_exits_i: ' + final.vor_exits_i)
   debug.log('final.vor_exits_ii: ' + final.vor_exits_ii)
 
   debug.log('most dense exit location at start: (' + final.most_dense_exit_i + ', ' + final.most_dense_exit_ii + '), with a density of: ' + final.m);
@@ -1324,18 +1331,18 @@ if (!gui.headless) {
 
 take_snapshot_calls = 0;
 function simulate_and_visualize() {
-	number_generations += 1;
+    number_generations += 1;
 
-	var report = "";
-	for (r = 0; r < voronoi.regions.length; r++) {
-	    var f = voronoi.density(r, state); //voronoi.count(r, state);
-	    report = report + f + ",";
-	}
+    var report = "";
+    for (r = 0; r < voronoi.regions.length; r++) {
+        var f = voronoi.density(r, state); //voronoi.count(r, state);
+        report = report + f + ",";
+    }
 
-	//console.log("gen:" + number_generations + ", density:" + report);
+    //console.log("gen:" + number_generations + ", density:" + report);
 
-	if (number_generations >= max_generation) {
-	  end_data(number_generations);
+    if (number_generations >= max_generation) {
+      end_data(number_generations);
     end_simulation();
 
         return;
@@ -1393,4 +1400,3 @@ function simulate_and_visualize() {
 
 })(typeof final === 'undefined'?
 this['final']={}: final);
-

@@ -54,6 +54,9 @@ function calc_distance(i, ii, j, jj) {
     data.width_i = 150; 
     data.width_ii = 150;
 
+    //represents whether or not we want to save the path information for each ped
+    data.save_path = false;
+
     // prepare for all attributes...
     data.current = {};
     data.max = {};
