@@ -191,9 +191,6 @@ if (typeof argv.save_path == 'undefined') {
 if (typeof argv.output !== 'undefined') {
    argv.output = argv.output;
 }
-if (typeof argv.output == 'undefined') {
-   argv.output = testing;
-}
 
 // SKIP the GUI!
 global.gui = {}
@@ -325,10 +322,11 @@ function process_all() {
    // console.log(myFile)
    console.log(output);
    // writeFile function with filename, content and callback function (using inputted name)
+	if(typeof argv.output !== 'undefined') {
 	fs.appendFile(argv.output, output + '\n', function (err) {
 	  if (err) throw err;
 	  // console.log('File is created successfully.');
-	});
+	});}
 	// fs.appendFile('output_test_file.txt', '\n', function (err) {
 	//   if (err) throw err;
 	//   console.log('File is created successfully.');
