@@ -56,6 +56,8 @@ function calc_distance(i, ii, j, jj) {
 
     //represents whether or not we want to save the path information for each ped
     data.save_path = false;
+    //for naming the output file
+    // data.output = output_test;
 
     // prepare for all attributes...
     data.current = {};

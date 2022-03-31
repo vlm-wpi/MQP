@@ -105,6 +105,10 @@ const argv = yargs
       description: 'manhattan, euclidean, diagonal)  => make them boolean',
       type: 'string'
    })
+   .option('output', {
+      description: 'Allows the user to name the output file',
+      type: 'string'
+   })
    
    .help()
    .alias('help', 'h').argv;
@@ -184,6 +188,12 @@ if (typeof argv.save_path !== 'undefined') {
 if (typeof argv.save_path == 'undefined') {
    global.data.save_path = false;
 }
+if (typeof argv.output !== 'undefined') {
+   argv.output = argv.output;
+}
+if (typeof argv.output == 'undefined') {
+   argv.output = testing;
+}
 
 // SKIP the GUI!
 global.gui = {}
@@ -246,6 +256,7 @@ const lzw = require('./LZWEncoder');
 const nq = require('./NeuQuant');
 const gife = require('./GIFEncoder');
 const b64 = require('./b64');
+const fs = require('fs');
 
 ///final.final.resolution_strategy = global.conflict.factory('ChooseDifferentExit', 8);
 
@@ -283,7 +294,7 @@ function process_all() {
 
    for (var elt in argv) {
       if ((elt != '_') && (elt != '$0')) { 
-         if (output != '') { output += ';'; }
+         if (output != '') {output += ';'; }
          output += elt + '=' + argv[elt];
       }
    }
@@ -310,7 +321,26 @@ function process_all() {
            }
        }
    });
+   // const myFile = new File([output], 'output_test_file')
+   // console.log(myFile)
    console.log(output);
+   // writeFile function with filename, content and callback function (using inputted name)
+	fs.appendFile(argv.output, output + '\n', function (err) {
+	  if (err) throw err;
+	  // console.log('File is created successfully.');
+	});
+	// fs.appendFile('output_test_file.txt', '\n', function (err) {
+	//   if (err) throw err;
+	//   console.log('File is created successfully.');
+	// });
+   // fs.renameSync(argv.output, output);
+   // console.log(argv.output)
+
+   // 	function(err) {
+   // 	if (err) {throw err};
+   // 	console.log('file renamed');
+   // });
+   // console.log('output_test_file.txt')
 }
 
 // If hasn't stopped after 5,000 generations, that is it
