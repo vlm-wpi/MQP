@@ -318,8 +318,7 @@ function process_all() {
            }
        }
    });
-   // const myFile = new File([output], 'output_test_file')
-   // console.log(myFile)
+
    console.log(output);
    // writeFile function with filename, content and callback function (using inputted name)
 	if(typeof argv.output !== 'undefined') {
@@ -327,18 +326,6 @@ function process_all() {
 	  if (err) throw err;
 	  // console.log('File is created successfully.');
 	});}
-	// fs.appendFile('output_test_file.txt', '\n', function (err) {
-	//   if (err) throw err;
-	//   console.log('File is created successfully.');
-	// });
-   // fs.renameSync(argv.output, output);
-   // console.log(argv.output)
-
-   // 	function(err) {
-   // 	if (err) {throw err};
-   // 	console.log('file renamed');
-   // });
-   // console.log('output_test_file.txt')
 }
 
 // If hasn't stopped after 5,000 generations, that is it
