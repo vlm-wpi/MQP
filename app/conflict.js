@@ -245,7 +245,7 @@
   	    if (thing.wait > this.threshold) {
   	      var node = astar.AStar(state, thing, 1, final.get_heuristic);
   	     if (node == null) { //if no move found from initial AStar call return false: can't move but not exit
-  	     console.log("no path");
+  	     // console.log("no path");
            return false;
         }
   	      var new_coords = node.initial_step(); //get the next move from the minheap

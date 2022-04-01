@@ -164,7 +164,7 @@
     layoutChoices.oninput = function() {
 
 	var layoutChoice = layoutChoices.options[layoutChoices.selectedIndex].value;
-	console.log(layoutChoice);
+	// console.log(layoutChoice);
 	data.layout = layoutChoice;
     }
     
@@ -174,7 +174,7 @@
     ResolutionChoice1.oninput = function() {
 
 	    var ResolutionChoice = ResolutionChoice1.options[ResolutionChoice1.selectedIndex].value;
-	    console.log(ResolutionChoice);
+	    // console.log(ResolutionChoice);
 	    data.resolve1 = ResolutionChoice;
     }
         
@@ -182,7 +182,7 @@
     ResolutionChoice2.oninput = function() {
 
 	    var ResolutionChoice = ResolutionChoice2.options[ResolutionChoice2.selectedIndex].value;
-	    console.log(ResolutionChoice);
+	    // console.log(ResolutionChoice);
 	    data.resolve2 = ResolutionChoice;
     }
         
@@ -190,7 +190,7 @@
     ResolutionChoice3.oninput = function() {
 
 	    var ResolutionChoice = ResolutionChoice3.options[ResolutionChoice3.selectedIndex].value;
-	    console.log(ResolutionChoice);
+	    // console.log(ResolutionChoice);
 	    data.resolve3 = ResolutionChoice;
     }
         
@@ -198,7 +198,7 @@
     ResolutionChoice4.oninput = function() {
 
 	    var ResolutionChoice = ResolutionChoice4.options[ResolutionChoice4.selectedIndex].value;
-	    console.log(ResolutionChoice);
+	    // console.log(ResolutionChoice);
 	    data.resolve4 = ResolutionChoice;
     }
     
