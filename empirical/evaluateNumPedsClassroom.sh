@@ -23,7 +23,7 @@ OUTPUT=results
 
 # Set Up
 # ------------------------------------
-INPUT_ARGS="--width=100 --height=100 --c=0 --a=0 --ab=0 --heuristic=euclidean --layout=Classroom --conflict1=ChooseRandomMove-3 --conflict2=ChooseRandomMove-6 --conflict3=ChooseRandomMove-9 --conflict4=ChooseRandomMove-12 output=output5"
+INPUT_ARGS="--width=100 --height=100 --c=0 --a=0 --ab=0 --heuristic=euclidean --layout=Classroom --conflict1=ChooseRandomMove-3 --conflict2=ChooseRandomMove-6 --conflict3=ChooseRandomMove-9 --conflict4=ChooseRandomMove-12 --output=output5"
 OUTPUT_ARGS="data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.deadlock"
 
 IDX=$LOW_THRESH
