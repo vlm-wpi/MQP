@@ -6,7 +6,7 @@
 # Gather Data on how behavior is affected by different number of adults with backpacks in a classroom
 #
 # ONE MORE than number of independent trials to run
-NUM_SEEDS=3501
+NUM_SEEDS=3500
 
 START_SEED=72500
 END_SEED=$((START_SEED+NUM_SEEDS))
