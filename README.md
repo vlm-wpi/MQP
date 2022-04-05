@@ -14,35 +14,35 @@ d. Through a remote server (no GUI component)
 
 Regardless of how the simulation is run, the user has the ability to input several parameters including:
 
-*Number of Children/Adults/Adults with Backpacks/Adults with Bikes
+* Number of Children/Adults/Adults with Backpacks/Adults with Bikes
 
-*Number of Exits
+* Number of Exits
 
-*Number of Obstacles
+* Number of Obstacles
 
-*Width/Height of Grid
+* Width/Height of Grid
 
-*Initial Layout (Randomized will produce a random layout, where as the other options for layouts are representations of a classroom, a lecture hall, a specific lecture hall at WPI, or a user input file - see below for how to construct such a file)
+* Initial Layout (Randomized will produce a random layout, where as the other options for layouts are representations of a classroom, a lecture hall, a specific lecture hall at WPI, or a user input file - see below for how to construct such a file)
 
-*Choice of Heuristic Function (Diagonal Distance, Manhattan Distance, or Euclidean Distance, representing how the heuristic function gets calculated)
+* Choice of Heuristic Function (Diagonal Distance, Manhattan Distance, or Euclidean Distance, representing how the heuristic function gets calculated)
 
-*Choice of four Conflict Strategies (how pedestrians resolve conflicts when they run into one another and get stuck) and their thresholds (after how many 'stuck' steps the pedestrian will employ the specific conflict resolution strategy)
+* Choice of four Conflict Strategies (how pedestrians resolve conflicts when they run into one another and get stuck) and their thresholds (after how many 'stuck' steps the pedestrian will employ the specific conflict resolution strategy)
 
 If the simulation is being run using the GUI, the user has the additional input options:
 
-*Time between updates (representing the amount of time between each update of the board; a greater value will make the simulation appear slower)
+* Time between updates (representing the amount of time between each update of the board; a greater value will make the simulation appear slower)
 
-*Choice of whether to Take Snapshot Images (if this is selected, a screenshot gets taken and downloaded to the users computer at each iteration of the simulation)
+* Choice of whether to Take Snapshot Images (if this is selected, a screenshot gets taken and downloaded to the users computer at each iteration of the simulation)
 
-*Choice of what graphs to plot and print at the conclusion of the simulation
+* Choice of what graphs to plot and print at the conclusion of the simulation
 
 If the simulation is not being run using the GUI, but instead with headless mode, the user has the additional input options:
 
-*Choice of what trial numbers (seeds) to run
+* Choice of what trial numbers (seeds) to run
 
-*output (the user can specify the name of the output file with all requested statistics)
+* output (the user can specify the name of the output file with all requested statistics)
 
-*Choice of what statistics will be output at the conclusion of the simulation
+* Choice of what statistics will be output at the conclusion of the simulation
 
 **Instructions for running the simulation:**
 
