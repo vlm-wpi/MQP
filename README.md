@@ -14,35 +14,35 @@ d. Through a remote server (no GUI component)
 
 Regardless of how the simulation is run, the user has the ability to input several parameters including:
 
-*Number of Children/Adults/Adults with Backpacks/Adults with Bikes
+* Number of Children/Adults/Adults with Backpacks/Adults with Bikes
 
-*Number of Exits
+* Number of Exits
 
-*Number of Obstacles
+* Number of Obstacles
 
-*Width/Height of Grid
+* Width/Height of Grid
 
-*Initial Layout (Randomized will produce a random layout, where as the other options for layouts are representations of a classroom, a lecture hall, a specific lecture hall at WPI, or a user input file - see below for how to construct such a file)
+* Initial Layout (Randomized will produce a random layout, where as the other options for layouts are representations of a classroom, a lecture hall, a specific lecture hall at WPI, or a user input file - see below for how to construct such a file)
 
-*Choice of Heuristic Function (Diagonal Distance, Manhattan Distance, or Euclidean Distance, representing how the heuristic function gets calculated)
+* Choice of Heuristic Function (Diagonal Distance, Manhattan Distance, or Euclidean Distance, representing how the heuristic function gets calculated)
 
-*Choice of four Conflict Strategies (how pedestrians resolve conflicts when they run into one another and get stuck) and their thresholds (after how many 'stuck' steps the pedestrian will employ the specific conflict resolution strategy)
+* Choice of four Conflict Strategies (how pedestrians resolve conflicts when they run into one another and get stuck) and their thresholds (after how many 'stuck' steps the pedestrian will employ the specific conflict resolution strategy)
 
 If the simulation is being run using the GUI, the user has the additional input options:
 
-*Time between updates (representing the amount of time between each update of the board; a greater value will make the simulation appear slower)
+* Time between updates (representing the amount of time between each update of the board; a greater value will make the simulation appear slower)
 
-*Choice of whether to Take Snapshot Images (if this is selected, a screenshot gets taken and downloaded to the users computer at each iteration of the simulation)
+* Choice of whether to Take Snapshot Images (if this is selected, a screenshot gets taken and downloaded to the users computer at each iteration of the simulation)
 
-*Choice of what graphs to plot and print at the conclusion of the simulation
+* Choice of what graphs to plot and print at the conclusion of the simulation
 
 If the simulation is not being run using the GUI, but instead with headless mode, the user has the additional input options:
 
-*Choice of what trial numbers (seeds) to run
+* Choice of what trial numbers (seeds) to run
 
-*output (the user can specify the name of the output file with all requested statistics)
+* output (the user can specify the name of the output file with all requested statistics)
 
-*Choice of what statistics will be output at the conclusion of the simulation
+* Choice of what statistics will be output at the conclusion of the simulation
 
 **Instructions for running the simulation:**
 
@@ -56,11 +56,11 @@ a. Online through the GUI (graphical user interface)
 	
 	Notes:
 		
-		*The user MUST clear the simulation between runs using the 'Clear' button in order for the simulation to run appropriately
+		* The user MUST clear the simulation between runs using the 'Clear' button in order for the simulation to run appropriately
 		
-		*The simulation will randomly populate with each run, so a user likely will not be able to achieve the same initial configuration more than once
+		* The simulation will randomly populate with each run, so a user likely will not be able to achieve the same initial configuration more than once
 		
-		*The simulation will end automatically when all pedestrians that are able to have left the grid, but the user can also select the 'End' button at any time
+		* The simulation will end automatically when all pedestrians that are able to have left the grid, but the user can also select the 'End' button at any time
 
 
 b. Locally on your device using the GUI
@@ -95,9 +95,9 @@ c. Locally on your device through the command prompt/terminal using headless mod
 		
 		5. While still in that location, type the following two commands:
 			
-			*'npm install yargs'
+			* 'npm install yargs'
 			
-			*'npm install random-seed'
+			* 'npm install random-seed'
 
 	
 	Steps for every time running the simulation:
@@ -110,7 +110,7 @@ c. Locally on your device through the command prompt/terminal using headless mod
 		
 		4. Run the command beginning with 'trial.bat' followed by your inputs for grid size, number of pedestrians, etc., and then followed by the variables that you wish to output
 			
-			*Ex: trial.bat 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
+			* Ex: trial.bat 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
 
 
 d. Through a remote server (no GUI component)
@@ -131,15 +131,15 @@ d. Through a remote server (no GUI component)
 		
 		7. Navigate into the 'app' folder part of 'MQP' by doing
 			
-			*'cd MQP'
+			* 'cd MQP'
 			
-			*'cd app'
+			* 'cd app'
 		
 		8. While still in that location, type the following two commands:
 			
-			*'npm install yargs'
+			* 'npm install yargs'
 			
-			*'npm install random-seed'
+			* 'npm install random-seed'
 
 	Steps for every time running the simulation:
 		
@@ -153,13 +153,13 @@ d. Through a remote server (no GUI component)
 		
 		5. Navigate into the 'app' folder part of 'MQP' by doing
 			
-			*'cd MQP'
+			* 'cd MQP'
 			
-			*'cd app'
+			* 'cd app'
 		
 		6. Run the command beginning with 'bash trial.sh' followed by your inputs for grid size, number of pedestrians, etc., and then followed by the variables that you wish to output
 			
-			*Ex:  bash trial.sh 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
+			* Ex:  bash trial.sh 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
 		
 		7. Connect to the server in FileZilla
 		
