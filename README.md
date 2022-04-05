@@ -56,11 +56,11 @@ a. Online through the GUI (graphical user interface)
 	
 	Notes:
 		
-		* The user MUST clear the simulation between runs using the 'Clear' button in order for the simulation to run appropriately
+		- The user MUST clear the simulation between runs using the 'Clear' button in order for the simulation to run appropriately
 		
-		* The simulation will randomly populate with each run, so a user likely will not be able to achieve the same initial configuration more than once
+		- The simulation will randomly populate with each run, so a user likely will not be able to achieve the same initial configuration more than once
 		
-		* The simulation will end automatically when all pedestrians that are able to have left the grid, but the user can also select the 'End' button at any time
+		- The simulation will end automatically when all pedestrians that are able to have left the grid, but the user can also select the 'End' button at any time
 
 
 b. Locally on your device using the GUI
