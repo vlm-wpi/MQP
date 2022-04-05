@@ -56,11 +56,11 @@ a. Online through the GUI (graphical user interface)
 	
 	Notes:
 		
-		*The user MUST clear the simulation between runs using the 'Clear' button in order for the simulation to run appropriately
+		* The user MUST clear the simulation between runs using the 'Clear' button in order for the simulation to run appropriately
 		
-		*The simulation will randomly populate with each run, so a user likely will not be able to achieve the same initial configuration more than once
+		* The simulation will randomly populate with each run, so a user likely will not be able to achieve the same initial configuration more than once
 		
-		*The simulation will end automatically when all pedestrians that are able to have left the grid, but the user can also select the 'End' button at any time
+		* The simulation will end automatically when all pedestrians that are able to have left the grid, but the user can also select the 'End' button at any time
 
 
 b. Locally on your device using the GUI
@@ -95,9 +95,9 @@ c. Locally on your device through the command prompt/terminal using headless mod
 		
 		5. While still in that location, type the following two commands:
 			
-			*'npm install yargs'
+			* 'npm install yargs'
 			
-			*'npm install random-seed'
+			* 'npm install random-seed'
 
 	
 	Steps for every time running the simulation:
@@ -110,7 +110,7 @@ c. Locally on your device through the command prompt/terminal using headless mod
 		
 		4. Run the command beginning with 'trial.bat' followed by your inputs for grid size, number of pedestrians, etc., and then followed by the variables that you wish to output
 			
-			*Ex: trial.bat 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
+			* Ex: trial.bat 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
 
 
 d. Through a remote server (no GUI component)
@@ -131,15 +131,15 @@ d. Through a remote server (no GUI component)
 		
 		7. Navigate into the 'app' folder part of 'MQP' by doing
 			
-			*'cd MQP'
+			* 'cd MQP'
 			
-			*'cd app'
+			* 'cd app'
 		
 		8. While still in that location, type the following two commands:
 			
-			*'npm install yargs'
+			* 'npm install yargs'
 			
-			*'npm install random-seed'
+			* 'npm install random-seed'
 
 	Steps for every time running the simulation:
 		
@@ -153,13 +153,13 @@ d. Through a remote server (no GUI component)
 		
 		5. Navigate into the 'app' folder part of 'MQP' by doing
 			
-			*'cd MQP'
+			* 'cd MQP'
 			
-			*'cd app'
+			* 'cd app'
 		
 		6. Run the command beginning with 'bash trial.sh' followed by your inputs for grid size, number of pedestrians, etc., and then followed by the variables that you wish to output
 			
-			*Ex:  bash trial.sh 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
+			* Ex:  bash trial.sh 100 105 --width=50 --height=50 --c=10 --a=10 --abp=10 --ab=0 --e=1 --o=0 --heuristic=euclidean --layout=Randomized --conflict1=ChooseRandomMove-3 --conflict2=ChooseDifferentExit-6 --conflict3=NullConflictStrategy-9 --conflict4=NullConflictStrategy-12 --save_path=true --output=output_file data.max data.width_i data.width_ii final.total_exit_time final.avg_exit_time final.avg_collisions_total final.total_avg_occ_all_time final.total_eval final.evaluation_metric final.initial_path_layout final.path_i_taken final.path_ii_taken final.all_paths_i_taken final.all_paths_ii_taken final.deadlock
 		
 		7. Connect to the server in FileZilla
 		
