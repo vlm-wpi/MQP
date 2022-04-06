@@ -1,223 +1,224 @@
 <html>
-<head><title>Final progress</title>
+  <head><title>Final progress</title>
   <link rel="stylesheet" href="final.css">
-  <style>
-        .bar {
-            fill: steelblue;
+    <style>
+    .bar {
+      fill: steelblue;
+    }
+  </style>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+      </head>
+      <body>
+      
+      <script type="text/javascript">
+        
+        function start_app() {
+          this.final.start_simulation();
+          // this.voronoi.pVoronoiD();
         }
-    </style>
-  <script src="https://d3js.org/d3.v7.min.js"></script>
-</head>
-<body>
-  
-  <script type="text/javascript">
-  
-  function start_app() {
-    this.final.start_simulation();
-    // this.voronoi.pVoronoiD();
-  }
+      
+      function stop_app() {
+        this.final.end_simulation();
+      }
+      
+      function clear_app() {
+        this.final.clear_simulation();
+      }
+      
+      </script>
+        
+<table>
+<tr valign=top>
+<td><h2>Values at initialization:</h2><br>
+<p>Total number of pedestrians on grid: <span id="total_peds_at_start"></span><br>
+Children: <span id="num_Child_initial"></span><br>
+Adults: <span id="num_Adult_initial"></span><br>
+Adults with backpacks: <span id="num_AdultBackpack_initial"></span><br>
+Adults with bikes: <span id="num_AdultBike_initial"></span><br>
+Obstacles: <span id="num_Obstacle_initial"></span><br>
+</p>
+</td>
+<td>
+<h2>Initialize the Simulation:</h2>
+<form>
+<label for="numChildren">Number of Children:</label><br>
+<input type="text" id="numChildren" name="numChildren"><br>
+<label for="numAdults">Number of Adults:</label><br>
+<input type="text" id="numAdults" name="numAdults"><br>
+<label for="numBackPacks">Number of Adults with Backpacks:</label><br>
+<input type="text" id="numBackPacks" name="numBackPacks"><br>
+<label for="numBikes">Number of Adults with Bikes:</label><br>
+<input type="text" id="numBikes" name="numBikes"><br>
+<label for="numExits">Number of Exits:</label><br>
+<input type="text" id="numExits" name="numExits"><br>
+<label for="numObstacles">Number of Obstacles:</label><br>
+<input type="text" id="numObstacles" name="numObstacles">
+</form>
+</td>
+<td>
+<h2>Choose Board Initialization:</h2>
+<form>
+<div class="slidecontainer">
+Time between updates: <input type="range" min="1" max="500" value="1" id="ms_speed"><br>
+</div>
+<label for="gridWidthi">Width of Grid:</label><br>
+<input type="text" id="gridWidthi" name="gridWidthi"><br>
+<label for="gridWidthii">Height of Grid:</label><br>
+<input type="text" id="gridWidthii" name="gridWidthii"><br>
+</form>
+<h3>Layout:</h3>
 
-  function stop_app() {
-    this.final.end_simulation();
-  }
+<select name="layouts" id="LayoutSelect">
 
-  function clear_app() {
-    this.final.clear_simulation();
-  }
-
-  </script>
-  
-   <table>
-    <tr valign=top>
-        <td><h2>Values at initialization:</h2><br>
-          <p>Total number of pedestrians on grid: <span id="total_peds_at_start"></span><br>
-          Children: <span id="num_Child_initial"></span><br>
-          Adults: <span id="num_Adult_initial"></span><br>
-          Adults with backpacks: <span id="num_AdultBackpack_initial"></span><br>
-          Adults with bikes: <span id="num_AdultBike_initial"></span><br>
-          Obstacles: <span id="num_Obstacle_initial"></span><br>
+<option value="Randomized" selected>Randomized</option>
+<option value="FullerLower"        >FullerLower</option>
+<option value="Classroom"          >Classroom</option>
+  <option value="LectureHall"        >LectureHall</option>
+    <option value="myFile"        >myFile</option>
+      </select>
+      <input type="file" name="inputfile"
+      id="inputfile"><br>
+        </td>
+        
+        <td>
+        <h2>Choose Heuristic Function:</h2>
+        <p>
+        Diagonal Distance: <input type="checkbox" id="diagonal"><br>
+        Manhattan Distance: <input type="checkbox" id="manhattan"><br>
+        Euclidean Distance: <input type="checkbox" id="euclidean"><br>
         </p>
         </td>
         <td>
-           <h2>Initialize the Simulation:</h2>
-          <form>
-            <label for="numChildren">Number of Children:</label><br>
-            <input type="text" id="numChildren" name="numChildren"><br>
-            <label for="numAdults">Number of Adults:</label><br>
-            <input type="text" id="numAdults" name="numAdults"><br>
-            <label for="numBackPacks">Number of Adults with Backpacks:</label><br>
-            <input type="text" id="numBackPacks" name="numBackPacks"><br>
-            <label for="numBikes">Number of Adults with Bikes:</label><br>
-            <input type="text" id="numBikes" name="numBikes"><br>
-            <label for="numExits">Number of Exits:</label><br>
-            <input type="text" id="numExits" name="numExits"><br>
-            <label for="numObstacles">Number of Obstacles:</label><br>
-            <input type="text" id="numObstacles" name="numObstacles">
-          </form>
+        <h2>Choose Graphs to plot:</h2>
+        <p>
+        Total collisions: <input type="checkbox" id="total_collide"><br>
+        Average collisions: <input type="checkbox" id="average_collide"><br>
+        Total exit times: <input type="checkbox" id="total_exit"><br>
+        Average exit times: <input type="checkbox" id="average_exit"><br>
+        Average area occupancy: <input type="checkbox" id="average_occupancy"><br>
+        Total visits each cell heatmap: <input type="checkbox" id="heatmap"><br>
+        </p>
         </td>
-        <td>
-          <h2>Choose Board Initialization:</h2>
-          <form>
-            <div class="slidecontainer">
-              Time between updates: <input type="range" min="1" max="500" value="1" id="ms_speed"><br>
-            </div>
-            <label for="gridWidthi">Width of Grid:</label><br>
-            <input type="text" id="gridWidthi" name="gridWidthi"><br>
-            <label for="gridWidthii">Height of Grid:</label><br>
-            <input type="text" id="gridWidthii" name="gridWidthii"><br>
-          </form>
-           <h3>Layout:</h3>
-
-	        <select name="layouts" id="LayoutSelect">
-
-	        <option value="Randomized" selected>Randomized</option>
-	      <option value="FullerLower"        >FullerLower</option>
-	       <option value="Classroom"          >Classroom</option>
-	       <option value="LectureHall"        >LectureHall</option>
-	       <option value="myFile"        >myFile</option>
-	       </select>
-	         <input type="file" name="inputfile"
-            id="inputfile"><br>
-          </td>
-          
-          <td>
-          <h2>Choose Heuristic Function:</h2>
-          <p>
-          Diagonal Distance: <input type="checkbox" id="diagonal"><br>
-          Manhattan Distance: <input type="checkbox" id="manhattan"><br>
-          Euclidean Distance: <input type="checkbox" id="euclidean"><br>
-          </p>
-          </td>
-          <td>
-           <h2>Choose Graphs to plot:</h2>
-           <p>
-          Total collisions: <input type="checkbox" id="total_collide"><br>
-          Average collisions: <input type="checkbox" id="average_collide"><br>
-          Total exit times: <input type="checkbox" id="total_exit"><br>
-          Average exit times: <input type="checkbox" id="average_exit"><br>
-          Average area occupancy: <input type="checkbox" id="average_occupancy"><br>
-          Total visits each cell heatmap: <input type="checkbox" id="heatmap"><br>
-          </p>
-          </td>
-          
-          <td>
-            <h2>Choose Conflict Resolution Strategies:</h2>
-            <p>
-            <label for="conflift_strategy1">First conflict strategy:</label>
-            <select name="resolution-strategy" id="conflift_strategy1">
-            <option value="ChooseDifferentExit">Random Exit</option>
-            <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
-            <option value="ChooseRandomMove">Random move</option>
-            <option value="ChooseDifferentExitDensity">Exit based on Density</option>
-            <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
-            <option value="NullConflictStrategy">None</option>
-            </select><br>
-            
-            <label for="threshold1">Threshold for conflict strategy 1:</label><br>
-            <input type="text" id="threshold1" name="threshold1"><br>
-            
-            <label for="conflift_strategy2">Second conflict strategy:</label>
-            <select name="resolution-strategy" id="conflift_strategy2">
-            <option value="ChooseDifferentExit">Random Exit</option>
-            <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
-            <option value="ChooseRandomMove">Random move</option>
-            <option value="ChooseDifferentExitDensity">Exit based on Density</option>
-            <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
-            <option value="NullConflictStrategy">None</option>
-            </select><br>
-            
-            <label for="threshold2">Threshold for conflict strategy 2:</label><br>
-            <input type="text" id="threshold2" name="threshold2"><br>
-            
-            <label for="conflift_strategy3">Third conflict strategy:</label>
-            <select name="resolution-strategy" id="conflift_strategy3">
-            <option value="ChooseDifferentExit">Random Exit</option>
-            <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
-            <option value="ChooseRandomMove">Random move</option>
-            <option value="ChooseDifferentExitDensity">Exit based on Density</option>
-            <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
-            <option value="NullConflictStrategy">None</option>
-            </select><br>
-            
-            <label for="threshold3">Threshold for conflict strategy 3:</label><br>
-            <input type="text" id="threshold3" name="threshold3"><br>
-            
-            <label for="conflift_strategy4">Fourth conflict strategy:</label>
-            <select name="resolution-strategy" id="conflift_strategy4">
-            <option value="ChooseDifferentExit">Random Exit</option>
-            <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
-            <option value="ChooseRandomMove">Random move</option>
-            <option value="ChooseDifferentExitDensity">Exit based on Density</option>
-            <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
-            <option value="NullConflictStrategy">None</option>
-            </select><br>
-            
-            <label for="threshold4">Threshold for conflict strategy 4:</label><br>
-            <input type="text" id="threshold4" name="threshold4">
-            </p>
-          </td>
-    </tr>
-</table>
-  
-
-  <form>
-    <input type = "button" value="start" onClick="JavaScript:start_app()">
-    <input type = "button" value="end" onClick="JavaScript:stop_app()">
-    <input type = "button" value="clear" onClick="JavaScript:clear_app()">
-    <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
-
-  </form>
-
-
         
-    <table>
-      
-      <tr valign=top>
+        <td>
+        <h2>Choose Conflict Resolution Strategies:</h2>
+        <p>
+        <label for="conflift_strategy1">First conflict strategy:</label>
+        <select name="resolution-strategy" id="conflift_strategy1">
+        <option value="ChooseDifferentExit">Random Exit</option>
+        <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
+        <option value="ChooseRandomMove">Random move</option>
+        <option value="ChooseDifferentExitDensity">Exit based on Density</option>
+        <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
+        <option value="NullConflictStrategy">None</option>
+        </select><br>
+        
+        <label for="threshold1">Threshold for conflict strategy 1:</label><br>
+        <input type="text" id="threshold1" name="threshold1"><br>
+        
+        <label for="conflift_strategy2">Second conflict strategy:</label>
+        <select name="resolution-strategy" id="conflift_strategy2">
+        <option value="ChooseDifferentExit">Random Exit</option>
+        <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
+        <option value="ChooseRandomMove">Random move</option>
+        <option value="ChooseDifferentExitDensity">Exit based on Density</option>
+        <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
+        <option value="NullConflictStrategy">None</option>
+        </select><br>
+        
+        <label for="threshold2">Threshold for conflict strategy 2:</label><br>
+        <input type="text" id="threshold2" name="threshold2"><br>
+        
+        <label for="conflift_strategy3">Third conflict strategy:</label>
+        <select name="resolution-strategy" id="conflift_strategy3">
+        <option value="ChooseDifferentExit">Random Exit</option>
+        <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
+        <option value="ChooseRandomMove">Random move</option>
+        <option value="ChooseDifferentExitDensity">Exit based on Density</option>
+        <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
+        <option value="NullConflictStrategy">None</option>
+        </select><br>
+        
+        <label for="threshold3">Threshold for conflict strategy 3:</label><br>
+        <input type="text" id="threshold3" name="threshold3"><br>
+        
+        <label for="conflift_strategy4">Fourth conflict strategy:</label>
+        <select name="resolution-strategy" id="conflift_strategy4">
+        <option value="ChooseDifferentExit">Random Exit</option>
+        <option value="ChooseDifferentExitAndReset">Exit and reset wait time</option>
+        <option value="ChooseRandomMove">Random move</option>
+        <option value="ChooseDifferentExitDensity">Exit based on Density</option>
+        <option value="takeOthersIntoAccount">Pedestrians taken account for path</option>
+        <option value="NullConflictStrategy">None</option>
+        </select><br>
+        
+        <label for="threshold4">Threshold for conflict strategy 4:</label><br>
+        <input type="text" id="threshold4" name="threshold4">
+        </p>
+        </td>
+        </tr>
+        </table>
+        
+        
+        <form>
+        <input type = "button" value="start" onClick="JavaScript:start_app()">
+        <input type = "button" value="end" onClick="JavaScript:stop_app()">
+        <input type = "button" value="clear" onClick="JavaScript:clear_app()">
+        <b>Take Snapshot images:</b> <input type="checkbox" id="takeSnapshot"><br>
+        
+        </form>
+        
+        
+        
+        <table>
+        
+        <tr valign=top>
         <td><canvas id="grid" width="600" height="600"></canvas></td>
         <td valign=top>
-          <svg id="visualisation" width="500" height="500"></svg>
-          </td>
-  </tr>
-  </table>
-  
-  <table>
-      
-  <tr> 
-      
-  <td><svg id="visualisation0" width="500" height="500"></svg></td>
-  <td><svg id="visualisation1" width="600" height="500"></svg></td>
-  <td><svg id="visualisation2" width="600" height="500"></svg></td>
-  <td><svg id="visualisation3" width="600" height="500"></svg></td>
-  <td><svg id="visualisation4" width="600" height="500"></svg></td>
-  <td><svg id="visualisation5" width="600" height="500"></svg></td>
-  <td><svg id="visualisation6" width="600" height="500"></svg></td>
-  <td><svg id="visualisation7" width="600" height="500"></svg></td>
-
-
-  </tr>
-  </table>
-<!--     <h1>Sample outputs</h1>
- -->
-
-    <script type='text/javascript' src='data.js'>    </script>
-    <script type='text/javascript' src='debug.js'>    </script>
-    <script type='text/javascript' src='random.js'>    </script>
-    <script type='text/javascript' src='metrics.js'>    </script>
-    <script type='text/javascript' src='gui.js'>    </script>
-    <script type='text/javascript' src='heap.js'>    </script>
-    <script type='text/javascript' src='astar.js'>    </script>
-    <script type='text/javascript' src='pop.js'>    </script>
-    <script type='text/javascript' src='layout.js'>  </script>
-    <script type='text/javascript' src='conflict.js'>    </script>
-    <script type='text/javascript' src='final.js'>    </script>
-    <script type="text/javascript" src="LZWEncoder.js">    </script>
-    <script type="text/javascript" src="NeuQuant.js">    </script>
-    <script type="text/javascript" src="GIFEncoder.js">    </script>
-    <script type="text/javascript" src="b64.js">    </script>
-    <script type="text/javascript" src="graph.js">    </script>
-    <script type="text/javascript" src="voronoi.js">    </script>
-
-
-
-  </body>
-  </html>
+        <svg id="visualisation" width="500" height="500"></svg>
+        </td>
+        </tr>
+        </table>
+        
+        <table>
+        
+        <tr> 
+        
+        <td><svg id="visualisation0" width="500" height="500"></svg></td>
+        <td><svg id="visualisation1" width="600" height="500"></svg></td>
+        <td><svg id="visualisation2" width="600" height="500"></svg></td>
+        <td><svg id="visualisation3" width="600" height="500"></svg></td>
+        <td><svg id="visualisation4" width="600" height="500"></svg></td>
+        <td><svg id="visualisation5" width="600" height="500"></svg></td>
+        <td><svg id="visualisation6" width="600" height="500"></svg></td>
+        <td><svg id="visualisation7" width="600" height="500"></svg></td>
+        
+        
+        </tr>
+        </table>
+        <!--     <h1>Sample outputs</h1>
+        -->
+        
+        <script type='text/javascript' src='data.js'>    </script>
+        <script type='text/javascript' src='debug.js'>    </script>
+        <script type='text/javascript' src='random.js'>    </script>
+        <script type='text/javascript' src='metrics.js'>    </script>
+        <script type='text/javascript' src='gui.js'>    </script>
+        <script type='text/javascript' src='heap.js'>    </script>
+        <script type='text/javascript' src='astar.js'>    </script>
+        <script type='text/javascript' src='pop.js'>    </script>
+        <script type='text/javascript' src='layout.js'>  </script>
+        <script type='text/javascript' src='conflict.js'>    </script>
+        <script type='text/javascript' src='final.js'>    </script>
+        <script type="text/javascript" src="LZWEncoder.js">    </script>
+        <script type="text/javascript" src="NeuQuant.js">    </script>
+        <script type="text/javascript" src="GIFEncoder.js">    </script>
+        <script type="text/javascript" src="b64.js">    </script>
+        <script type="text/javascript" src="graph.js">    </script>
+        <script type="text/javascript" src="voronoi.js">    </script>
+        
+        
+        
+        </body>
+        </html>
+        
