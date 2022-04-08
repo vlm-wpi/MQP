@@ -1213,7 +1213,13 @@ function reset(){
 function start_simulation(max_gen, callback) {
   
   if (!gui.headless) {
-    reset(); //used to clear the board in GUI
+      reset(); //used to clear the board in GUI
+      var initial_seed = document.getElementById("randomSeed");
+      var seed = initial_seed.value;
+      if (seed.length != 0) {
+	  // this initializes the random seed. NOTE: THIS IS A STRING
+	  random.generator = randomseed.uheprng(seed);
+      }
   }
   
   var things = pop.types();

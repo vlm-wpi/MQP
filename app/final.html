@@ -53,6 +53,9 @@ Obstacles: <span id="num_Obstacle_initial"></span><br>
 <input type="text" id="numExits" name="numExits"><br>
 <label for="numObstacles">Number of Obstacles:</label><br>
 <input type="text" id="numObstacles" name="numObstacles">
+<label for="randomSeed">Initial Seed:</label><br>
+<input type="text" id="randomSeed" name="randomSeed">
+
 </form>
 </td>
 <td>
@@ -76,8 +79,7 @@ Time between updates: <input type="range" min="1" max="500" value="1" id="ms_spe
   <option value="LectureHall"        >LectureHall</option>
     <option value="myFile"        >myFile</option>
       </select>
-      <input type="file" name="inputfile"
-      id="inputfile"><br>
+      <input type="file" name="inputfile" id="inputfile"><br>
         </td>
         
         <td>
@@ -201,6 +203,7 @@ Time between updates: <input type="range" min="1" max="500" value="1" id="ms_spe
         
         <script type='text/javascript' src='data.js'>    </script>
         <script type='text/javascript' src='debug.js'>    </script>
+        <script type="text/javascript" src="random-seed.js">    </script>  
         <script type='text/javascript' src='random.js'>    </script>
         <script type='text/javascript' src='metrics.js'>    </script>
         <script type='text/javascript' src='gui.js'>    </script>
@@ -216,7 +219,6 @@ Time between updates: <input type="range" min="1" max="500" value="1" id="ms_spe
         <script type="text/javascript" src="b64.js">    </script>
         <script type="text/javascript" src="graph.js">    </script>
         <script type="text/javascript" src="voronoi.js">    </script>
-        
         
         
         </body>

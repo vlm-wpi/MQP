@@ -5,7 +5,7 @@
  */
 (function(random) {
 
-   random.generator = undefined
+    random.generator = randomseed.uheprng();   // Make sure to use random-seed
 
     // Create pseudo-random number generator to use for all runs
     function create(seed) {
@@ -15,7 +15,6 @@
          random.generator = require('random-seed').create();     // get what you get
        }
     }
-
 
     // random number between 0 and 1
     function next() {
