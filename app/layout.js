@@ -470,6 +470,9 @@
 		    maxCol = j;
 		    j = 0; //change column to zero
 		    jj++;  //add one to row
+		} else if (item == '\r') {
+		    // SKIP \r because of Unix/Dos* irregularities with \n\r
+		    // conversions.
 		} else{
 		    // INTERPRET and then advance
 		    if (item == "@") {
