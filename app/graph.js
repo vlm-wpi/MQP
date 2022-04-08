@@ -10,7 +10,9 @@
   //function to get the standard deviation of an array
   //https://stackoverflow.com/questions/7343890/standard-deviation-javascript
   function getStandardDeviation (array) {
+      if (typeof array === 'undefined') { return 0; }  // NOT SURE what else to do....
     const n = array.length;
+      if (n == 0) { return 0; }  // NOT SURE what else to do....
     const mean = array.reduce((a, b) => a + b) / n;
     return Math.sqrt(array.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b) / n);
 }

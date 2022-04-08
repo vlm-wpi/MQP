@@ -12,7 +12,7 @@ START_SEED=76000
 END_SEED=$((START_SEED+NUM_SEEDS))
 
 # Target the thresholds from 1 to 50 (inclusive)
-LOW_THRESH=2
+LOW_THRESH=16
 HIGH_THRESH=20
 
 # Where should output go?

@@ -323,6 +323,51 @@
     data.heatmap = heatmap_Checkbox.checked;
     }
 
+    var select_file = document.getElementById("inputfile");
+    gui.input_text_file = undefined;
+    if (select_file) {
+	select_file.addEventListener("change", function () {
+    	    var file = select_file.files[0];
+            var fr = new FileReader();
+	    
+	    // set up the callback function once data has been loaded
+	    fr.addEventListener("load", () => {
+		// Will be called asynchronously
+		var text_file = fr.result;  // callback on FileReader
+		gui.input_text_file = text_file;
+
+		// process and change width/height in GUI
+		var maxCol = 0;
+		var j = 0;
+		var jj = 0;
+
+		for(var i=0; i<text_file.length; i++){
+		    //check if new line
+		    var item = text_file.charAt(i);
+		    if (item == '\n'){
+			maxCol = j;
+			j = 0; //change column to zero
+			jj++;  //add one to row
+		    } else{
+			j++;
+		    }
+		}
+
+		// Has global awareness of everything...
+
+		var gridWidthi = document.getElementById("gridWidthi");
+		var gridWidthii = document.getElementById("gridWidthii");
+		gridWidthi.value = "" + maxCol;
+		gridWidthii.value = "" + jj;
+		data.width_i = maxCol;
+		data.width_ii = jj;
+	    }, false);
+	    
+	    fr.readAsText(file);
+	});
+    }
+
+
 // HOOK UP GUI ELEMENTS: END
 // -----------------------------------------------------
     exports.headless = false;
