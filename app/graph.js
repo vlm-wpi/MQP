@@ -136,18 +136,28 @@
   var num_updates = 0; //dont think necessary
   
   function reset_graph(){
-    //remove lines
-    d3.selectAll("path.line").remove();
+    d3.select("#visualisation").selectAll("svg").remove();
+    d3.select("#visualisation0").selectAll("svg").remove();
+    d3.select("#visualisation1").selectAll("svg").remove();
+    d3.select("#visualisation2").selectAll("svg").remove();
+    d3.select("#visualisation3").selectAll("svg").remove();
+    d3.select("#visualisation4").selectAll("svg").remove();
+    d3.select("#visualisation5").selectAll("svg").remove();
+    d3.select("#visualisation6").selectAll("svg").remove();
+    d3.select("#visualisation7").selectAll("svg").remove();
     
-    var things = pop.types(); //each type of a person
-	  var value2 = 0; //for x Axis, number of board updates
+    //remove lines
+   // d3.selectAll("path.line").remove();
+    
+   // var things = pop.types(); //each type of a person
+	 // var value2 = 0; //for x Axis, number of board updates
 	  //empty arrays for each type of person. Make sure the population types never changes order!
-	  var lineData = []; //initial empty data
-	  var totalPopData = [];
-	  for (i = 0; i < things.length; i++) {
-	    var tpe = things[i];
-	    lineData[i] = [];
-	}
+	 // var lineData = []; //initial empty data
+	 // var totalPopData = [];
+	 // for (i = 0; i < things.length; i++) {
+	 //   var tpe = things[i];
+	 //   lineData[i] = [];
+//	}
   }
   
   
