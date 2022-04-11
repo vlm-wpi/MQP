@@ -54,6 +54,7 @@
       for (i=0; i<population_types.length; i++){
         final.exit_times_array[population_types[i]] = [];
       }
+      
       final.exit_times_total_array = [];
       //collision array used for standard deviation
       final.collision_list = {};

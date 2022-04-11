@@ -339,7 +339,7 @@
 		// process and change width/height in GUI
 		var maxCol = 0;
 		var j = 0;
-		var jj = 0;
+		var jj = 1;
 
 		for(var i=0; i<text_file.length; i++){
 		    //check if new line
