@@ -99,7 +99,7 @@
         .attr('transform', 'rotate(-90)')
         .attr("dy", "1em")
         .style("text-anchor", "middle")
-        .text("Number of People on Grid");
+        .text("Percentage of People on Grid");
     
   //title
   vis.append("text")
@@ -107,7 +107,7 @@
    .attr("y", margin.top)
    .attr("text-anchor", "middle")
    .style("font-size", "16px")
-   .text("Number of People by Type on the Grid Over Time");
+   .text("Percentage of People by Type on the Grid Over Time");
     
   //this is what needs to be transitioned each time when it updates
   //add valueline path

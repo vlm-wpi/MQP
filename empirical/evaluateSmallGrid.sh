@@ -8,7 +8,7 @@
 # ONE MORE than number of independent trials to run
 NUM_SEEDS=3500
 
-START_SEED=65500
+START_SEED=100500
 END_SEED=$((START_SEED+NUM_SEEDS))
 
 # Target the thresholds from 1 to 50 (inclusive)
