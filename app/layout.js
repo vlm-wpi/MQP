@@ -464,27 +464,22 @@
 	    var numExits = 0;
 
 	    for(var i=0; i<raw_data.length; i++){
-		//check if new line
-		var item = raw_data.charAt(i);
-		if (item == '\n'){
-		    maxCol = j;
-		    j = 0; //change column to zero
-		    jj++;  //add one to row
-		} else if (item == '\r') {
+		    //check if new line
+		    var item = raw_data.charAt(i);
+		    if (item == '\n'){
+		      maxCol = j;
+		      j = 0; //change column to zero
+		      jj++;  //add one to row
+		    } else if (item == '\r') {
 		    // SKIP \r because of Unix/Dos* irregularities with \n\r
 		    // conversions.
-		} else{
+	    	} else{
 		    // INTERPRET and then advance
-		    if (item == "@") {
-			numExits++;
-			var obj = new Exit(j, jj);
-			if ((obj.anchor_i == 0) || (obj.anchor_i == this.width_i - 1)) {
+		    if (item == "v") {
+			    numExits++;
+			    var obj = new Exit(j, jj);
 			    obj.profile_i = [0, 0, 0, 0];
 			    obj.profile_ii = [0, 1, 2, 3]; //vertical exit
-			} else {
-			    obj.profile_i = [0, 1, 2, 3];
-			    obj.profile_ii = [0, 0, 0, 0]; //horizontal exit
-			}
 			//want to push whole object so that it keeps track of the end
 			this.exit_locations.push(obj);
 			data.exit_locations.push(obj);  // Don't forget
@@ -496,6 +491,22 @@
 			    
 			    temp_grid[safej][safejj].thing = obj;
 			}
+		    } else if (item == "h"){
+		        numExits++;
+			      var obj = new Exit(j, jj);
+		        obj.profile_i = [0, 1, 2, 3];
+			      obj.profile_ii = [0, 0, 0, 0]; //horizontal exit
+			      //want to push whole object so that it keeps track of the end
+      			this.exit_locations.push(obj);
+      			data.exit_locations.push(obj);  // Don't forget
+      			for (var p = 0; p < obj.profile_i.length; p++) { //placing exits on the grid
+      			    var dj = obj.profile_i[p];
+      			    var djj = obj.profile_ii[p];
+      			    var safej = data.get_bounded_index_i(j + dj);
+      			    var safejj = data.get_bounded_index_ii(jj + djj);
+      			    
+      			    temp_grid[safej][safejj].thing = obj;
+      			}
 		    } else if (item == "x"){
 			var obj = new Obstacle(j, jj);
 			this.obstacles.push(obj);
