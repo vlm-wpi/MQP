@@ -171,7 +171,6 @@
       var tpe = things[i];
       value = (data.current[tpe]/data.total_peds_at_start)*100; //now a percent for each type of ped
       lineData[i].push({x: value2,y: value});
-      final.excel_graph[tpe].push({tpe, value2, value});
     }
     totalPopData.push({x: value2,y: (final.current_population/data.total_peds_at_start)*100});
     //update every line
