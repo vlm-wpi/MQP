@@ -5,7 +5,7 @@
  */
 (function(debug) {
 
-   debug.active = true;
+   debug.active = false;
 
    function log(msg) {
        if (debug.active) {

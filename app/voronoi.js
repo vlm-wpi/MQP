@@ -11,8 +11,7 @@
 
   // HF#2 Random hex color
     function randhclr() {
-      return 
-      '#' + 
+      return '#' + 
       ("00" + randgp(256).toString(16)).slice(-2) + 
       ("00" + randgp(256).toString(16)).slice(-2) + 
       ("00" + randgp(256).toString(16)).slice(-2)
