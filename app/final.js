@@ -1208,7 +1208,7 @@ function reset(){
     data.current[things[i]] = data.max[things[i]];
   }
   //reset graph
- // graph.reset_graph();
+  graph.reset_graph();
 }
 
 function start_simulation(max_gen, callback) {
