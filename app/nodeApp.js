@@ -203,6 +203,10 @@ if (typeof argv.debug !== 'undefined') {
    global.debug.active = argv.debug
 }
 
+// Bring in the random seed.
+const randomseed = require('./random-seed');
+global.randomseed = randomseed['randomseed'];
+
 const random = require('./random');
 global.random = random['random'];
 global.random.create(seed);  // SEED IT NOW

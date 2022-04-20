@@ -902,7 +902,7 @@ if (gui.headless) {
   }
   debug.log('exits: ' + exits)
   debug.log('count of last coords: ' + num_through_exit);
-  debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
+  //debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
   
   //calculating the final average occupancy for each ped type
   for(i=0; i<things.length; i++){
