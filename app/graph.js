@@ -138,25 +138,33 @@
   var num_updates = 0; //dont think necessary
   
   function reset_graph(){
-    d3.select("#visualisation").selectAll("svg").remove();
-    d3.select("#visualisation0").selectAll("svg").remove();
-    d3.select("#visualisation1").selectAll("svg").remove();
-    d3.select("#visualisation2").selectAll("svg").remove();
-    d3.select("#visualisation3").selectAll("svg").remove();
-    d3.select("#visualisation4").selectAll("svg").remove();
-    d3.select("#visualisation5").selectAll("svg").remove();
-    d3.select("#visualisation6").selectAll("svg").remove();
-    d3.select("#visualisation7").selectAll("svg").remove();
+    d3.select("visualisation").selectAll("svg").remove();
+    d3.select("visualisation0").selectAll("svg").remove();
+    d3.select("visualisation1").selectAll("svg").remove();
+    d3.select("visualisation2").selectAll("svg").remove();
+    d3.select("visualisation3").selectAll("svg").remove();
+    d3.select("visualisation4").selectAll("svg").remove();
+    d3.select("visualisation5").selectAll("svg").remove();
+    d3.select("visualisation6").selectAll("svg").remove();
+    d3.select("visualisation7").selectAll("svg").remove();
+    
+  //  d3.select("svg").remove();
     
     //remove lines
    // d3.selectAll("path.line").remove();
-    
-   // var things = pop.types(); //each type of a person
-	 // var value2 = 0; //for x Axis, number of board updates
+    while(totalPopData.length > 0){
+      totalPopData.pop();
+    }
+    var things = pop.types(); //each type of a person
+	  value2 = 0; //for x Axis, number of board updates
 	  //empty arrays for each type of person. Make sure the population types never changes order!
 	 // var lineData = []; //initial empty data
-	 // var totalPopData = [];
-	 // for (i = 0; i < things.length; i++) {
+	  //var totalPopData = [];
+	 for (i = 0; i < things.length; i++) {
+	   while(lineData[i].length>0){
+	     lineData[i].pop();
+	   }
+	 }
 	 //   var tpe = things[i];
 	 //   lineData[i] = [];
 //	}
@@ -209,8 +217,6 @@
       var obj = pop.factory(tpe,0,0);
       data.push({Type: tpe,Value: value, Color: obj.color()});
     }
-
-
     //data.push({Type: "Total",Value: final.total_collisions});
     // console.log(data);
 
