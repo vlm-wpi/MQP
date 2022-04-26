@@ -138,17 +138,28 @@
   var num_updates = 0; //dont think necessary
   
   function reset_graph(){
-    d3.select("visualisation").selectAll("svg").remove();
-    d3.select("visualisation0").selectAll("svg").remove();
-    d3.select("visualisation1").selectAll("svg").remove();
-    d3.select("visualisation2").selectAll("svg").remove();
-    d3.select("visualisation3").selectAll("svg").remove();
-    d3.select("visualisation4").selectAll("svg").remove();
-    d3.select("visualisation5").selectAll("svg").remove();
-    d3.select("visualisation6").selectAll("svg").remove();
-    d3.select("visualisation7").selectAll("svg").remove();
     
-  //  d3.select("svg").remove();
+    var vis = d3.select("#visualisation0");
+    var vis1 = d3.select("#visualisation1");
+    var vis2 = d3.select("#visualisation2");
+    var vis3 = d3.select("#visualisation3");
+    var vis4 = d3.select("#visualisation4");
+    var vis5 = d3.select("#visualisation5");
+    var vis6 = d3.select("#visualisation6");
+    var vis7 = d3.select("#visualisation7");
+    
+    vis.selectAll("g").remove() //removes axis
+    vis1.selectAll("g").remove() //removes axis
+    vis2.selectAll("g").remove() //removes axis
+    vis3.selectAll("g").remove() //removes axis
+    vis4.selectAll("g").remove() //removes axis
+    vis5.selectAll("g").remove() //removes axis
+    vis6.selectAll("g").remove() //removes axis
+    vis7.selectAll("g").remove() //removes axis
+    d3.selectAll("rect").remove() //removes bars
+    d3.selectAll("circle").remove()
+    d3.selectAll("line").remove()
+
     
     //remove lines
    // d3.selectAll("path.line").remove();
@@ -157,17 +168,11 @@
     }
     var things = pop.types(); //each type of a person
 	  value2 = 0; //for x Axis, number of board updates
-	  //empty arrays for each type of person. Make sure the population types never changes order!
-	 // var lineData = []; //initial empty data
-	  //var totalPopData = [];
 	 for (i = 0; i < things.length; i++) {
 	   while(lineData[i].length>0){
 	     lineData[i].pop();
 	   }
 	 }
-	 //   var tpe = things[i];
-	 //   lineData[i] = [];
-//	}
   }
   
   
@@ -206,6 +211,8 @@
     
   for(k=0; k<final.total_data.length; k++){
     var svg = d3.select('#visualisation'+k);
+    //set the id
+    svg.attr("id","visualisation"+k)
     var colors = [];
     var data = [];
     var value_avg;
@@ -217,9 +224,7 @@
       var obj = pop.factory(tpe,0,0);
       data.push({Type: tpe,Value: value, Color: obj.color()});
     }
-    //data.push({Type: "Total",Value: final.total_collisions});
-    // console.log(data);
-
+    
     //array of keys
     const types = data.map(function(obj){
       return obj.Type;
@@ -323,32 +328,6 @@
     .on("mouseover", mouseover)
     .on("mousemove", mousemove)
     .on("mouseleave", mouseleave)
-     
-   //add error bars
- //  svg.append("g")
- //   .selectAll("g")
- //   .data(data)
- //   .join(enter => {
- //   let g = enter.append("g")
- //   g.append("path")
- //     .attr("d", d => {
-  //      let p = d3.path()
-      // Vertical line
-  //    console.log(d.Value);
-  //    p.moveTo(d.Value, (d.avg - d.sde))
-  //    p.lineTo(d.Value, (d.avg + d.sde))
-      // Bottom error bar
-  //    p.moveTo(d.Value - 4, (d.avg - d.sde))
-  //    p.lineTo(d.Value + 4, (d.avg - d.sde))
-      // Top error bar
-  //    p.moveTo(d.Value - 4, (d.avg + d.sde))
-   //   p.lineTo(d.Value + 4, (d.avg + d.sde))
-   //   return p.toString()
- // })
-//  .attr("stroke", "seagreen")
-//  .attr("stroke-width", 1)
-//  })
-     
      
     }
   }
