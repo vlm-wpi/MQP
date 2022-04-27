@@ -623,6 +623,7 @@
     layout.factory = factory;
     layout.get_exit_information = get_exit_information;
     layout.Obstacle = Obstacle;
+    layout.Exit = Exit;
     layout.previewFile = previewFile;
 
 })(typeof layout === 'undefined'?

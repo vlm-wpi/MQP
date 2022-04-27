@@ -22,6 +22,10 @@
         avg_occ_list[population_types[i]] = [];
       }
       final.all_visited = [];
+      final.count = [];
+      for (var i = 0; i < data.width_i; i = i + 1) { //go through each index until you get to the width og the board
+        final.count[i] = []; //initialize the temp grid at that width index to be empty
+      }
       final.avg_total_occ_list = [];
       final.total_avg_occ_all_time = 0;
       final.occ_sum = 0;
@@ -133,10 +137,8 @@
       
       
       
-      
       //function that takes care of initializing the grid, placing items, and updating the board
       function State() {
-        
         this.grid = []; //data structure for grid, initially empty
         this.temp_grid = []; //data structure for the temp griid, used to try placing objects without actually moving them on the actual board
         this.population = []; //population of people on the grid, initially empty
@@ -213,6 +215,22 @@
                 box_position_ii = location[1] + box_profile_ii[ii];
                 var safei = data.get_bounded_index_i(box_position_i);
                 var safeii = data.get_bounded_index_ii(box_position_ii);
+                
+                
+                
+                 //go through board and add count to the people on a board
+                if(this.temp_grid[safei][safeii] != null){ //if not null
+                //check if obstacle
+                  if(this.temp_grid[safei][safeii] instanceof layout.Obstacle){}//do nothing
+                  //check if exit
+                  else if(this.temp_grid[safei][safeii] instanceof layout.Exit){} //do nothing
+                  else{
+                    //must be a pedestrian
+                    final.count[safei][safeii] += 1; //add one to final count
+                  }
+                }
+               
+          
                 //count the number of open cells in their box
                 if(this.temp_grid[safei][safeii].thing != null) {
                   open_cells--;
@@ -817,6 +835,7 @@ function initialize_simulation() {
     }));
   }
 }
+
 this.end_data = function(last_exit_time){
        var things = pop.types();
                 
@@ -868,23 +887,33 @@ if (gui.headless) {
     j = final.total_visited_i[n];
     jj = final.total_visited_ii[n];
     visited_coords = [j,jj];
-    final.all_visited.push(visited_coords);
   } 
+for (i=0; i<data.width_i; i++){
+      for (ii=0; ii<data.width_ii; ii++){
+        if(isNaN(final.count[i][ii])){
+          var value = 0;
+        }
+        else{
+          var value = final.count[i][ii];
+        }
+        final.all_visited.push({X:i, Y:ii, Value:value});
+      }
+    }
   //counter for num times each location was visited
-  const count = [];
-  for(const element of final.all_visited) {
-    if(count[element]) {
-      count[element] += 1;
-    } else {
-      count[element] = 1;
-    }
-  }
-  for(const element of final.all_visited) {
-    if(count[element]>max_visits) {
-      max_visits = count[element];
-      max_element = element;
-    }
-  }
+ // const count = [];
+ // for(const element of final.all_visited) {
+ //   if(count[element]) {
+ //     count[element] += 1;
+ //   } else {
+ //     count[element] = 1;
+ //   }
+//  }
+  //for(const element of final.all_visited) {
+  //  if(count[element]>max_visits) {
+ //  max_visits = count[element];
+ //     max_element = element;
+ //   }
+//  }
   //do a count for the last coord of each ped to get num peds using each exit
   const count_last = [];
   var num_through_exit = [];
@@ -973,6 +1002,7 @@ if (!gui.headless) { graph.makeAvgExitGraph(); }
 
 var end_sim_counter = 0;
 function end_simulation() {
+  
   end_sim_counter = end_sim_counter + 1;
   clearInterval(interval_id);
   // if (!gui.headless) { clearInterval(interval_id2); }
@@ -1005,23 +1035,35 @@ function end_simulation() {
       j = final.total_visited_i[n];
       jj = final.total_visited_ii[n];
       visited_coords = [j,jj];
-      final.all_visited.push(visited_coords);
-    } 
+    }
+    
+    for (i=0; i<data.width_i; i++){
+      for (ii=0; ii<data.width_ii; ii++){
+        if(isNaN(final.count[i][ii])){
+          var value = 0;
+        }
+        else{
+          var value = final.count[i][ii];
+        }
+        final.all_visited.push({X:i, Y:ii, Value:value});
+      }
+    }
+    
     //counter for num times each location was visited
-    const count = [];
-    for(const element of final.all_visited) {
-      if(count[element]) {
-        count[element] += 1;
-      } else {
-        count[element] = 1;
-      }
-    }
-    for(const element of final.all_visited) {
-      if(count[element]>max_visits) {
-        max_visits = count[element];
-        max_element = element;
-      }
-    }
+   // const count = [];
+   // for(const element of final.all_visited) {
+   //   if(count[element]) {
+   //     count[element] += 1;
+  //    } else {
+  //      count[element] = 1;
+  //    }
+  //  }
+  //  for(const element of final.all_visited) {
+  //    if(count[element]>max_visits) {
+  //      max_visits = count[element];
+  //      max_element = element;
+  //    }
+  //  }
     //do a count for the last coord of each ped to get num peds using each exit
     const count_last = [];
     var num_through_exit = [];
@@ -1039,7 +1081,7 @@ function end_simulation() {
     }
     debug.log('exits: ' + exits)
     debug.log('count of last coords: ' + num_through_exit);
-    debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
+   // debug.log('max visited occurs at: (' + max_element + ') and is ' + max_visits)
     
     if(data.heatmap) {
       graph.heatmap();
@@ -1117,6 +1159,16 @@ function reset(){
     avg_occ_list[population_types[i]] = [];
   }
   final.all_visited = [];
+  final.count = [];
+  for (var i = 0; i < data.width_i; i = i + 1) { //go through each index until you get to the width og the board
+    final.count[i] = []; //initialize the temp grid at that width index to be empty
+  }
+  //initialize to all zeros
+  for (var i = 0; i < data.width_i; i = i + 1){
+    for (var ii = 0; ii < data.width_ii; ii = ii + 1){
+      final.count[i][ii] = 0;
+    }
+  }
   final.avg_total_occ_list = [];
   final.total_avg_occ_all_time = 0;
   final.occ_sum = 0;
@@ -1307,6 +1359,7 @@ function start_simulation(max_gen, callback) {
 
 take_snapshot_calls = 0;
 function simulate_and_visualize() {
+  
   number_generations += 1;
   
   var report = "";
