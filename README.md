@@ -1,5 +1,7 @@
 # MQP
 
+Github pages site: https://vlm-wpi.github.io/MQP/app/final.html
+
 This GitHub Repository represents the work of Worcester Polytechnic Institute (WPI) students for their senior capstone project and is titled, 'Modeling Pedestrian Flow: A Path-Finding Approach.'  The simulation tool can be used to model pedestrian movement in an enclosed space given several initial parameters (that the user can input), and will return several statistics.
 
 **The simulation can be run in four ways:**
