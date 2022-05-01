@@ -13,4 +13,3 @@ This branch is used to show how to add another pedestrian to the simulation.
 **Note:**
 
 This tutorial adds in the number of new pedestrians manually, if you want to add the new pedestrian to the GUI input, you would have to add an input in app/final.html and you would have to add getting the input in app/gui.js .
-
