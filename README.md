@@ -8,6 +8,7 @@ This branch is used to show how to add another pedestrian to the simulation.
 2. Add the new pedestrian type to the function types()
 3. Add the creation of the new pedestrian to the function factory(tpe, j, jj) 
 4. In app/data.js add the number of new pedestrians you want on the grid. Add two lines under the line data.current['AdultBike'] = data.max['AdultBike']; that say data.max['new_pedestrian_type'] = number of new pedestrians you want on board; and data.current['new_pedestrian_type'] = data.max['new_pedestrian_type'];
+5. In app/final.html add a line underneath the line that states: Adults with bikes: <span id="num_AdultBike_initial"></span><br> that says: Whatever you want here: <span id="num_newPedestrianType_initial"></span><br>
 
 **Note:**
 
