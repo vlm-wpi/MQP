@@ -344,14 +344,9 @@ const svg = d3.select("#visualisation5")
 .append("g")
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
-//Read the data
-//d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/heatmap_data.csv").then(function(data) {
-
-
-
   // Labels of row and columns -> unique identifier of the column called 'group' and 'variable'
-  const myGroups = Array.from(new Set(final.all_visited.map(d => d.Y)))
-  const myVars = Array.from(new Set(final.all_visited.map(d => d.X)))
+  const myGroups = Array.from(new Set(final.all_visited.map(d => d.X)))
+  const myVars = Array.from(new Set(final.all_visited.map(d => d.Y)))
   // var myGroups = final.total_visited_i;
 
   // Build X scales and axis:
@@ -367,7 +362,7 @@ const svg = d3.select("#visualisation5")
 
   // Build Y scales and axis:
   const y = d3.scaleBand()
-    .range([ height, 0 ])
+    .range([ 0,height ])
     .domain(myVars)
     .padding(0.05);
   svg.append("g")

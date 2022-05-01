@@ -204,12 +204,65 @@ function AdultBike(j, jj) {
     }
 }
 
+function new_ped(j, jj) {
+    this.orientation = data.random_orientation();
+    this.anchor_i = j
+    this.anchor_ii = jj
+    this.min_exiti = 0;
+    this.min_exitii = 0;
+    this.code = "n";
+    this.goali = 0; //initially
+    this.goalii = 0; //initially
+    this.endi = 0; //initially
+    this.endii = 0; // initially
+    this.wait = 0;
+    // my projection
+    this.profile_i = [0,-1,0,1]
+    this.profile_ii = [0,1,1,1]
+    this.width = 3;
+    this.height = 2;
+    this.type = 'new_ped';
+    this.exittime = 0;
+    this.waitsteps = 0;
+    this.local_occupancy = [];
+    this.path_i = [];
+    this.path_ii = [];
+    this.initial_path = [];
+    this.collision = 0;
+    this.stuck = 0;
+
+    this.color = function() {
+        return "rgb(255,127,80)";
+    }
+
+    this.place_footprint = function(state) {
+        for (var p = 0; p < this.profile_i.length; p++) { //
+            var dj = this.profile_i[p];
+            var djj = this.profile_ii[p];
+            var safej = data.get_bounded_index_i(this.anchor_i + dj);
+            var safejj = data.get_bounded_index_ii(this.anchor_ii + djj);
+            state.temp_grid[safej][safejj].thing = this;
+        }
+    }
+
+    this.remove_footprint = function(state) {
+        for (var p = 0; p < this.profile_i.length; p++) { //
+            var dj = this.profile_i[p];
+            var djj = this.profile_ii[p];
+            var safei = data.get_bounded_index_i(this.anchor_i + dj);
+            var safeii = data.get_bounded_index_ii(this.anchor_ii + djj);
+            state.temp_grid[safei][safeii].thing = null;
+        }
+    }
+}
+
     function types() {
 	return [
 	    'Child',
 	    'Adult',
 	    'AdultBike',
 	    'AdultBackpack',
+	    'new_ped',
 	];
     }
 
@@ -222,6 +275,8 @@ function AdultBike(j, jj) {
 	    return new AdultBike(j, jj);
 	} else if (tpe == 'AdultBackpack') {
 	    return new AdultBackpack(j, jj);
+	} else if (tpe == 'new_ped'){
+	    return new new_ped(j,jj);
 	} else {
 	    console.log("unknown type:" + tpe);
 	    return None;

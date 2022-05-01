@@ -83,6 +83,9 @@ function calc_distance(i, ii, j, jj) {
 //counter for the number of adults w/ bike on the board, updates when an adult w/ bike reaches an exit
     data.max['AdultBike'] = 25;
     data.current['AdultBike'] = data.max['AdultBike']; 
+    
+    data.max['new_ped'] = 25;
+    data.current['new_ped'] = data.max['new_ped']; 
 
     //number of oobstacles to place on the board, can be changed by user input
     data.max['Obstacle'] = 100; 
