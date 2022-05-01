@@ -168,4 +168,4 @@ d. Through a remote server (no GUI component)
 		8. Once the trials have stopped running, you can transfer the output file from the server back to your device by dragging and dropping it into the desired location
 
 **Acknowledgments**
-We stared with the code from an ant simulation taken froom here: http://www.natureincode.com/code/various/ants.html
+We stared with the code from an ant simulation taken from here: http://www.natureincode.com/code/various/ants.html
